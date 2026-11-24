@@ -65,11 +65,11 @@ async function exportPdf(ids,opts){
   }));
   let logo=null;try{logo=await image('/app/logo.png');}catch(e){}
   const pictures=[];
-  for(let i=0;i<tables.length;i+=4){
+  for(let i=0;i<tables.length;i+=9){
    const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
    const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
-   const spots=[[37,17],[123,17],[37,153],[123,153]];
-   for(let j=0;j<4&&i+j<tables.length;j++)sticker(ctx,tables[i+j],qrs[i+j],logo,spots[j][0],spots[j][1]);
+   const spots=[[20,7],[80,7],[140,7],[20,100],[80,100],[140,100],[20,193],[80,193],[140,193]];
+   for(let j=0;j<9&&i+j<tables.length;j++)sticker(ctx,tables[i+j],qrs[i+j],logo,spots[j][0],spots[j][1]);
    write(ctx,'РАЙ Оценка · 50 × 80 мм · печат 100%',105,291,2.5,'#8a8c92','600');
    const uri=canvas.toDataURL('image/jpeg',.96);pictures.push(bytes(uri.slice(uri.indexOf(',')+1)));
    canvas.width=canvas.height=1;
