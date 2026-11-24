@@ -209,7 +209,7 @@
         var tmax = Math.max.apply(null, s.trend.map(function (d) { return d.n; }).concat([1]));
         var tagMax = Math.max.apply(null, s.tags.map(function (d) { return d.n; }).concat([1]));
         var inTarget = s.reaction.acked ? Math.round(s.reaction.in_target / s.reaction.acked * 100) + '%' : '—';
-        view.innerHTML = '<div class="row between"><h1>Статистика</h1>' + (isOwner() ? '<a class="btn small primary" href="#/floorplan">Карта на оценките</a>' : '') + '</div>' +
+        view.innerHTML = '<h1>Анализи</h1>' +
           '<div class="seg">' + [['day', 'Днес'], ['week', '7 дни'], ['month', '30 дни'], ['all', 'Всичко'], ['custom', 'Период']].map(function (p) {
             return '<button type="button" data-p="' + p[0] + '" class="' + (statP.period === p[0] ? 'on' : '') + '">' + p[1] + '</button>'; }).join('') + '</div>' +
           (statP.period === 'custom' ? '<div class="row"><label class="f grow">От<input type="date" id="sf" value="' + statP.from + '"></label><label class="f grow">До<input type="date" id="st" value="' + statP.to + '"></label><button class="btn" id="sgo" style="align-self:flex-end">Покажи</button></div>' : '') +
@@ -221,6 +221,7 @@
             return '<div class="bar"><span>' + stars(d.rating) + '</span><span class="track"><i style="width:' + (d.n / max * 100) + '%;background:' + (d.rating <= s.alert_max_rating ? 'var(--red2)' : d.rating === 3 ? 'var(--warn)' : 'var(--ok)') + '"></i></span><span class="num">' + d.n + '</span></div>'; }).join('') + '</div></div>' +
           (s.trend.length > 1 ? '<div class="card"><h3>Тенденция по дни</h3><div class="spark">' + s.trend.map(function (d) {
             return '<div title="' + d.d + ': ' + d.n + ' оценки, ' + d.avg + '★" style="height:' + Math.max(4, d.n / tmax * 100) + '%;background:' + (d.avg < 3 ? 'var(--red2)' : d.avg < 4 ? 'var(--warn)' : 'var(--ok)') + '"></div>'; }).join('') + '</div><div class="meta">Височина: брой оценки · цвят: средна оценка за деня</div></div>' : '') +
+          (isOwner() ? '<section id="stats-floorplan" class="stats-floorplan" aria-label="Анализ по маси"><p class="muted">Зареждане на схемите…</p></section>' : '') +
           '<div class="card"><h3>Реакция на сигнали (≤' + s.alert_max_rating + '★)</h3><div class="row"><span>Сигнали: <b>' + s.reaction.alerts + '</b></span><span>Поети: <b>' + s.reaction.acked + '</b></span><span>В рамките на ' + s.reaction.target_min + ' мин: <b>' + inTarget + '</b></span><span>Медиана: <b>' + (s.reaction.median_min != null ? s.reaction.median_min + ' мин' : '—') + '</b></span></div></div>' +
           '<div class="card"><h3>Категории</h3>' + (s.tags.length ? '<div class="bars">' + s.tags.map(function (t) {
             return '<div class="bar"><span>' + esc(TAGS[t.tag] || t.tag) + '</span><span class="track"><i style="width:' + (t.n / tagMax * 100) + '%;background:' + (['slow', 'cold', 'wrong', 'price', 'clean', 'noise'].indexOf(t.tag) >= 0 ? 'var(--red2)' : 'var(--ok)') + '"></i></span><span class="num">' + t.n + ' · ' + t.avg + '★</span></div>'; }).join('') + '</div><div class="meta">Червено: споменато като проблем · зелено: като харесано</div>' : '<p class="muted">Няма данни.</p>') + '</div>' +
@@ -232,6 +233,7 @@
             return '<a class="rv ' + (c.rating <= s.alert_max_rating ? 'alert' : 'r' + c.rating) + '" href="#/review/' + c.id + '"><div class="row between">' + stars(c.rating) + '<span class="meta">' + dt(c.created_at) + '</span></div><div class="comment">' + esc(c.comment) + '</div><div class="meta">' + esc([c.zone_name, c.table_label ? 'Маса ' + c.table_label : ''].filter(Boolean).join(' · ')) + '</div></a>'; }).join('') + '</div>' : '<p class="muted">Няма коментари.</p>') + '</div>';
         view.querySelectorAll('.seg button').forEach(function (b) { b.onclick = function () { statP.period = b.dataset.p; draw().catch(fail); }; });
         if ($('#sgo')) $('#sgo').onclick = function () { statP.from = $('#sf').value; statP.to = $('#st').value; draw().catch(fail); };
+        if(isOwner() && window.RAIFloorplan){var floorSlot=$('#stats-floorplan');if(floorSlot)window.RAIFloorplan.mount({view:floorSlot,api:api,toast:toast,fail:fail,tags:TAGS,embedded:true}).catch(fail);}
       });
     }
     return draw();
@@ -242,7 +244,7 @@
     chrome(true);
     if (!isOwner()) { location.hash = '#/'; return; }
     view.innerHTML = '<h1>Управление</h1><div class="list">' +
-      [['#/floorplan', 'Карта на оценките', 'Интерактивни планове на двете зали, оценки по маси и QR лепенки'], ['#/tables', 'Маси и зони', 'Добавяне, QR кодове, печат на стикери'], ['#/menu', 'Ново меню', 'Продукти и категории за оценка'],
+      [['#/tables', 'Маси и зони', 'Добавяне, QR кодове, печат на стикери'], ['#/menu', 'Ново меню', 'Продукти и категории за оценка'],
        ['#/users', 'Потребители', 'Управители, известия, дежурен'], ['#/settings', 'Настройки', 'Известия, адрес, Google, GDPR, защита']].map(function (x) {
         return '<a class="item" href="' + x[0] + '" style="text-decoration:none;color:var(--fg)"><span class="grow"><b>' + x[1] + '</b><br><span class="meta">' + x[2] + '</span></span><span>›</span></a>'; }).join('') + '</div>';
   });
