@@ -848,3 +848,41 @@ label.f,.meta,.muted{color:var(--muted)}
   text-align:center;
   white-space:nowrap;
 }
+
+/* Compact Analytics title: use BAROMETER's mobile page-title hierarchy,
+   without wasting a whole section above the date controls. */
+#view:has(> .rai-page-heading){
+  padding-top:12px;
+  row-gap:10px;
+}
+#view > .rai-page-heading{
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:2px;
+  padding:0;
+  margin:0;
+  min-height:0;
+}
+#view > .rai-page-heading .rai-eyebrow{
+  font-size:9px;
+  line-height:1.2;
+  font-weight:700;
+  letter-spacing:1px;
+  margin:0;
+}
+#view > .rai-page-heading h1{
+  font:700 24px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  letter-spacing:-.025em;
+  color:#263442;
+  text-align:center;
+  padding:0;
+  margin:0;
+}
+#view > .rai-page-heading + .rai-period-panel{margin:0 0 2px}
+@media(min-width:768px){
+  #view:has(> .rai-page-heading){padding-top:16px}
+  #view > .rai-page-heading{gap:3px}
+}
