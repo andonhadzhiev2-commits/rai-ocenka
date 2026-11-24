@@ -2158,3 +2158,95 @@ label.f,.meta,.muted{color:var(--muted)}
     font-size:26px;
   }
 }
+
+/* Larger balanced ten-card presentation: TOP and 10 match, both on two lines.
+   Keep five cards per row with existing colored star accents and percent rules. */
+#view .kpis.rai-summary-kpis.rai-summary-five>.kpi.rai-summary-cell,
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent{
+  height:140px;
+  min-height:140px;
+}
+#view .kpis.rai-summary-kpis.rai-summary-five>.kpi.rai-summary-cell{
+  grid-template-rows:66px 32px 28px;
+  padding:6px 2px;
+}
+#view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v,
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-count{
+  font-size:38px;
+  font-weight:750;
+  letter-spacing:-1px;
+  font-variant-numeric:tabular-nums;
+}
+#view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:0;
+  height:66px;
+  line-height:1;
+}
+#view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten .rai-top-word,
+#view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten .rai-top-number{
+  display:block;
+  font-size:29px;
+  font-weight:750;
+  line-height:.98;
+  letter-spacing:-.9px;
+}
+#view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .rai-summary-icon{
+  font-size:24px;
+  height:32px;
+}
+#view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .rai-center-star{font-size:26px}
+#view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .l{font-size:15px}
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent{
+  grid-template-rows:50px 34px 30px;
+  padding:10px 2px 7px;
+}
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-percent{font-size:16px}
+@media(max-width:600px){
+  #view .kpis.rai-summary-kpis.rai-summary-five>.kpi.rai-summary-cell,
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent{
+    height:132px;
+    min-height:132px;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.kpi.rai-summary-cell{
+    grid-template-rows:62px 30px 25px;
+    padding:6px 1px;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v,
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-count{
+    font-size:clamp(28px,7.4vw,33px);
+    letter-spacing:-1px;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten{
+    height:62px;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten .rai-top-word,
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten .rai-top-number{
+    font-size:clamp(20px,5.3vw,25px);
+    letter-spacing:-.65px;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .rai-summary-icon{
+    height:30px;
+    font-size:22px;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .rai-center-star{font-size:25px}
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .l{
+    font-size:clamp(9px,2.75vw,12px);
+  }
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent{
+    grid-template-rows:48px 33px 28px;
+    padding:9px 1px 6px;
+  }
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-percent{
+    font-size:14px;
+  }
+}
+@media(max-width:360px){
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v,
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-count{
+    font-size:27px;
+  }
+}
