@@ -274,7 +274,7 @@
         if (x.s === 200 || x.s === 201 || x.s === 202) {
           $('#form').hidden = true; $('#thanks').hidden = false; window.scrollTo(0, 0); return;
         }
-        render(); showErr(x.s === 429 ? (x.j.error === 'too_fast' ? t.errFast : t.errRate) : t.errGen);
+        render(); showErr(x.j && x.j.error === 'phone_consent_required' ? t.phoneConsentNeeded : x.j && x.j.error === 'invalid_phone' ? t.phoneBad : x.s === 429 ? (x.j.error === 'too_fast' ? t.errFast : t.errRate) : t.errGen);
       }).catch(function () { sending = false; render(); showErr(T[lang].errNet); });
   });
 
