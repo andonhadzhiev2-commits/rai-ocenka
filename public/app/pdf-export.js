@@ -34,9 +34,12 @@ function sticker(ctx,t,qr,logo,x,y){
  else write(ctx,'РАЙ',cx,y+14,8,'#fff','800');
  write(ctx,'Вашето мнение',cx,y+28,4.1,'#fff','700');
  write(ctx,'е важно за нас',cx,y+33,4.1,'#fff','700');
- ctx.fillStyle='#fff';ctx.fillRect(px(cx-24),px(y+37),px(48),px(48));
- ctx.drawImage(qr,px(cx-22),px(y+39),px(44),px(44));
- write(ctx,'BG  ·  EN  ·  GR',cx,y+86,2.6,'#d9dade','700');
+ // Keep a clear quiet zone and 6 mm breathing space below the QR.
+ ctx.fillStyle='#fff';ctx.fillRect(px(cx-22),px(y+36),px(44),px(44));
+ ctx.imageSmoothingEnabled=false;
+ ctx.drawImage(qr,px(cx-20),px(y+38),px(40),px(40));
+ ctx.imageSmoothingEnabled=true;
+ write(ctx,'BG  ·  EN  ·  GR',cx,y+84,3.0,'#e3e4e8','700');
  // This identifying label must stay OUTSIDE the cut line.
  write(ctx,(t.zone_name||'')+' — МАСА '+t.label,cx,y+97,3.4,'#171a20','800');
 }
