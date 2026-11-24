@@ -2573,18 +2573,22 @@ body header.top.rai-top-nav .rai-pulse-mark{
   pointer-events:none;
 }
 
-/* Symmetrical red breathing room around Pulse; carry red behind iPhone safe-area. */
-html{background:#bd1730}
+/* Red only behind the Pulse header, equally padded above and below logo.
+   Black system/status area and a crisp black outline around the band. */
+html{background:#0d0b0c}
 body header.top.rai-top-nav{
-  padding-top:calc(12px + env(safe-area-inset-top,0px));
-  padding-bottom:12px;
+  top:env(safe-area-inset-top,0px);
+  margin-top:env(safe-area-inset-top,0px);
+  padding-top:10px;
+  padding-bottom:10px;
   padding-left:max(12px,env(safe-area-inset-left,0px));
   padding-right:max(12px,env(safe-area-inset-right,0px));
+  border:2px solid #0d0b0c;
 }
 @media(max-width:400px){
   body header.top.rai-top-nav{
-    padding-top:calc(10px + env(safe-area-inset-top,0px));
-    padding-bottom:10px;
+    padding-top:9px;
+    padding-bottom:9px;
     padding-left:max(10px,env(safe-area-inset-left,0px));
     padding-right:max(10px,env(safe-area-inset-right,0px));
   }
