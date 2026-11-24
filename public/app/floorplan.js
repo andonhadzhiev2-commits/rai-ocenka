@@ -99,14 +99,14 @@
       const marks=new Map(aggregated.map(x=>[Number(x.table_id),x]));
       let markup='<svg class="fp-sketch" viewBox="0 0 '+c.w+' '+c.h+'" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'+c.svg+'</svg>';
       c.seats.forEach(spec=>{
-        const [num,x,y,w,h,shape]=spec;const t=existing.get(String(num));
+        const [num,x,y,w,h]=spec;const t=existing.get(String(num));
         const a=t?marks.get(Number(t.id)):null;
         const total=a?Number(a.total):0,avg=a?Number(a.avg_rating):null,low=a?Number(a.low_count):0;
         const quality=!t?'pending':!total?'neutral':avg<3.5?'bad':avg<4.3?'mixed':'good';
         const posX=t&&t.map_x!=null?Number(t.map_x):100*(x+w/2)/c.w;
         const posY=t&&t.map_y!=null?Number(t.map_y):100*(y+h/2)/c.h;
-        const attr='style="left:'+posX+'%;top:'+posY+'%;width:'+(w/c.w*100)+'%;height:'+(h/c.h*100)+'%"';
-        markup+='<button type="button" title="Маса '+esc(num)+' · '+(total?fmt(avg)+' звезди, '+total+' отзива':'Няма отзиви')+'" class="fp-seat '+quality+(shape==='round'?' round':'')+(selected===num?' selected':'')+(t&&printSelection.has(keyForNum(num))?' print-marked':'')+'" data-fps="'+esc(num)+'" '+attr+'><b>'+esc(num)+'</b>'+(total?'<small>'+fmt(avg)+' ★</small>':'')+'</button>';
+        const attr='style="left:'+posX+'%;top:'+posY+'%"';
+        markup+='<button type="button" title="Маса '+esc(num)+' · '+(total?fmt(avg)+' звезди, '+total+' отзива':'Няма отзиви')+'" class="fp-seat '+quality+(selected===num?' selected':'')+(t&&printSelection.has(keyForNum(num))?' print-marked':'')+'" data-fps="'+esc(num)+'" '+attr+'><b>'+esc(num)+'</b>'+(total?'<small>'+fmt(avg)+' ★</small>':'')+'</button>';
       });
       const unplaced=tables.filter(t=>mapName(t)===zone&&!c.seats.some(q=>String(q[0])===String(t.label)));
       return '<div class="fp-map-scroll"><div class="fp-map" style="aspect-ratio:'+c.w+'/'+c.h+'">'+markup+'</div></div>'+
