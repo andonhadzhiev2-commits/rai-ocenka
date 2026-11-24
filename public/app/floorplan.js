@@ -95,7 +95,7 @@
     }
     function periodControls() {
       return '<div class="fp-controls"><div class="fp-pills" role="group" aria-label="Период">'+
-        [['mtd','Този месец'],['day','Днес'],['week','7 дни'],['month','30 дни'],['all','Всичко'],['custom','Период']].map(x=>'<button type="button" class="fp-pill '+(period===x[0]?'on':'')+'" data-fpp="'+x[0]+'">'+x[1]+'</button>').join('')+
+        [['day','Ден'],['week','Седмица'],['mtd','Месец'],['custom','Период']].map(x=>'<button type="button" class="fp-pill '+(period===x[0]?'on':'')+'" data-fpp="'+x[0]+'">'+x[1]+'</button>').join('')+
         '</div>'+ (period==='custom'?'<div class="fp-dates"><label>От <input id="fp-from" type="date" value="'+esc(from)+'"></label><label>До <input id="fp-to" type="date" value="'+esc(to)+'"></label><button type="button" class="btn small primary" id="fp-go">Покажи</button></div>':'')+'</div>';
     }
     function makeStage(){
@@ -132,7 +132,7 @@
       const reviewsCount=selectedStats.reduce((n,a)=>n+Number(a.total),0);
       const low=selectedStats.reduce((n,a)=>n+Number(a.low_count),0);
       target.innerHTML=(opt.embedded ? '' : '<a href="#/stats" class="muted">← Анализи</a><div class="row between"><div><h1>Анализ по маси</h1><p class="muted">Интерактивна схема по реалното разположение на масите</p></div><button class="btn small" id="fp-refresh">Обнови</button></div>')+
-        periodControls()+
+        (opt.embedded ? '' : periodControls())+
         (opt.embedded ? '' : '<div class="fp-print-toolbar"><span><b>'+printSelection.size+'</b> маси за печат</span><button type="button" class="btn small primary" id="fp-pdf-selected">Изтегли избраните PDF</button><button type="button" class="btn small" id="fp-pdf-zone">Цялата зала PDF</button><button type="button" class="btn small" id="fp-pdf-all">Всички маси PDF</button><button type="button" class="btn small" id="fp-print-clear">Изчисти</button></div>')+
         (opt.embedded ? '' : '<div class="fp-kpis"><div><span>Отзиви за залата</span><b>'+reviewsCount+'</b></div><div><span>Обща оценка на РАЙ</span><b>'+fmt(venueRating)+' <span class="rai-gold-star">★</span></b></div><div><span>Ниски оценки</span><b>'+low+'</b></div></div>')+
         '<div class="fp-layout"><section class="fp-left"><div class="fp-map-head"><div class="fp-map-heading"><div class="fp-zone-switch" role="group" aria-label="Избор на зала">'+[['inside','Вътрешна зала'],['kids','Детски кът']].map(x=>'<button type="button" class="fp-zone-tab'+(zone===x[0]?' on':'')+'" aria-pressed="'+(zone===x[0])+'" data-fpz="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><span>'+(opt.embedded?'Натисни маса за подробности':'Натисни масите, които искаш да включиш в PDF')+'</span></div>'+(opt.embedded?'':'<button type="button" class="btn small" id="fp-edit">'+(edit?'Готово':'Подреди маси')+'</button>')+'</div>'+
