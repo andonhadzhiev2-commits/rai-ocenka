@@ -83,9 +83,8 @@
     };
   });
 
-  // ---------- feed ----------
-  var feedFilter = 'open';
-  var feedRatingSort = 'desc';
+  // ---------- review feed: independent status, period and score filters ----------
+  var feedFilter='all', feedPeriod='week', feedRatingSort='desc';
   function reviewCard(r) {
     var alert = r.rating <= (window.__alertMax || 2);
     return '<a class="rv ' + (alert ? 'alert' : 'r' + r.rating) + '" href="#/review/' + r.id + '">' +
@@ -97,28 +96,32 @@
   route(/^\/$/, function () {
     chrome(true);
     function draw() {
-      var q = feedFilter === 'open' ? '/reviews?period=month&status=new&limit=200' :
-        feedFilter === 'today' ? '/reviews?period=day&limit=200' :
-        feedFilter === 'week' ? '/reviews?period=week&limit=200' :
-        '/reviews?period=all&limit=200&rating_group=' + (feedFilter === 'high' ? 'high' : 'low');
-      q += '&sort=rating_' + (feedRatingSort === 'asc' ? 'asc' : 'desc');
-      return Promise.all([api(q), api('/stats?period=day')]).then(function (x) {
-        var list = x[0], s = x[1];
-        window.__alertMax = s.alert_max_rating;
-        var banner = s.open.alerts ? '<div class="banner"><div><b>' + s.open.alerts + ' нов' + (s.open.alerts === 1 ? ' сигнал' : 'и сигнала') + '</b><div class="meta">Оценки ' + s.alert_max_rating + '★ и по-ниски</div></div><button class="btn small primary" id="seeOpen">Виж</button></div>' : '';
-        view.innerHTML = '<div class="row between"><h1>Отзиви</h1><button class="btn small" id="rf">Обнови</button></div>' + banner +
-          '<div class="seg" role="group" aria-label="Филтри на отзиви">' + [['open', 'Нови отзиви'], ['today', 'Днес'], ['week', '7 дни'], ['low', 'Ниски 1–3★'], ['high', 'Високи 4–5★']].map(function (f) {
-            return '<button type="button" data-f="' + f[0] + '" class="' + (feedFilter === f[0] ? 'on' : '') + '">' + f[1] + '</button>'; }).join('') + '</div>' +
-          '<div class="row between" style="margin:12px 0"><span class="muted">Подредба по оценка</span><button type="button" class="btn small" id="ratingSort" aria-label="Смени реда на оценките">' + (feedRatingSort === 'asc' ? '↑ Възходящо (1 → 5★)' : '↓ Низходящо (5 → 1★)') + '</button></div>' +
-          (list.length ? '<div class="list">' + list.map(reviewCard).join('') + '</div>' : '<p class="muted pad">Няма отзиви за този филтър.</p>');
-        view.querySelectorAll('.seg button').forEach(function (b) { b.onclick = function () { feedFilter = b.dataset.f; draw().catch(fail); }; });
-        $('#ratingSort').onclick = function () { feedRatingSort = feedRatingSort === 'asc' ? 'desc' : 'asc'; draw().catch(fail); };
-        $('#rf').onclick = function () { draw().then(function () { toast('Обновено'); }).catch(fail); };
-        if ($('#seeOpen')) $('#seeOpen').onclick = function () { feedFilter = 'open'; draw().catch(fail); };
+      var q='/reviews?period='+feedPeriod+'&limit=200';
+      if(feedFilter==='new')q+='&status=new';
+      else if(feedFilter==='low'||feedFilter==='high')q+='&rating_group='+feedFilter;
+      q+='&sort=rating_'+(feedRatingSort==='asc'?'asc':'desc');
+      return Promise.all([api(q),api('/stats?period=day')]).then(function (x) {
+        var list=x[0], s=x[1];
+        window.__alertMax=s.alert_max_rating;
+        var banner=s.open.alerts ? '<div class="banner"><div><b>'+s.open.alerts+' сигнала за реакция</b><div class="meta">Оценки '+s.alert_max_rating+'★ и по-ниски</div></div><button class="btn small primary" id="seeOpen">Виж</button></div>' : '';
+        var buttons=function(opts,active,data){return '<div class="fp-pills" role="group">'+opts.map(function(f){return '<button type="button" class="fp-pill'+(active===f[0]?' on':'')+'" data-'+data+'="'+f[0]+'">'+f[1]+'</button>';}).join('')+'</div>';};
+        view.innerHTML='<div class="row between"><h1>Отзиви</h1><button class="btn small" id="rf">Обнови</button></div>'+banner+
+          '<section class="feed-filters"><div class="feed-filter-label">Покажи</div>'+
+          buttons([['all','Всички'],['new','Нови отзиви'],['low','Ниски 1–3★'],['high','Високи 4–5★']],feedFilter,'feed')+
+          '<div class="feed-filter-label">Период</div>'+
+          buttons([['day','Днес'],['week','7 дни'],['month','30 дни'],['all','Всичко']],feedPeriod,'period')+
+          '<div class="feed-sort"><span>Подредба по оценка</span><button type="button" class="btn small" id="ratingSort">'+(feedRatingSort==='asc'?'↑ От 1 към 5 ★':'↓ От 5 към 1 ★')+'</button></div></section>'+
+          (list.length?'<div class="list">'+list.map(reviewCard).join('')+'</div>':'<div class="feed-empty"><b>Няма отзиви за този избор</b><p>Промени периода или филтъра, за да видиш останалите оценки.</p><button type="button" class="btn small" id="resetFeed">Покажи всички за 7 дни</button></div>');
+        view.querySelectorAll('[data-feed]').forEach(function(b){b.onclick=function(){feedFilter=b.dataset.feed;draw().catch(fail);};});
+        view.querySelectorAll('[data-period]').forEach(function(b){b.onclick=function(){feedPeriod=b.dataset.period;draw().catch(fail);};});
+        $('#ratingSort').onclick=function(){feedRatingSort=feedRatingSort==='asc'?'desc':'asc';draw().catch(fail);};
+        $('#rf').onclick=function(){draw().then(function(){toast('Обновено');}).catch(fail);};
+        if($('#resetFeed'))$('#resetFeed').onclick=function(){feedFilter='all';feedPeriod='week';draw().catch(fail);};
+        if($('#seeOpen'))$('#seeOpen').onclick=function(){feedFilter='new';feedPeriod='month';draw().catch(fail);};
         updateBadge();
       });
     }
-    refreshTimer = setInterval(function () { if (!document.hidden) draw().catch(function () {}); }, 20000);
+    refreshTimer=setInterval(function(){if(!document.hidden)draw().catch(function(){});},20000);
     return draw();
   });
 
