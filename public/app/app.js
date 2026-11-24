@@ -97,9 +97,10 @@
   function updateBadge() {
     if (!me) return;
     api('/stats?period=day').then(function (s) {
-      var b = $('#openBadge'), n = s.open.alerts;
-      b.hidden = !n; b.textContent = n + (n === 1 ? ' сигнал' : ' сигнала');
-      if (navigator.setAppBadge) { if (n) navigator.setAppBadge(n).catch(function () {}); else navigator.clearAppBadge().catch(function () {}); }
+      var b = $('#openBadge'), n = s.open.alerts || 0, repeats = isOwner() ? (s.open.repeated || 0) : 0;
+      b.hidden = !n && !repeats;
+      b.textContent = [repeats ? repeats + (repeats === 1 ? ' повторна' : ' повторни') : '', n ? n + (n === 1 ? ' ниска' : ' ниски') : ''].filter(Boolean).join(' · ');
+      if (navigator.setAppBadge) { var total = n + repeats; if (total) navigator.setAppBadge(total).catch(function () {}); else navigator.clearAppBadge().catch(function () {}); }
     }).catch(function () {});
   }
 
@@ -142,7 +143,8 @@
       return Promise.all([api(q),api('/stats?period=day')]).then(function (x) {
         var list=x[0], s=x[1];
         window.__alertMax=s.alert_max_rating;
-        var banner=s.open.alerts ? '<div class="banner"><div><b>'+s.open.alerts+' сигнала за реакция</b><div class="meta">Оценки '+s.alert_max_rating+'★ и по-ниски</div></div><button class="btn small primary" id="seeOpen">Виж</button></div>' : '';
+        var repeatCount=isOwner() ? (s.open.repeated || 0) : 0;
+        var banner=(s.open.alerts || repeatCount) ? '<div class="banner"><div>'+(repeatCount ? '<b>⚠ '+repeatCount+(repeatCount===1?' повторна оценка':' повторни оценки')+' за проверка</b><div class="meta">Първата оценка от всеки браузър не се брои като повторна.</div>' : '')+(s.open.alerts ? '<b>'+s.open.alerts+(s.open.alerts===1?' сигнал':' сигнала')+' за ниска оценка</b><div class="meta">Оценки '+s.alert_max_rating+'★ и по-ниски</div>' : '')+'</div><button class="btn small primary" id="seeOpen">Виж</button></div>' : '';
         var buttons=function(opts,active,data){return '<div class="fp-pills" role="group">'+opts.map(function(f){return '<button type="button" class="fp-pill'+(active===f[0]?' on':'')+'" data-'+data+'="'+f[0]+'">'+f[1]+'</button>';}).join('')+'</div>';};
         view.innerHTML='<div class="row between"><h1>Сигнали</h1><button class="btn small" id="rf">Обнови</button></div>'+banner+
           '<section class="feed-filters"><div class="feed-filter-label">Покажи</div>'+
