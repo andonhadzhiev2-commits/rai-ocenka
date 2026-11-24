@@ -551,3 +551,79 @@ h3{font-family:var(--body);font-size:12px;font-weight:750;letter-spacing:0;line-
 .kpis>.rai-comments-kpi .rai-kpi-hint{color:#278465}
 @media(min-width:561px){.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:560px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* 2026-11-24: exact color tokens from RAI BAROMETER premium.css.
+   Source: :root and .period-tabs button.selected — not approximate colors. */
+:root{
+  --accent:#ee603e;
+  --accent-dark:#ca4729;
+  --ink:#24303b;
+  --muted:#73808c;
+  --border:#e9e9e5;
+  --paper:#f7f7f4;
+  --green:#278465;
+  --red:#c9574f;
+  --bg:var(--paper);
+  --panel:#ffffff;
+  --panel2:#eeefeb;
+  --line:var(--border);
+  --fg:var(--ink);
+  --red2:var(--red);
+  --ok:var(--green);
+}
+html,body{background:var(--paper)!important;color:var(--ink)!important}
+.card,.item,.rv,.kpi{background:#ffffff!important;border-color:var(--border)!important}
+.top{
+  background:#fce7df!important;
+  border-bottom-color:#f2a48f!important;
+  box-shadow:0 3px 14px #28333910!important;
+}
+.top-title{color:var(--ink)}
+.top-title em,.tabs a.on,.rai-kpi-hint,.rai-quick-open{color:var(--accent-dark)}
+.top-badge{color:var(--accent-dark);background:#fff0e9;border-color:#f2a48f}
+.seg{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:3px;
+  background:#eeefeb!important;
+  border:0!important;
+  padding:4px;
+  border-radius:10px;
+  overflow:visible;
+}
+.seg button{
+  min-width:0;
+  min-height:39px;
+  padding:9px 5px;
+  background:transparent!important;
+  color:var(--muted)!important;
+  border:0;
+  border-radius:7px;
+  font:650 12px var(--body);
+  box-shadow:none!important;
+}
+.seg button.on,.seg button[aria-pressed="true"]{
+  background:#fce7df!important;
+  color:#bd4527!important;
+  box-shadow:inset 0 0 0 1px #f2a48f!important;
+  font-weight:800!important;
+}
+.seg button:hover:not(.on){background:#f7f7f4!important;color:var(--accent-dark)!important}
+.fp-pill.on,.fp-zone-tab.on{
+  background:#fce7df!important;
+  border-color:#f2a48f!important;
+  color:#bd4527!important;
+  box-shadow:inset 0 0 0 1px #f2a48f!important;
+  font-weight:800!important;
+}
+.fp-pills,.fp-zone-switch{background:#eeefeb;border-color:var(--border)}
+.btn.primary{background:var(--accent)!important;border-color:var(--accent)!important}
+.btn.primary:hover{background:var(--accent-dark)!important}
+.kpis>.kpi:nth-child(2){background:#ffffff!important;border-color:var(--border)!important}
+.kpis>.kpi:nth-child(2):before{background:var(--accent)}
+.fp-kpis>div:nth-child(2){background:#ffffff!important;border-color:var(--border)!important}
+.fp-mini-stats>div:first-child{background:#f7f7f4}
+.rai-action-kpi:hover{background:#fff0e9!important;border-color:#f2a48f!important}
+.rai-rating-bar:hover{background:#fff0e9}
+.rai-quick-review.is-low{background:#faeeeb;border-left-color:var(--red)}
+.fp-map-scroll,.fp-map,.fp-sketch{background:var(--paper)}
