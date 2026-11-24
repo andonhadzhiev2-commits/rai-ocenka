@@ -182,7 +182,7 @@ r.get('/stats', ANY, wrap(async (req, res) => {
           GROUP BY rp.product_name ORDER BY (sum(CASE WHEN vote=1 THEN 1 ELSE 0 END) + sum(CASE WHEN vote=-1 THEN 1 ELSE 0 END)) DESC`, P),
     db.q(`SELECT to_char(date_trunc('day', created_at AT TIME ZONE 'Europe/Sofia'), 'YYYY-MM-DD') d, count(*)::int n, round(avg(rating)::numeric,2)::float avg
           FROM reviews WHERE ${W} GROUP BY 1 ORDER BY 1`, P),
-    db.q(`SELECT count(*)::int total, sum(CASE WHEN rating <= $1 THEN 1 ELSE 0 END)::int alerts FROM reviews WHERE status='new'`, [s.alert_max_rating]),
+    db.q(`SELECT count(*)::int total, COALESCE(sum(CASE WHEN rating <= $1 THEN 1 ELSE 0 END),0)::int alerts, COALESCE(sum(CASE WHEN suspected_repeat THEN 1 ELSE 0 END),0)::int repeated FROM reviews WHERE status='new'`, [s.alert_max_rating]),
     db.q(`SELECT round(avg(extract(epoch FROM ack_at - created_at))/60, 1)::float avg_min,
                  round((percentile_cont(0.5) WITHIN GROUP (ORDER BY extract(epoch FROM ack_at - created_at)))::numeric/60, 1)::float median_min,
                  count(*)::int acked,
