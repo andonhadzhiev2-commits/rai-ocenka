@@ -104,7 +104,7 @@ router.post('/api/public/reviews', express.json({ limit: '8kb' }), async (req, r
     const review = await db.tx(async c => {
       let repeated = false;
       if (browserHash) {
-        await c.query('SELECT pg_advisory_xact_lock(hashtext($1))', [browserHash]);
+        await c.query('SELECT pg_advisory_xact_lock(hashtext($1)::bigint)', [browserHash]);
         const seen = await c.query("SELECT 1 FROM reviews WHERE browser_hash=$1 AND created_at >= now() - interval '10 hours' LIMIT 1", [browserHash]);
         repeated = seen.rowCount > 0;
       }
