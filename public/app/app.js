@@ -215,7 +215,7 @@
           (statP.period === 'custom' ? '<div class="row"><label class="f grow">От<input type="date" id="sf" value="' + statP.from + '"></label><label class="f grow">До<input type="date" id="st" value="' + statP.to + '"></label><button class="btn" id="sgo" style="align-self:flex-end">Покажи</button></div>' : '') +
           '<div class="kpis"><div class="kpi"><div class="v">' + s.total + '</div><div class="l">оценки</div></div>' +
           '<div class="kpi"><div class="v">' + (s.avg != null ? String(s.avg).replace('.', ',') + '★' : '—') + '</div><div class="l">средна оценка</div></div>' +
-          '<div class="kpi"><div class="v">' + s.open.total + '</div><div class="l">неразгледани сега</div></div>' +
+          '<div class="kpi"><div class="v">' + s.open.total + '</div><div class="l">Нови отзиви</div></div>' +
           '<div class="kpi"><div class="v">' + (s.reaction.avg_min != null ? String(s.reaction.avg_min).replace('.', ',') : '—') + '</div><div class="l">мин. средна реакция</div></div></div>' +
           '<div class="card"><h3>Разпределение</h3><div class="bars">' + s.distribution.slice().reverse().map(function (d) {
             return '<div class="bar"><span>' + stars(d.rating) + '</span><span class="track"><i style="width:' + (d.n / max * 100) + '%;background:' + (d.rating <= s.alert_max_rating ? 'var(--red2)' : d.rating === 3 ? 'var(--warn)' : 'var(--ok)') + '"></i></span><span class="num">' + d.n + '</span></div>'; }).join('') + '</div></div>' +
