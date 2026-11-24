@@ -65,6 +65,22 @@ r.get('/push/devices', ANY, wrap(async (req, res) => {
   res.json(d.rows);
 }));
 
+// Private review-browser activity register (hashed IDs; never expose raw browser markers).
+r.get('/browser-registry', OWNER, wrap(async (req, res) => {
+  const rows = await db.q(`
+    SELECT left(browser_hash, 10) AS browser_id, review_count AS total,
+           first_seen_at, last_seen_at,
+           (SELECT count(*)::int FROM reviews r
+             WHERE r.browser_hash=b.browser_hash AND r.created_at >= now()-interval '10 hours') AS reviews_10h,
+           (SELECT count(*)::int FROM reviews r
+             WHERE r.browser_hash=b.browser_hash AND r.created_at >= now()-interval '48 hours') AS reviews_48h
+    FROM review_browser_registry b
+    WHERE review_count >= 2
+    ORDER BY review_count DESC, last_seen_at DESC LIMIT 100
+  `);
+  res.json(rows.rows);
+}));
+
 // ---------- reviews ----------
 function period(req) {
   const now = new Date();
