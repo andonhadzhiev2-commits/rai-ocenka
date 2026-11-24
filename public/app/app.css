@@ -544,3 +544,10 @@ h3{font-family:var(--body);font-size:12px;font-weight:750;letter-spacing:0;line-
   .view{gap:15px}
   .fp-map .fp-seat{box-shadow:none}
 }
+
+/* Fourth analytics KPI: comments from selected period, same light Barometer system */
+.kpis>.rai-comments-kpi{background:#fff!important;border-color:#e1e7df!important}
+.kpis>.rai-comments-kpi:before{background:linear-gradient(90deg,#278465,transparent)}
+.kpis>.rai-comments-kpi .rai-kpi-hint{color:#278465}
+@media(min-width:561px){.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:560px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
