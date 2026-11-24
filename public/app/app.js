@@ -100,6 +100,52 @@
     more.onclick=load;load();
   }
 
+  // Two period-bound rankings of written feedback. No status-based "new" counter.
+  function openTopReviews(opts) {
+    opts=opts||{};
+    var old=document.getElementById('rai-quick-backdrop');if(old)old.remove();
+    var panel=document.createElement('div');
+    panel.id='rai-quick-backdrop';panel.className='rai-quick-backdrop';
+    panel.innerHTML='<section class="rai-quick-panel rai-top-panel" role="dialog" aria-modal="true" aria-label="Топ 10 отзиви">'+
+      '<div class="rai-quick-head"><div><div class="rai-eyebrow">РАЙ · Избран период</div><h2>Топ 10 отзиви</h2><p class="meta">Първо по звезди, после по дата · само отзиви с коментар</p></div>'+
+      '<button type="button" class="rai-quick-close" aria-label="Затвори">✕</button></div>'+
+      '<div class="rai-top-tabs" role="group" aria-label="Тип отзиви">'+
+      '<button type="button" data-top-kind="high" class="on" aria-pressed="true">👍 Положителни (4–5★)</button>'+
+      '<button type="button" data-top-kind="low" aria-pressed="false">👎 Отрицателни (1–3★)</button></div>'+
+      '<div class="rai-quick-list" id="rai-top-list"><p class="muted">Зареждане…</p></div>'+
+      '<div class="rai-quick-footer" id="rai-top-footer">До 10 отзива от избрания период</div></section>';
+    document.body.appendChild(panel);
+    var closed=false,active='high',token=0,cache={};
+    function close(){closed=true;panel.remove();document.removeEventListener('keydown',onKey);}
+    function onKey(e){if(e.key==='Escape')close();}
+    document.addEventListener('keydown',onKey);
+    panel.onclick=function(e){if(e.target===panel||e.target.closest('.rai-quick-close'))close();};
+    var list=panel.querySelector('#rai-top-list');
+    function render(kind) {
+      active=kind;
+      panel.querySelectorAll('[data-top-kind]').forEach(function(b){var on=b.dataset.topKind===kind;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
+      if(cache[kind]){paint(cache[kind],kind);return;}
+      list.innerHTML='<p class="muted">Зареждане…</p>';
+      var mine=++token;
+      var q='/reviews?limit=10&offset=0&with_comment=1&rating_group='+kind+'&sort='+(kind==='high'?'rating_desc':'rating_asc');
+      if(opts.period==='custom'&&opts.from&&opts.to)q+='&from='+encodeURIComponent(opts.from)+'&to='+encodeURIComponent(opts.to);
+      else q+='&period='+encodeURIComponent(opts.period||'mtd');
+      api(q).then(function(rows){cache[kind]=rows;if(!closed&&mine===token&&active===kind)paint(rows,kind);})
+        .catch(function(e){if(!closed&&mine===token)list.innerHTML='<p class="muted">'+esc(e.message||e)+'</p>';});
+    }
+    function paint(rows,kind){
+      list.innerHTML=rows.length?rows.map(function(r,i){
+        return '<a class="rai-quick-review rai-top-review'+(kind==='low'?' is-low':'')+'" href="#/review/'+esc(r.id)+'">'+
+          '<div class="rai-quick-review-top"><span class="rai-top-rank">№ '+(i+1)+'</span>'+stars(r.rating)+'<span class="rai-quick-date">'+dt(r.created_at)+'</span></div>'+
+          '<strong>'+esc(place(r))+'</strong><p>'+esc(r.comment||'')+'</p></a>';
+      }).join(''):'<p class="rai-quick-empty">Няма '+(kind==='high'?'положителни':'отрицателни')+' отзиви с коментар за избрания период.</p>';
+      list.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});
+      panel.querySelector('#rai-top-footer').textContent='Показани '+rows.length+' от максимум 10 · '+(kind==='high'?'Положителни':'Отрицателни');
+    }
+    panel.querySelectorAll('[data-top-kind]').forEach(function(b){b.onclick=function(){render(b.dataset.topKind);};});
+    render('high');
+  }
+
   // ---------- router ----------
   var routes = [];
   function route(re, fn) { routes.push([re, fn]); }
@@ -317,7 +363,7 @@
           (statP.period === 'custom' ? '<div class="rai-calendar-panel" id="rai-calendar" aria-label="Календар за избор на период"></div>' : '') + '</section>' +
           '<div class="kpis"><button type="button" id="rai-all-ratings" class="kpi rai-action-kpi"><div class="v">' + s.total + '</div><div class="l"><span class="rai-kpi-emoji" aria-hidden="true">📝</span>Оценки ›</div></button>' +
           '<button type="button" id="rai-avg-ratings" class="kpi rai-action-kpi"><div class="v">' + (s.avg != null ? String(s.avg).replace('.', ',') + '<span class="rai-gold-star">★</span>' : '—') + '</div><div class="l"><span class="rai-kpi-emoji" aria-hidden="true">⭐</span>Средна оценка ›</div></button>' +
-          '<button type="button" class="kpi rai-action-kpi" id="openNewReviewsQuick" aria-label="Покажи всички нови отзиви по маси"><div class="v">' + s.open.total + '</div><div class="l"><span class="rai-kpi-emoji" aria-hidden="true">🔔</span>Нови отзиви <span aria-hidden="true">›</span></div></button>' +
+          '<button type="button" class="kpi rai-action-kpi" id="openTopReviews" aria-label="Топ 10 положителни и отрицателни отзиви"><div class="v">10 <span class="rai-top-split">/</span> 10</div><div class="l"><span class="rai-kpi-emoji" aria-hidden="true">👍</span>Топ отзиви <span aria-hidden="true">›</span></div></button>' +
           '<button type="button" class="kpi rai-action-kpi rai-comments-kpi" id="rai-comments-quick" aria-label="Покажи всички коментари за избрания период"><div class="v">' + (s.comments_total || 0) + '</div><div class="l"><span class="rai-kpi-emoji" aria-hidden="true">💬</span>Коментари <span aria-hidden="true">›</span></div></button>' +
           '</div>' +
           '<div class="card"><h3>Разпределение</h3><div class="bars">' + s.distribution.slice().reverse().map(function (d) {
@@ -335,7 +381,7 @@
             return '<a class="rv ' + (c.rating <= s.alert_max_rating ? 'alert' : 'r' + c.rating) + '" href="#/review/' + c.id + '"><div class="row between">' + stars(c.rating) + '<span class="meta">' + dt(c.created_at) + '</span></div><div class="comment">' + esc(c.comment) + '</div><div class="meta">' + esc([c.zone_name, c.table_label ? 'Маса ' + c.table_label : ''].filter(Boolean).join(' · ')) + '</div></a>'; }).join('') + '</div>' : '<p class="muted">Няма коментари.</p>') + '</div>';
         view.querySelectorAll('[data-quick-rating]').forEach(function(b){b.onclick=function(){openNewReviewsQuick({period:statP.period,from:statP.from,to:statP.to,rating:Number(b.dataset.quickRating)});};});
         var commentsButton=$('#rai-comments-quick');if(commentsButton)commentsButton.onclick=function(){openNewReviewsQuick({kind:'comments',period:statP.period,from:statP.from,to:statP.to});};
-        var quickButton = $('#openNewReviewsQuick'); if (quickButton) quickButton.onclick = function(){openNewReviewsQuick({kind:'new'});};
+        var topButton = $('#openTopReviews'); if (topButton) topButton.onclick = function(){openTopReviews({period:statP.period,from:statP.from,to:statP.to});};
         var allButton=$('#rai-all-ratings');if(allButton)allButton.onclick=function(){openNewReviewsQuick({period:statP.period,from:statP.from,to:statP.to});};
         var avgButton=$('#rai-avg-ratings');if(avgButton)avgButton.onclick=function(){openNewReviewsQuick({period:statP.period,from:statP.from,to:statP.to});};
         view.querySelectorAll('.rai-period-bar [data-p]').forEach(function (b) { b.onclick = function () {
