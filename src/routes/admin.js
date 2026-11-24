@@ -132,7 +132,16 @@ r.get('/reviews/:id', ANY, wrap(async (req, res) => {
   if (!/^[0-9a-f-]{36}$/i.test(req.params.id)) return bad(res, 'Няма такъв отзив.', 404);
   const row = await db.q(`SELECT ${REVIEW_COLS} FROM reviews r LEFT JOIN users ua ON ua.id=r.ack_by LEFT JOIN users ur ON ur.id=r.resolved_by WHERE r.id=$1`, [req.params.id]);
   if (!row.rowCount) return bad(res, 'Няма такъв отзив.', 404);
-  res.json(row.rows[0]);
+  const review = row.rows[0];
+  if (req.user && req.user.role === 'owner') {
+    const history = await db.q(`SELECT past.id, past.created_at, past.rating, past.table_label, past.zone_name
+      FROM reviews current_review
+      JOIN reviews past ON past.browser_hash=current_review.browser_hash
+      WHERE current_review.id=$1 AND current_review.browser_hash IS NOT NULL
+      ORDER BY past.created_at ASC, past.id ASC LIMIT 100`, [req.params.id]);
+    review.browser_history = history.rows;
+  }
+  res.json(review);
 }));
 r.post('/reviews/:id/ack', ANY, wrap(async (req, res) => {
   const u = await db.q(`UPDATE reviews SET status='acknowledged', ack_by=$2, ack_at=now() WHERE id=$1 AND status='new' RETURNING id`, [req.params.id, req.user.id]);
