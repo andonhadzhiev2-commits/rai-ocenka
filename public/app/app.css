@@ -1426,3 +1426,35 @@ label.f,.meta,.muted{color:var(--muted)}
   .rai-rating-tile-count{font-size:19px}
   .kpis.rai-summary-kpis.rai-summary-212 .rai-summary-cell .l{font-size:9px}
 }
+
+/* Distribution: five real star groups (no 5★, 4★ number prefixes).
+   Fit the full ★★★★★ within the available width on small phones. */
+.rai-rating-distribution .rai-rating-tiles{
+  grid-template-columns:repeat(5,minmax(0,1fr));
+}
+.rai-rating-distribution .rai-rating-tile-stars{
+  display:block;
+  width:100%;
+  color:#d6a036!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI Symbol",sans-serif;
+  font-size:clamp(12px,1.55vw,18px);
+  line-height:1.3;
+  font-weight:800;
+  letter-spacing:-1.35px;
+  text-align:center;
+  white-space:nowrap;
+  overflow:visible;
+}
+.rai-rating-distribution .rai-rating-tile{gap:7px;padding:11px 2px}
+.rai-rating-distribution .rai-rating-tile-count{font-size:24px}
+@media(max-width:600px){
+  .rai-rating-distribution .rai-rating-tile{gap:6px;padding:10px 1px}
+  .rai-rating-distribution .rai-rating-tile-stars{
+    font-size:clamp(9px,2.7vw,12px);
+    letter-spacing:-1.5px;
+  }
+  .rai-rating-distribution .rai-rating-tile-count{font-size:21px}
+}
+@media(max-width:360px){
+  .rai-rating-distribution .rai-rating-tile-stars{font-size:9px;letter-spacing:-1.6px}
+}
