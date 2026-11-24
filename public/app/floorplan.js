@@ -30,18 +30,18 @@
   ];
   const CONFIG = {
     inside:{title:'Вътрешна зала',w:1448,h:1024,seats:inside,
-      svg:'<rect x="0" y="0" width="1448" height="1024" fill="#171a20"/>' +
-      '<rect x="0" y="200" width="54" height="129" rx="4" fill="#30333a" stroke="#5f6470"/><text x="27" y="278" text-anchor="middle" fill="#cbd1dd" font-size="18" font-weight="600" transform="rotate(-90 27 278)">БАР</text>' +
-      '<rect x="971" y="175" width="92" height="54" rx="4" fill="#30333a" stroke="#5f6470"/><text x="1017" y="209" text-anchor="middle" fill="#cbd1dd" font-size="21">ШКАФ</text>' +
-      '<rect x="647" y="420" width="93" height="53" rx="4" fill="#30333a" stroke="#5f6470"/><text x="694" y="453" text-anchor="middle" fill="#cbd1dd" font-size="21">ШКАФ</text>' +
-      '<rect x="1396" y="160" width="52" height="92" rx="4" fill="#30333a" stroke="#5f6470"/><text x="1427" y="232" text-anchor="middle" fill="#cbd1dd" font-size="18" font-weight="600" transform="rotate(-90 1427 232)">ВХОД</text>' +
-      '<rect x="718" y="966" width="92" height="58" rx="4" fill="#30333a" stroke="#5f6470"/><text x="764" y="1003" text-anchor="middle" fill="#cbd1dd" font-size="18" font-weight="600">ВХОД</text>'},
+      svg:'<rect x="0" y="0" width="1448" height="1024" fill="#f2f3ef"/>' +
+      '<rect x="0" y="200" width="54" height="129" rx="4" fill="#e2e6e2" stroke="#aab5b2"/><text x="27" y="278" text-anchor="middle" fill="#52606a" font-size="18" font-weight="600" transform="rotate(-90 27 278)">БАР</text>' +
+      '<rect x="971" y="175" width="92" height="54" rx="4" fill="#e2e6e2" stroke="#aab5b2"/><text x="1017" y="209" text-anchor="middle" fill="#52606a" font-size="21">ШКАФ</text>' +
+      '<rect x="647" y="420" width="93" height="53" rx="4" fill="#e2e6e2" stroke="#aab5b2"/><text x="694" y="453" text-anchor="middle" fill="#52606a" font-size="21">ШКАФ</text>' +
+      '<rect x="1396" y="160" width="52" height="92" rx="4" fill="#e2e6e2" stroke="#aab5b2"/><text x="1427" y="232" text-anchor="middle" fill="#52606a" font-size="18" font-weight="600" transform="rotate(-90 1427 232)">ВХОД</text>' +
+      '<rect x="718" y="966" width="92" height="58" rx="4" fill="#e2e6e2" stroke="#aab5b2"/><text x="764" y="1003" text-anchor="middle" fill="#52606a" font-size="18" font-weight="600">ВХОД</text>'},
     kids:{title:'Детски кът',w:1169,h:827,seats:kids,
-      svg:'<rect x="0" y="0" width="1169" height="827" fill="#171a20"/>' +
-      '<path d="M759 0 V180 H547 V386 H0 M0 385 H365 V543 H930 V410 H1072 V199 H1169" stroke="#707882" stroke-width="7" stroke-linejoin="round" fill="none"/>' +
-      '<rect x="405" y="439" width="73" height="199" rx="4" fill="#333940" stroke="#626c79"/><text x="441" y="550" text-anchor="middle" fill="#d3dae4" font-size="19" transform="rotate(-90 441 550)">ШКАФ</text>' +
-      '<rect x="936" y="468" width="200" height="69" rx="4" fill="#333940" stroke="#626c79"/><text x="1036" y="510" text-anchor="middle" fill="#d3dae4" font-size="23">ШКАФ</text>' +
-      '<rect x="397" y="675" width="91" height="81" rx="5" fill="#242c35" stroke="#788394"/><text x="443" y="726" text-anchor="middle" fill="#d3dae4" font-size="22">PC</text>'}
+      svg:'<rect x="0" y="0" width="1169" height="827" fill="#f2f3ef"/>' +
+      '<path d="M759 0 V180 H547 V386 H0 M0 385 H365 V543 H930 V410 H1072 V199 H1169" stroke="#aeb9b3" stroke-width="7" stroke-linejoin="round" fill="none"/>' +
+      '<rect x="405" y="439" width="73" height="199" rx="4" fill="#e5e9e5" stroke="#adb8b3"/><text x="441" y="550" text-anchor="middle" fill="#52606a" font-size="19" transform="rotate(-90 441 550)">ШКАФ</text>' +
+      '<rect x="936" y="468" width="200" height="69" rx="4" fill="#e5e9e5" stroke="#adb8b3"/><text x="1036" y="510" text-anchor="middle" fill="#52606a" font-size="23">ШКАФ</text>' +
+      '<rect x="397" y="675" width="91" height="81" rx="5" fill="#e5e9e5" stroke="#aeb8b3"/><text x="443" y="726" text-anchor="middle" fill="#52606a" font-size="22">PC</text>'}
   };
   const byNum = rows => new Map(rows.map(t => [String(t.label).trim(),t]));
   const mapName = (t) => {
