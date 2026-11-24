@@ -2432,3 +2432,39 @@ label.f,.meta,.muted{color:var(--muted)}
     padding-top:3px;
   }
 }
+
+/* Additional typography scale at the same compact card height. */
+@media(max-width:600px){
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v,
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-count{
+    font-size:clamp(33px,9vw,38px);
+  }
+  /* The average includes a decimal separator: keep it wholly inside its tile. */
+  #view .kpis.rai-summary-kpis.rai-summary-five>#rai-avg-ratings .v{
+    font-size:clamp(28px,7.5vw,33px);
+    letter-spacing:-1.7px;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten .rai-top-word,
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten .rai-top-number{
+    font-size:clamp(20px,5.9vw,24px);
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .rai-summary-icon{
+    font-size:22px;
+    height:24px;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .rai-center-star{font-size:24px}
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-stars{
+    font-size:clamp(11px,3.05vw,14px);
+    letter-spacing:-1.6px;
+  }
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-percent{
+    font-size:14px;
+  }
+}
+@media(max-width:360px){
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v,
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-count{
+    font-size:33px;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>#rai-avg-ratings .v{font-size:28px}
+}
