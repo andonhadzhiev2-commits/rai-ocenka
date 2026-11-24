@@ -1,4 +1,4 @@
-/* Rai Pulse – приложение за собственик и управители (PWA) */
+/* РАЙ PULSE – приложение за собственик и управители (PWA) */
 (function () {
   'use strict';
   var $ = function (s, r) { return (r || document).querySelector(s); };
@@ -226,7 +226,7 @@
   // ---------- login ----------
   route(/^\/login$/, function () {
     chrome(false);
-    view.innerHTML = '<form class="login" id="lf"><img src="/app/logo.png" alt="Рай"><h1 style="text-align:center">Rai Pulse</h1>' +
+    view.innerHTML = '<form class="login" id="lf"><img src="/app/logo.png" alt="Рай"><h1 style="text-align:center">РАЙ PULSE</h1>' +
       '<label class="f">Имейл<input id="le" type="email" autocomplete="username" required></label>' +
       '<label class="f">Парола<input id="lp" type="password" autocomplete="current-password" required></label>' +
       '<button class="btn primary block" type="submit">Вход</button><p class="muted" id="lerr" role="alert"></p></form>';
@@ -662,8 +662,8 @@
       var devices = x[0], sub = x[1];
       var perm = 'Notification' in window ? Notification.permission : 'unsupported';
       var install = p.standalone ? '<p class="meta">✓ Приложението е инсталирано на това устройство.</p>' :
-        p.ios ? '<ol class="steps"><li>Отворете този адрес в <b>Safari</b>.</li><li>Натиснете бутона <b>Сподели</b> (квадрат със стрелка).</li><li>Изберете <b>„Добави към началния екран“</b> → Добави.</li><li>Отворете „Rai Pulse“ от иконата и влезте отново.</li><li>Тук натиснете „Включи известията“.</li></ol><p class="meta">На iPhone известията работят само от инсталираното приложение и iOS 16.4 или по-нов.</p>' :
-        '<ol class="steps"><li>Отворете адреса в <b>Chrome</b>.</li><li>Меню <b>⋮</b> → <b>„Инсталиране на приложението“</b> (или „Добавяне към началния екран“).</li><li>Отворете „Rai Pulse“ от иконата.</li><li>Натиснете „Включи известията“.</li></ol>';
+        p.ios ? '<ol class="steps"><li>Отворете този адрес в <b>Safari</b>.</li><li>Натиснете бутона <b>Сподели</b> (квадрат със стрелка).</li><li>Изберете <b>„Добави към началния екран“</b> → Добави.</li><li>Отворете „РАЙ PULSE“ от иконата и влезте отново.</li><li>Тук натиснете „Включи известията“.</li></ol><p class="meta">На iPhone известията работят само от инсталираното приложение и iOS 16.4 или по-нов.</p>' :
+        '<ol class="steps"><li>Отворете адреса в <b>Chrome</b>.</li><li>Меню <b>⋮</b> → <b>„Инсталиране на приложението“</b> (или „Добавяне към началния екран“).</li><li>Отворете „РАЙ PULSE“ от иконата.</li><li>Натиснете „Включи известията“.</li></ol>';
       var pushBlock = !p.pushOk ? '<div class="notice">' + (p.ios && !p.standalone ? 'Първо инсталирайте приложението (стъпките по-долу), после включете известията.' : 'Този браузър не поддържа push известия.') + '</div>' :
         sub ? '<p>✓ Известията са включени на това устройство.</p><div class="row"><button class="btn" id="tp">Изпрати тестово известие</button><button class="btn danger" id="dp">Изключи на това устройство</button></div>' :
         '<button class="btn primary block" id="ep">Включи известията</button>' + (perm === 'denied' ? '<div class="notice">Известията са блокирани за това приложение. Разрешете ги от настройките на телефона и опитайте отново.</div>' : '');
