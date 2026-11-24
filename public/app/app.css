@@ -832,3 +832,31 @@ h3,.card h3,.fp-right h3,.fp-modal h3{font-size:13px;line-height:1.4;letter-spac
   .fp-map-scroll.is-zoomed .fp-seat,.stats-floorplan .fp-map-scroll.is-zoomed .fp-seat{font-size:13px}
   .fp-zoom-btn{padding:8px 10px}
 }
+
+/* Align owner branding with RAI BAROMETER, not orange-painted title/header.
+   Barometer uses a clean white header, dark brand text, coral only as an accent.
+   Keep original peach active period selection from premium.css. */
+.top{
+  background:rgba(255,255,255,.96)!important;
+  border-bottom:1px solid var(--border)!important;
+  box-shadow:0 2px 12px rgba(36,48,59,.055)!important;
+  backdrop-filter:blur(10px);
+}
+.top-title,.top-title em{
+  color:var(--ink)!important;
+  font-style:normal;
+  font-weight:800;
+  letter-spacing:-.015em;
+}
+.top-title em{letter-spacing:.03em;font-size:.87em}
+.brand-sub{color:var(--muted)!important;letter-spacing:.06em}
+.top-logo{height:36px;object-fit:contain}
+.top-badge{background:#fff0e9;color:var(--accent-dark);border:1px solid #f2a48f}
+.seg{background:#eeefeb!important;border:0!important}
+.seg button{background:transparent!important;color:#73808c!important;box-shadow:none!important}
+.seg button.on,.seg button[aria-pressed="true"]{
+  background:#fce7df!important;
+  color:#bd4527!important;
+  box-shadow:inset 0 0 0 1px #f2a48f!important;
+}
+.fp-zone-tab.on,.fp-pill.on{background:#fce7df!important;color:#bd4527!important;border-color:#f2a48f!important}
