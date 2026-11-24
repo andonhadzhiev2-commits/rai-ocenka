@@ -237,7 +237,7 @@
             return '<button type="button" data-p="' + p[0] + '" class="' + (statP.period === p[0] ? 'on' : '') + '">' + p[1] + '</button>'; }).join('') + '</div>' +
           (statP.period === 'custom' ? '<div class="row"><label class="f grow">От<input type="date" id="sf" value="' + statP.from + '"></label><label class="f grow">До<input type="date" id="st" value="' + statP.to + '"></label><button class="btn" id="sgo" style="align-self:flex-end">Покажи</button></div>' : '') +
           '<div class="kpis"><div class="kpi"><div class="v">' + s.total + '</div><div class="l">оценки</div></div>' +
-          '<div class="kpi"><div class="v">' + (s.avg != null ? String(s.avg).replace('.', ',') + '★' : '—') + '</div><div class="l">средна оценка</div></div>' +
+          '<div class="kpi"><div class="v">' + (s.avg != null ? String(s.avg).replace('.', ',') + '<span class="rai-gold-star">★</span>' : '—') + '</div><div class="l">средна оценка</div></div>' +
           '<div class="kpi"><div class="v">' + s.open.total + '</div><div class="l">Нови отзиви</div></div>' +
           '</div>' +
           '<div class="card"><h3>Разпределение</h3><div class="bars">' + s.distribution.slice().reverse().map(function (d) {
@@ -251,7 +251,7 @@
           '<div class="card"><h3>Ново меню 👍 / 👎</h3>' + (s.products.length ? '<div class="bars">' + s.products.map(function (p) { var t = p.up + p.down || 1;
             return '<div class="bar"><span>' + esc(p.name) + '</span><span class="track"><i style="width:' + (p.up / t * 100) + '%;background:var(--ok)"></i><i style="width:' + (p.down / t * 100) + '%;background:var(--red2)"></i></span><span class="num">' + p.up + ' / ' + p.down + '</span></div>'; }).join('') + '</div>' : '<p class="muted">Няма оценки за нови продукти.</p>') + '</div>' +
           '<div class="card"><h3>По маси</h3>' + (s.tables.length ? '<div class="scroll"><table class="tbl"><thead><tr><th>Маса</th><th class="n">Оценки</th><th class="n">Средна</th><th class="n">Сигнали</th></tr></thead><tbody>' + s.tables.map(function (t) {
-            return '<tr><td>' + esc([t.zone, t.label].filter(Boolean).join(' · ') || '—') + '</td><td class="n">' + t.n + '</td><td class="n">' + t.avg + '★</td><td class="n">' + t.alerts + '</td></tr>'; }).join('') + '</tbody></table></div>' : '<p class="muted">Няма данни.</p>') + '</div>' +
+            return '<tr><td>' + esc([t.zone, t.label].filter(Boolean).join(' · ') || '—') + '</td><td class="n">' + t.n + '</td><td class="n">' + t.avg + '<span class="rai-gold-star">★</span></td><td class="n">' + t.alerts + '</td></tr>'; }).join('') + '</tbody></table></div>' : '<p class="muted">Няма данни.</p>') + '</div>' +
           '<div class="card"><h3>Коментари</h3>' + (s.comments.length ? '<div class="list">' + s.comments.map(function (c) {
             return '<a class="rv ' + (c.rating <= s.alert_max_rating ? 'alert' : 'r' + c.rating) + '" href="#/review/' + c.id + '"><div class="row between">' + stars(c.rating) + '<span class="meta">' + dt(c.created_at) + '</span></div><div class="comment">' + esc(c.comment) + '</div><div class="meta">' + esc([c.zone_name, c.table_label ? 'Маса ' + c.table_label : ''].filter(Boolean).join(' · ')) + '</div></a>'; }).join('') + '</div>' : '<p class="muted">Няма коментари.</p>') + '</div>';
         view.querySelectorAll('.seg button').forEach(function (b) { b.onclick = function () { statP.period = b.dataset.p; draw().catch(fail); }; });
