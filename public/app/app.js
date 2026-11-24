@@ -477,7 +477,23 @@
   // ---------- boot ----------
   function loadMe() { return api('/auth/me').then(function (u) { me = u; return u; }); }
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/app/sw.js', { scope: '/app/' }).catch(function () {});
+    // The installed phone app must receive the newest code, not keep an old shell.
+    var hadController = !!navigator.serviceWorker.controller;
+    var refreshedForUpdate = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (hadController && !refreshedForUpdate) {
+        refreshedForUpdate = true;
+        window.location.reload();
+      }
+      hadController = true;
+    });
+    var swRegistration = null;
+    navigator.serviceWorker.register('/app/sw.js', { scope: '/app/', updateViaCache: 'none' })
+      .then(function (reg) { swRegistration = reg; return reg.update(); })
+      .catch(function () {});
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden && swRegistration) swRegistration.update().catch(function () {});
+    });
     navigator.serviceWorker.addEventListener('message', function (e) {
       if (!e.data) return;
       if (e.data.type === 'open' && e.data.url) { var u = new URL(e.data.url); if (u.hash) location.hash = u.hash; }
