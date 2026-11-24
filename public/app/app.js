@@ -126,7 +126,7 @@
       '<div class="row between"><span>' + stars(r.rating) + '</span><span class="pill ' + r.status + '">' + STATUS[r.status] + '</span></div>' +
       '<div class="meta">' + esc(place(r)) + ' · ' + dt(r.created_at) + ' · ' + (LANG[r.lang] || '') + '</div>' +
       (r.phone ? '<div class="tags"><span class="tag" style="border-color:#a97945;color:#ffe2a4">☎ Иска обаждане</span></div>' : '') +
-      (r.suspected_repeat ? '<div class="tags"><span class="tag" style="border-color:#d68b43;color:#ffd7a3">⚠ За проверка · повторен браузър до 10 ч.</span></div>' : '') +
+      (r.suspected_repeat ? '<div class="tags"><span class="tag" style="border-color:#d68b43;color:#ffd7a3">⚠ За проверка · повторен браузър</span></div>' : '') +
       (r.tags && r.tags.length ? '<div class="tags">' + r.tags.map(function (t) { return '<span class="tag">' + esc(TAGS[t] || t) + '</span>'; }).join('') + '</div>' : '') +
       (r.comment ? '<div class="comment">' + esc(r.comment) + '</div>' : '') + '</a>';
   }
