@@ -1916,3 +1916,72 @@ label.f,.meta,.muted{color:var(--muted)}
   }
   .rai-rating-distribution .rai-rating-tile-count{font-size:30px}
 }
+
+/* Distribution option 3: category accent at top, count, gold stars, % below.
+   Preserve the EXACT card dimensions of the five summary cards above. */
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent{
+  position:relative;
+  height:120px;
+  min-height:120px;
+  box-sizing:border-box;
+  padding:12px 2px 8px;
+  display:grid;
+  grid-template-rows:38px 29px 24px;
+  align-content:center;
+  align-items:center;
+  justify-items:center;
+  gap:0;
+  overflow:hidden;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:10px;
+}
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto;
+  width:100%;
+  height:5px;
+  background:var(--rating-accent);
+}
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-count{
+  font:750 clamp(29px,2.8vw,36px)/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:#24303b;
+  align-self:center;
+}
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-stars{
+  display:block;
+  width:100%;
+  min-height:0;
+  overflow:visible;
+  color:#d6a036!important;
+  font:800 clamp(12px,1.7vw,19px)/1.1 -apple-system,BlinkMacSystemFont,"Segoe UI Symbol",sans-serif;
+  letter-spacing:-1.5px;
+  white-space:nowrap;
+  text-align:center;
+}
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-percent{
+  font:750 clamp(12px,1.1vw,15px)/1.15 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:#65747e;
+  font-variant-numeric:tabular-nums;
+}
+@media(max-width:600px){
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent{
+    height:112px;
+    min-height:112px;
+    padding:11px 1px 7px;
+    grid-template-rows:36px 26px 22px;
+  }
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent::before{height:4px}
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-count{font-size:30px}
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-stars{
+    font-size:clamp(10px,2.75vw,13px);
+    letter-spacing:-1.5px;
+  }
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-percent{font-size:12px}
+}
+@media(max-width:355px){
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-stars{
+    font-size:9px;letter-spacing:-1.6px;
+  }
+}
