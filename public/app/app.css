@@ -1073,3 +1073,26 @@ label.f,.meta,.muted{color:var(--muted)}
   .rai-kpi-dual .rai-kpi-half .l{font-size:9px}
   .rai-callback-badge{font-size:10px;padding:6px}
 }
+
+/* Readable split KPI typography: match the four cards rather than 9–10px captions. */
+.kpis>.kpi.rai-kpi-dual{height:108px;min-height:108px}
+.kpis>.kpi.rai-kpi-dual .rai-kpi-half{padding:9px 5px;gap:7px}
+.kpis>.kpi.rai-kpi-dual .rai-kpi-half .v{
+  font:750 clamp(26px,2.8vw,32px)/1.12 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  letter-spacing:-.6px;
+  color:#24303b;
+}
+.kpis>.kpi.rai-kpi-dual .rai-kpi-half .l{
+  font:700 clamp(11px,1.05vw,13px)/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  letter-spacing:0;
+  color:#52616d;
+  text-align:center;
+  overflow-wrap:normal;
+}
+@media(max-width:560px){
+  .kpis>.kpi.rai-kpi-dual{height:110px;min-height:110px}
+  .kpis>.kpi.rai-action-kpi{height:110px;min-height:110px}
+  .kpis>.kpi.rai-kpi-dual .rai-kpi-half{padding:7px 3px;gap:6px}
+  .kpis>.kpi.rai-kpi-dual .rai-kpi-half .v{font-size:clamp(22px,6vw,27px)}
+  .kpis>.kpi.rai-kpi-dual .rai-kpi-half .l{font-size:11px;line-height:1.25}
+}
