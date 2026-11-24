@@ -107,7 +107,11 @@ function period(req) {
   return { from, to };
 }
 const REVIEW_COLS = `r.id, r.created_at, r.table_label, r.zone_name, r.rating, r.tags, r.comment, r.lang, r.status, r.ack_at, r.resolved_at, r.escalated_at,
-  r.phone_consent, r.phone, r.suspected_repeat, r.suspicion_reason, left(r.browser_hash, 10) AS browser_short_id, ua.name AS ack_by_name, ur.name AS resolved_by_name,
+  r.phone_consent, r.phone, r.suspected_repeat, r.suspicion_reason, left(r.browser_hash, 10) AS browser_short_id,
+  (SELECT count(*)::int FROM reviews prev WHERE prev.browser_hash=r.browser_hash AND (prev.created_at < r.created_at OR (prev.created_at=r.created_at AND prev.id < r.id))) AS prior_count,
+  (SELECT prev.rating FROM reviews prev WHERE prev.browser_hash=r.browser_hash AND (prev.created_at < r.created_at OR (prev.created_at=r.created_at AND prev.id < r.id)) ORDER BY prev.created_at DESC, prev.id DESC LIMIT 1) AS previous_rating,
+  (SELECT prev.created_at FROM reviews prev WHERE prev.browser_hash=r.browser_hash AND (prev.created_at < r.created_at OR (prev.created_at=r.created_at AND prev.id < r.id)) ORDER BY prev.created_at DESC, prev.id DESC LIMIT 1) AS previous_at,
+  ua.name AS ack_by_name, ur.name AS resolved_by_name,
   COALESCE((SELECT json_agg(json_build_object('name', product_name, 'vote', vote)) FROM review_products rp WHERE rp.review_id = r.id), '[]') AS products`;
 r.get('/reviews', ANY, wrap(async (req, res) => {
   const { from, to } = period(req);
