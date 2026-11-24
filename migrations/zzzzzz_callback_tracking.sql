@@ -3,3 +3,7 @@ ALTER TABLE reviews ADD COLUMN IF NOT EXISTS callback_called_at timestamptz;
 ALTER TABLE reviews ADD COLUMN IF NOT EXISTS callback_called_by uuid REFERENCES users(id) ON DELETE SET NULL;
 CREATE INDEX IF NOT EXISTS reviews_callback_pending_idx ON reviews(created_at DESC)
   WHERE phone_consent = true AND phone IS NOT NULL AND callback_called_at IS NULL;
+
+-- Callback push is a distinct notification event from rating notifications.
+ALTER TABLE push_outbox DROP CONSTRAINT IF EXISTS push_outbox_kind_check;
+ALTER TABLE push_outbox ADD CONSTRAINT push_outbox_kind_check CHECK(kind IN ('new','escalation','callback'));
