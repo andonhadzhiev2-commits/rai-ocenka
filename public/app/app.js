@@ -123,14 +123,11 @@
     $('#top').hidden = !on; $('#tabs').hidden = !on;
     document.querySelectorAll('.owner-only').forEach(function (e) { e.hidden = !isOwner(); });
   }
-  var quickBadge = $('#openBadge');
-  if (quickBadge) { quickBadge.setAttribute('role','button'); quickBadge.tabIndex=0; quickBadge.title='Покажи новите отзиви'; quickBadge.onclick=function(){openNewReviewsQuick({kind:'new'});}; quickBadge.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openNewReviewsQuick({kind:'new'});}}; }
   function updateBadge() {
     if (!me) return;
     api('/stats?period=day').then(function (s) {
-      var b = $('#openBadge'), n = s.open.alerts || 0, repeats = isOwner() ? (s.open.repeated || 0) : 0;
-      b.hidden = !n && !repeats;
-      b.textContent = [repeats ? repeats + (repeats === 1 ? ' с история' : ' с история') : '', n ? n + (n === 1 ? ' ниска' : ' ниски') : ''].filter(Boolean).join(' · ');
+      var n = s.open.alerts || 0, repeats = isOwner() ? (s.open.repeated || 0) : 0;
+      // Header badge removed: repeated and low ratings are shown in Signals.
       if (navigator.setAppBadge) { var total = n + repeats; if (total) navigator.setAppBadge(total).catch(function () {}); else navigator.clearAppBadge().catch(function () {}); }
     }).catch(function () {});
   }
