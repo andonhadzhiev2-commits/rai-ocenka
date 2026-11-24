@@ -739,3 +739,36 @@ h3,.card h3,.fp-right h3,.fp-modal h3{font-size:13px;line-height:1.4;letter-spac
   .view>h1,.view>.row>h1{font-size:24px}
   .fp-map .fp-seat{box-shadow:none}
 }
+
+/* Floorplan readability: slightly larger tiles, legible average, compact 1-decimal score. */
+.fp-map .fp-seat{
+  width:8.0%;
+  height:8.3%;
+  padding:2px 1px;
+  gap:2px;
+  line-height:1.05;
+  font-size:clamp(10px,1vw,13px);
+}
+.fp-map .fp-seat b{font-size:1em;line-height:1.05}
+.fp-map .fp-seat small{
+  font-size:.83em;
+  font-weight:750;
+  line-height:1.1;
+  letter-spacing:-.015em;
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+.fp-map .fp-seat .rai-gold-star{margin-left:1px}
+@media(max-width:600px){
+  .stats-floorplan .fp-map .fp-seat{
+    width:8.2%;
+    height:8.5%;
+    padding:1px 0;
+    gap:1px;
+    font-size:clamp(9px,2.65vw,11px);
+  }
+  .stats-floorplan .fp-map .fp-seat small{
+    font-size:.84em;
+    letter-spacing:-.035em;
+  }
+}
