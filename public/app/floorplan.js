@@ -51,7 +51,7 @@
     return /дет|дк|kids/i.test(t.zone_name||'') ? 'kids':'inside';
   };
   function mount(opt) {
-    let zone='inside', period='week', from='',to='', mode='avg', selected=null, placing=null, edit=false, seq=0;
+    let zone='inside', period=opt.period||'mtd', from=opt.from||'',to=opt.to||'', mode='avg', selected=null, placing=null, edit=false, seq=0;
     let tables=[], aggregated=[], reviews=[];
     // Selection stores permanent zone:number keys, including not-yet-registered tables.
     const printSelection=new Set();
@@ -92,7 +92,7 @@
       return '<div class="fp-controls"><div class="fp-pills" role="group" aria-label="Зала">' +
         [['inside','Вътрешна зала'],['kids','Детски кът']].map(x=>'<button type="button" class="fp-pill '+(zone===x[0]?'on':'')+'" data-fpz="'+x[0]+'">'+x[1]+'</button>').join('')+
         '</div><div class="fp-pills" role="group" aria-label="Период">'+
-        [['day','Днес'],['week','7 дни'],['month','30 дни'],['all','Всичко'],['custom','Период']].map(x=>'<button type="button" class="fp-pill '+(period===x[0]?'on':'')+'" data-fpp="'+x[0]+'">'+x[1]+'</button>').join('')+
+        [['mtd','Този месец'],['day','Днес'],['week','7 дни'],['month','30 дни'],['all','Всичко'],['custom','Период']].map(x=>'<button type="button" class="fp-pill '+(period===x[0]?'on':'')+'" data-fpp="'+x[0]+'">'+x[1]+'</button>').join('')+
         '</div>'+ (period==='custom'?'<div class="fp-dates"><label>От <input id="fp-from" type="date" value="'+esc(from)+'"></label><label>До <input id="fp-to" type="date" value="'+esc(to)+'"></label><button type="button" class="btn small primary" id="fp-go">Покажи</button></div>':'')+'</div>';
     }
     function makeStage(){
