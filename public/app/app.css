@@ -1096,3 +1096,17 @@ label.f,.meta,.muted{color:var(--muted)}
   .kpis>.kpi.rai-kpi-dual .rai-kpi-half .v{font-size:clamp(22px,6vw,27px)}
   .kpis>.kpi.rai-kpi-dual .rai-kpi-half .l{font-size:11px;line-height:1.25}
 }
+
+/* Rai Pulse: lighter, more refined brand lettering. */
+.top .brand-stack .top-title,
+.top .brand-stack .top-title em{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px;
+  font-weight:500;
+  letter-spacing:.015em;
+  line-height:1.25;
+  text-transform:none;
+  font-style:normal;
+  color:#263442;
+}
+.top .brand-stack .top-title em{font-weight:400;color:#52656e}
