@@ -2250,3 +2250,129 @@ label.f,.meta,.muted{color:var(--muted)}
     font-size:27px;
   }
 }
+
+/* Compact, wider-looking 5+5 tiles: recover side padding instead of adding height.
+   Both rows use exactly the same five columns and horizontal gutters. */
+#view .kpis.rai-summary-kpis.rai-summary-five,
+#view .rai-rating-distribution{
+  width:calc(100% + 16px);
+  margin-left:-8px;
+  margin-right:-8px;
+}
+#view .kpis.rai-summary-kpis.rai-summary-five,
+#view .rai-rating-distribution .rai-rating-tiles{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:4px;
+}
+#view .rai-rating-distribution{display:flex;flex-direction:column;gap:5px}
+#view .kpis.rai-summary-kpis.rai-summary-five>.kpi.rai-summary-cell,
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent{
+  height:108px;
+  min-height:108px;
+  max-height:108px;
+  border-radius:11px;
+  padding:5px 1px;
+}
+#view .kpis.rai-summary-kpis.rai-summary-five>.kpi.rai-summary-cell{
+  grid-template-rows:43px 27px 22px;
+  align-content:center;
+}
+#view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v,
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-count{
+  font-size:35px;
+  font-weight:750;
+  line-height:1;
+  letter-spacing:-1px;
+}
+#view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten{
+  height:43px;
+  gap:0;
+}
+#view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten .rai-top-word,
+#view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten .rai-top-number{
+  font-size:21px;
+  font-weight:750;
+  line-height:1;
+}
+#view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .rai-summary-icon{
+  height:27px;
+  font-size:22px;
+}
+#view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .rai-center-star{font-size:24px}
+#view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .l{
+  font-size:clamp(10px,1.13vw,13px);
+  line-height:1.05;
+  letter-spacing:-.35px;
+}
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent{
+  grid-template-rows:39px 28px 24px;
+  align-content:center;
+}
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-stars{
+  font-size:clamp(12px,1.65vw,18px);
+}
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-percent{
+  font-size:15px;
+  padding-top:4px;
+}
+@media(max-width:600px){
+  #view .kpis.rai-summary-kpis.rai-summary-five,
+  #view .rai-rating-distribution{
+    width:calc(100% + 20px);
+    margin-left:-10px;
+    margin-right:-10px;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five,
+  #view .rai-rating-distribution .rai-rating-tiles{gap:4px}
+  #view .kpis.rai-summary-kpis.rai-summary-five>.kpi.rai-summary-cell,
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent{
+    height:104px;
+    min-height:104px;
+    max-height:104px;
+    padding:5px 1px;
+    border-radius:10px;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.kpi.rai-summary-cell{
+    grid-template-rows:40px 26px 21px;
+    align-content:center;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v,
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-count{
+    font-size:clamp(30px,8.2vw,35px);
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten{height:40px}
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten .rai-top-word,
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten .rai-top-number{
+    font-size:clamp(19px,5.7vw,23px);
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .rai-summary-icon{
+    height:26px;
+    font-size:22px;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .rai-center-star{font-size:24px}
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .l{
+    font-size:clamp(9px,2.55vw,11px);
+    line-height:1.05;
+    white-space:nowrap;
+    letter-spacing:-.45px;
+  }
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent{
+    grid-template-rows:38px 27px 23px;
+    align-content:center;
+  }
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-stars{
+    font-size:clamp(10px,2.9vw,13px);
+    letter-spacing:-1.45px;
+  }
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-percent{
+    font-size:14px;
+    padding-top:4px;
+  }
+}
+@media(max-width:360px){
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .l{
+    font-size:8.5px;
+    letter-spacing:-.5px;
+  }
+}
