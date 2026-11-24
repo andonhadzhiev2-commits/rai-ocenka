@@ -75,12 +75,14 @@
     }
     const keyForNum=n=>(CONFIG.kids.seats.some(q=>q[0]===Number(n))?'kids':'inside')+':'+n;
     const target=opt.view, api=opt.api;
-    target.addEventListener('click',function(e){
+    if (target.__raiFloorplanHandler) target.removeEventListener('click',target.__raiFloorplanHandler);
+    target.__raiFloorplanHandler=function(e){
       const m=e.target.closest('#fp-mark'),o=e.target.closest('#fp-one-pdf');if(!m&&!o)return;
       if(selected===null)return;
       if(m){const k=keyForNum(selected);if(printSelection.has(k))printSelection.delete(k);else printSelection.add(k);draw();}
       if(o)pdf('selected',[Number(selected)],'RAI_QR_masa_'+selected+'.pdf');
-    });
+    };
+    target.addEventListener('click',target.__raiFloorplanHandler);
     const fmt = n => n==null?'—':Number(n).toFixed(2);
     function params() {
       if(period==='custom' && from && to) return '?from='+encodeURIComponent(from)+'&to='+encodeURIComponent(to);
