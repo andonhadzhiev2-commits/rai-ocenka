@@ -257,6 +257,56 @@
   var statP = { period: 'mtd', from: '', to: '' };
   route(/^\/stats$/, function () {
     chrome(true);
+    // Range picker based on the LAST deployed BAROMETER style (not its older orange theme).
+    var calDraftFrom='',calDraftTo='',calMonth='',calNext='start';
+    function calToday(){return new Date().toLocaleDateString('sv-SE',{timeZone:'Europe/Sofia'});}
+    function calInit(){
+      var today=calToday();
+      calDraftFrom=statP.from||today.slice(0,8)+'01';
+      calDraftTo=statP.to||today;
+      calMonth=(calDraftFrom||today).slice(0,7);
+      calNext='start';
+    }
+    function calDate(y,m,d){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
+    function paintCalendar(){
+      var root=$('#rai-calendar');if(!root)return;
+      var bits=calMonth.split('-').map(Number),y=bits[0],m=bits[1]-1;
+      var first=new Date(Date.UTC(y,m,1)),days=new Date(Date.UTC(y,m+1,0)).getUTCDate();
+      var offset=(first.getUTCDay()+6)%7;
+      var title=first.toLocaleDateString('bg-BG',{month:'long',year:'numeric',timeZone:'UTC'});
+      var today=calToday();
+      var html='<div class="rai-calendar-head"><button type="button" data-cnav="-1" aria-label="Предишен месец">‹</button><strong>'+esc(title)+'</strong><button type="button" data-cnav="1" aria-label="Следващ месец">›</button></div>'+
+        '<div class="rai-calendar-weekdays">'+['Пн','Вт','Ср','Чт','Пт','Сб','Нд'].map(function(n){return '<span>'+n+'</span>';}).join('')+'</div>'+
+        '<div class="rai-calendar-days">'+Array(offset+days).fill(0).map(function(_,i){
+          if(i<offset)return '<span class="rai-calendar-blank"></span>';
+          var date=calDate(y,m,i-offset+1);
+          var a=date===calDraftFrom,b=date===calDraftTo,mid=calDraftFrom&&calDraftTo&&date>calDraftFrom&&date<calDraftTo;
+          return '<button type="button" data-cday="'+date+'" class="rai-calendar-day'+(a?' range-start':'')+(b?' range-end':'')+(mid?' range-between':'')+'" aria-pressed="'+!!(a||b)+'" '+(date>today?'disabled':'')+'>'+String(i-offset+1)+'</button>';
+        }).join('')+'</div>'+
+        '<p class="rai-calendar-caption">'+(calNext==='start'?'Избери начална дата':'Избери крайна дата')+'</p>'+
+        '<div class="rai-calendar-range"><span>От: <b>'+esc(calDraftFrom||'—')+'</b></span><span>До: <b>'+esc(calDraftTo||'—')+'</b></span></div>'+
+        '<button type="button" class="btn primary rai-calendar-apply" id="rai-calendar-apply" '+(!calDraftFrom||!calDraftTo?'disabled':'')+'>Покажи периода</button>';
+      root.innerHTML=html;
+      root.querySelectorAll('[data-cnav]').forEach(function(b){b.onclick=function(){
+        var d=new Date(Date.UTC(y,m+Number(b.dataset.cnav),1));
+        calMonth=d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0');paintCalendar();
+      };});
+      root.querySelectorAll('[data-cday]').forEach(function(b){b.onclick=function(){
+        var date=b.dataset.cday;
+        if(calNext==='start'||!calDraftFrom){
+          calDraftFrom=date;calDraftTo='';calNext='end';
+        }else if(date<calDraftFrom){
+          calDraftTo=calDraftFrom;calDraftFrom=date;calNext='start';
+        }else{
+          calDraftTo=date;calNext='start';
+        }
+        paintCalendar();
+      };});
+      $('#rai-calendar-apply').onclick=function(){
+        if(!calDraftFrom||!calDraftTo)return;
+        statP.from=calDraftFrom;statP.to=calDraftTo;statP.period='custom';draw().catch(fail);
+      };
+    }
     function qs() { return statP.period === 'custom' && statP.from ? '?from=' + statP.from + '&to=' + (statP.to || statP.from) : '?period=' + statP.period; }
     function draw() {
       return api('/stats' + qs()).then(function (s) {
@@ -264,9 +314,10 @@
         var tmax = Math.max.apply(null, s.trend.map(function (d) { return d.n; }).concat([1]));
         var tagMax = Math.max.apply(null, s.tags.map(function (d) { return d.n; }).concat([1]));
         view.innerHTML = '<div class="rai-page-heading"><span class="rai-eyebrow">КОКТЕЙЛ-БАР РАЙ</span><h1>Анализи</h1></div>' +
-          '<section class="rai-period-panel"><div class="rai-period-tabs" role="group" aria-label="Избор на период">' + [['day', 'Ден'], ['week', 'Седмица'], ['mtd', 'Месец'], ['custom', 'Период']].map(function (p) {
+          '<section class="rai-period-panel"><div class="rai-period-bar"><div class="rai-period-tabs" role="group" aria-label="Избор на период">' + [['day', 'Ден'], ['week', 'Седмица'], ['mtd', 'Месец']].map(function (p) {
             return '<button type="button" data-p="' + p[0] + '" class="' + (statP.period === p[0] ? 'selected' : '') + '" aria-pressed="' + (statP.period === p[0]) + '">' + p[1] + '</button>'; }).join('') + '</div>' +
-          (statP.period === 'custom' ? '<div class="rai-period-dates"><label>От дата<input type="date" id="sf" value="' + statP.from + '"></label><label>До дата<input type="date" id="st" value="' + statP.to + '"></label><button type="button" class="btn primary" id="sgo">Покажи</button></div>' : '') + '</section>' +
+          '<button type="button" class="rai-period-choice'+(statP.period==='custom'?' selected':'')+'" data-p="custom" aria-expanded="'+(statP.period==='custom')+'"><span>Период</span><small>'+(statP.period==='custom'&&statP.from?esc(statP.from.slice(5)+' – '+statP.to.slice(5)):'Избери дати')+'</small></button></div>' +
+          (statP.period === 'custom' ? '<div class="rai-calendar-panel" id="rai-calendar" aria-label="Календар за избор на период"></div>' : '') + '</section>' +
           '<div class="kpis"><button type="button" id="rai-all-ratings" class="kpi rai-action-kpi"><div class="v">' + s.total + '</div><div class="l">Оценки ›</div><span class="rai-kpi-hint">Виж всички по маси</span></button>' +
           '<button type="button" id="rai-avg-ratings" class="kpi rai-action-kpi"><div class="v">' + (s.avg != null ? String(s.avg).replace('.', ',') + '<span class="rai-gold-star">★</span>' : '—') + '</div><div class="l">Средна оценка ›</div><span class="rai-kpi-hint">Виж оценките</span></button>' +
           '<button type="button" class="kpi rai-action-kpi" id="openNewReviewsQuick" aria-label="Покажи всички нови отзиви по маси"><div class="v">' + s.open.total + '</div><div class="l">Нови отзиви <span aria-hidden="true">›</span></div><span class="rai-kpi-hint">Виж всички по маси</span></button>' +
@@ -290,15 +341,18 @@
         var quickButton = $('#openNewReviewsQuick'); if (quickButton) quickButton.onclick = function(){openNewReviewsQuick({kind:'new'});};
         var allButton=$('#rai-all-ratings');if(allButton)allButton.onclick=function(){openNewReviewsQuick({period:statP.period,from:statP.from,to:statP.to});};
         var avgButton=$('#rai-avg-ratings');if(avgButton)avgButton.onclick=function(){openNewReviewsQuick({period:statP.period,from:statP.from,to:statP.to});};
-        view.querySelectorAll('.rai-period-tabs button').forEach(function (b) { b.onclick = function () {
-          statP.period = b.dataset.p;
-          if (statP.period === 'custom' && !statP.from) {
-            var today = new Date().toLocaleDateString('sv-SE',{timeZone:'Europe/Sofia'});
-            statP.from = today.slice(0,8)+'01'; statP.to = today;
+        view.querySelectorAll('.rai-period-bar [data-p]').forEach(function (b) { b.onclick = function () {
+          if(b.dataset.p==='custom'){
+            if(statP.period!=='custom'){
+              calInit();statP.period='custom';draw().catch(fail);
+            }else{
+              statP.period='mtd';draw().catch(fail);
+            }
+          }else{
+            statP.period=b.dataset.p;draw().catch(fail);
           }
-          draw().catch(fail);
         }; });
-        if ($('#sgo')) $('#sgo').onclick = function () { statP.from = $('#sf').value; statP.to = $('#st').value; draw().catch(fail); };
+        if(statP.period==='custom'){if(!calMonth)calInit();paintCalendar();}
         if(isOwner() && window.RAIFloorplan){var floorSlot=$('#stats-floorplan');if(floorSlot)window.RAIFloorplan.mount({view:floorSlot,api:api,toast:toast,fail:fail,tags:TAGS,embedded:true,period:statP.period,from:statP.from,to:statP.to}).catch(fail);}
       });
     }
