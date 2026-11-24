@@ -41,8 +41,12 @@ function sticker(ctx,t,qr,logo,x,y){
  ctx.drawImage(qr,px(cx-17),px(y+36),px(34),px(34));
  ctx.imageSmoothingEnabled=true;
  write(ctx,'BG  ·  EN  ·  GR',cx,y+75.5,2.35,'#e3e4e8','700');
- // Identification is outside the 50 x 80 mm cut line.
- write(ctx,(t.zone_name||'')+' — МАСА '+t.label,cx,y+86,2.9,'#171a20','800');
+ // Small table label in the LEFT white gutter, outside the cut line.
+ // Cutting only the four sides of the 50 x 80 mm sticker removes this label automatically.
+ ctx.save();ctx.translate(px(x-5),px(y+40));ctx.rotate(-Math.PI/2);
+ ctx.fillStyle='#444951';ctx.textAlign='center';ctx.textBaseline='middle';
+ ctx.font='700 '+Math.round(px(2.7))+'px Montserrat,Arial,sans-serif';
+ ctx.fillText('МАСА '+t.label,0,0);ctx.restore();
 }
 let ongoing=false;
 async function exportPdf(ids,opts){
