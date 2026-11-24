@@ -73,10 +73,10 @@
 
   // Read-only quick list, paginated across every zone; reviews stay unmodified.
   function openNewReviewsQuick(opts) {
-    opts=opts||{};var onlyNew=opts.kind==='new',rating=Number(opts.rating)||0,limit=100,offset=0,busy=false,closed=false;
+    opts=opts||{};var onlyNew=opts.kind==='new',onlyComments=opts.kind==='comments',rating=Number(opts.rating)||0,limit=100,offset=0,busy=false,closed=false;
     var old=document.getElementById('rai-quick-backdrop');if(old)old.remove();
     var panel=document.createElement('div');panel.id='rai-quick-backdrop';panel.className='rai-quick-backdrop';
-    var title=onlyNew?'Нови отзиви':rating?'Оценки с '+rating+' звезди':'Всички оценки и отзиви';
+    var title=onlyNew?'Нови отзиви':onlyComments?'Коментари за периода':rating?'Оценки с '+rating+' звезди':'Всички оценки и отзиви';
     panel.innerHTML='<section class="rai-quick-panel" role="dialog" aria-modal="true" aria-label="'+esc(title)+'"><div class="rai-quick-head"><div><div class="rai-eyebrow">РАЙ · Всички маси</div><h2>'+esc(title)+'</h2><p class="meta">Натисни оценка, за да видиш подробностите</p></div><button type="button" class="rai-quick-close" aria-label="Затвори">✕</button></div><div class="rai-quick-list" id="rai-quick-list"><p class="muted">Зареждане…</p></div><div class="rai-quick-footer"><span id="rai-quick-count"></span><button class="btn small" id="rai-quick-more" type="button" hidden>Зареди още</button></div></section>';
     document.body.appendChild(panel);
     function close(){closed=true;panel.remove();document.removeEventListener('keydown',key);}
@@ -87,11 +87,11 @@
     function load(){
       if(busy||closed)return;busy=true;more.disabled=true;
       var q='/reviews?limit='+limit+'&offset='+offset+'&period='+encodeURIComponent(onlyNew?'all':opts.period||'all');
-      if(onlyNew)q+='&status=new';if(rating)q+='&rating='+rating;
-      if(!onlyNew&&opts.period==='custom'&&opts.from)q='/reviews?limit='+limit+'&offset='+offset+'&from='+encodeURIComponent(opts.from)+'&to='+encodeURIComponent(opts.to||opts.from)+(rating?'&rating='+rating:'');
+      if(onlyNew)q+='&status=new';if(onlyComments)q+='&with_comment=1';if(rating)q+='&rating='+rating;
+      if(!onlyNew&&opts.period==='custom'&&opts.from)q='/reviews?limit='+limit+'&offset='+offset+'&from='+encodeURIComponent(opts.from)+'&to='+encodeURIComponent(opts.to||opts.from)+(rating?'&rating='+rating:'')+(onlyComments?'&with_comment=1':'');
       api(q).then(function(rows){
         if(closed)return;if(offset===0)list.innerHTML='';
-        if(!rows.length&&!offset)list.innerHTML='<p class="rai-quick-empty">Няма оценки за този избор.</p>';
+        if(!rows.length&&!offset)list.innerHTML='<p class="rai-quick-empty">'+(onlyComments?'Няма коментари за избрания период.':'Няма оценки за този избор.')+'</p>';
         list.insertAdjacentHTML('beforeend',rows.map(function(r){return '<a class="rai-quick-review'+(r.rating<=3?' is-low':'')+'" href="#/review/'+esc(r.id)+'"><div class="rai-quick-review-top">'+stars(r.rating)+'<span class="rai-quick-date">'+dt(r.created_at)+'</span></div><strong>'+esc(place(r))+'</strong><p>'+esc(r.comment||'Без коментар')+'</p>'+(r.tags&&r.tags.length?'<small>'+esc(r.tags.map(function(t){return TAGS[t]||t;}).join(' · '))+'</small>':'')+'<span class="rai-quick-open">Отвори отзива ›</span></a>';}).join(''));
         list.querySelectorAll('a:not([data-wired])').forEach(function(a){a.dataset.wired='1';a.addEventListener('click',close);});
         offset+=rows.length;count.textContent='Показани '+offset;more.hidden=rows.length<limit;
@@ -270,6 +270,7 @@
           '<div class="kpis"><button type="button" id="rai-all-ratings" class="kpi rai-action-kpi"><div class="v">' + s.total + '</div><div class="l">Оценки ›</div><span class="rai-kpi-hint">Виж всички по маси</span></button>' +
           '<button type="button" id="rai-avg-ratings" class="kpi rai-action-kpi"><div class="v">' + (s.avg != null ? String(s.avg).replace('.', ',') + '<span class="rai-gold-star">★</span>' : '—') + '</div><div class="l">Средна оценка ›</div><span class="rai-kpi-hint">Виж оценките</span></button>' +
           '<button type="button" class="kpi rai-action-kpi" id="openNewReviewsQuick" aria-label="Покажи всички нови отзиви по маси"><div class="v">' + s.open.total + '</div><div class="l">Нови отзиви <span aria-hidden="true">›</span></div><span class="rai-kpi-hint">Виж всички по маси</span></button>' +
+          '<button type="button" class="kpi rai-action-kpi rai-comments-kpi" id="rai-comments-quick" aria-label="Покажи всички коментари за избрания период"><div class="v">' + (s.comments_total || 0) + '</div><div class="l">Коментари <span aria-hidden="true">›</span></div><span class="rai-kpi-hint">По маси · за периода</span></button>' +
           '</div>' +
           '<div class="card"><h3>Разпределение</h3><div class="bars">' + s.distribution.slice().reverse().map(function (d) {
             return '<button type="button" class="bar rai-rating-bar" data-quick-rating="' + d.rating + '" aria-label="Виж оценките с ' + d.rating + ' звезди"><span>' + stars(d.rating) + '</span><span class="track"><i style="width:' + (d.n / max * 100) + '%;background:' + (d.rating <= s.alert_max_rating ? 'var(--red2)' : d.rating === 3 ? 'var(--warn)' : 'var(--ok)') + '"></i></span><span class="num">' + d.n + '</span></button>'; }).join('') + '</div></div>' +
@@ -285,6 +286,7 @@
           '<div class="card"><h3>Коментари</h3>' + (s.comments.length ? '<div class="list">' + s.comments.map(function (c) {
             return '<a class="rv ' + (c.rating <= s.alert_max_rating ? 'alert' : 'r' + c.rating) + '" href="#/review/' + c.id + '"><div class="row between">' + stars(c.rating) + '<span class="meta">' + dt(c.created_at) + '</span></div><div class="comment">' + esc(c.comment) + '</div><div class="meta">' + esc([c.zone_name, c.table_label ? 'Маса ' + c.table_label : ''].filter(Boolean).join(' · ')) + '</div></a>'; }).join('') + '</div>' : '<p class="muted">Няма коментари.</p>') + '</div>';
         view.querySelectorAll('[data-quick-rating]').forEach(function(b){b.onclick=function(){openNewReviewsQuick({period:statP.period,from:statP.from,to:statP.to,rating:Number(b.dataset.quickRating)});};});
+        var commentsButton=$('#rai-comments-quick');if(commentsButton)commentsButton.onclick=function(){openNewReviewsQuick({kind:'comments',period:statP.period,from:statP.from,to:statP.to});};
         var quickButton = $('#openNewReviewsQuick'); if (quickButton) quickButton.onclick = function(){openNewReviewsQuick({kind:'new'});};
         var allButton=$('#rai-all-ratings');if(allButton)allButton.onclick=function(){openNewReviewsQuick({period:statP.period,from:statP.from,to:statP.to});};
         var avgButton=$('#rai-avg-ratings');if(avgButton)avgButton.onclick=function(){openNewReviewsQuick({period:statP.period,from:statP.from,to:statP.to});};
