@@ -106,7 +106,7 @@
         markup+='<button type="button" title="Маса '+esc(num)+' · '+(total?fmt(avg)+' звезди, '+total+' отзива':'Няма отзиви')+'" class="fp-seat '+quality+(selected===num?' selected':'')+(printSelection.has(keyForNum(num))?' print-marked':'')+'" data-fps="'+esc(num)+'" '+attr+'><b>'+esc(num)+'</b>'+(total?'<small class="rai-seat-stars" aria-label="Средна оценка '+fmt(avg)+' от 5">'+'★'.repeat(Math.max(1,Math.min(5,Math.round(Number(avg)||0))))+'</small>':'')+'</button>';
       });
       const unplaced=tables.filter(t=>mapName(t)===zone&&!c.seats.some(q=>String(q[0])===String(t.label)));
-      return '<div class="fp-map-scroll"><div class="fp-map" style="aspect-ratio:'+c.w+'/'+c.h+'">'+markup+'</div></div>'+
+      return '<div class="fp-map-scroll"><div class="fp-map fp-map-'+zone+'" style="aspect-ratio:'+c.w+'/'+c.h+'">'+markup+'</div></div>'+
       (unplaced.length?'<div class="fp-extra"><b>Маси извън първоначалната скица:</b> '+unplaced.map(t=>'<button class="btn small" data-fpex="'+esc(t.label)+'">'+esc(t.label)+'</button>').join(' ')+'</div>':'');
     }
     function detail() {
