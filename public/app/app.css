@@ -1985,3 +1985,33 @@ label.f,.meta,.muted{color:var(--muted)}
     font-size:9px;letter-spacing:-1.6px;
   }
 }
+
+/* Reliable visible color stripe for iOS Safari (real element, not button pseudo-element).
+   Accent matches the positive / neutral / negative star categories. */
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+}
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent::before{
+  content:none!important;
+}
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-accent-line{
+  display:block!important;
+  position:absolute!important;
+  z-index:2;
+  top:0!important;
+  left:0!important;
+  right:0!important;
+  width:100%!important;
+  height:5px!important;
+  border-radius:8px 8px 0 0;
+  padding:0!important;
+  margin:0!important;
+  pointer-events:none;
+}
+@media(max-width:600px){
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-accent-line{
+    height:4px!important;
+  }
+}
