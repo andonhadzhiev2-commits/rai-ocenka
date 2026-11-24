@@ -7,7 +7,7 @@
       ph4: 'Какво Ви хареса или какво да подобрим?', q5: 'Желаете ли да се свържем с Вас?',
       gdpr: 'Съгласявам се Рай да използва телефона ми само за връзка по този отзив.', privacy: 'Как пазим данните',
       send: 'Изпратете', hint: 'Изберете оценка, за да продължите.', hint2: 'Готово, можете да изпратите.', sending: 'Изпращане…',
-      ty: 'Благодарим Ви!', ty2: 'Отзивът Ви беше изпратен на управителя.', google: 'Ако желаете, споделете и в Google',
+      ty: 'Благодарим Ви!', ty2: 'Отзивът Ви беше изпратен на управителя.',
       errNet: 'Няма връзка. Опитайте отново – отзивът няма да се дублира.', errRate: 'Получихме много отзиви от това устройство. Опитайте по-късно.',
       errFast: 'Моля, отделете няколко секунди и опитайте отново.', errGen: 'Нещо се обърка. Опитайте отново.', phoneBad: 'Проверете телефона или махнете отметката.',
       stars: ['', 'Много зле', 'Зле', 'Средно', 'Добре', 'Отлично'], starAria: 'звезди',
@@ -19,7 +19,7 @@
       ph4: 'What did you like, or what should we improve?', q5: 'Would you like us to contact you?',
       gdpr: 'I agree that Rai may use my phone number only to contact me about this review.', privacy: 'How we keep your data',
       send: 'Send', hint: 'Choose a rating to continue.', hint2: 'Ready to send.', sending: 'Sending…',
-      ty: 'Thank you!', ty2: 'Your feedback was sent to the manager.', google: 'If you like, share it on Google too',
+      ty: 'Thank you!', ty2: 'Your feedback was sent to the manager.',
       errNet: 'No connection. Please try again – your review will not be duplicated.', errRate: 'Too many reviews from this device. Please try later.',
       errFast: 'Please take a few seconds and try again.', errGen: 'Something went wrong. Please try again.', phoneBad: 'Check the phone number or untick the box.',
       stars: ['', 'Very bad', 'Bad', 'OK', 'Good', 'Excellent'], starAria: 'stars',
@@ -31,7 +31,7 @@
       ph4: 'Τι σας άρεσε ή τι να βελτιώσουμε;', q5: 'Θέλετε να επικοινωνήσουμε μαζί σας;',
       gdpr: 'Συμφωνώ το Rai να χρησιμοποιήσει το τηλέφωνό μου μόνο για επικοινωνία σχετικά με αυτή την αξιολόγηση.', privacy: 'Πώς προστατεύουμε τα δεδομένα',
       send: 'Αποστολή', hint: 'Επιλέξτε βαθμολογία για να συνεχίσετε.', hint2: 'Έτοιμο για αποστολή.', sending: 'Αποστολή…',
-      ty: 'Ευχαριστούμε!', ty2: 'Η γνώμη σας στάλθηκε στον υπεύθυνο.', google: 'Αν θέλετε, μοιραστείτε το και στο Google',
+      ty: 'Ευχαριστούμε!', ty2: 'Η γνώμη σας στάλθηκε στον υπεύθυνο.',
       errNet: 'Δεν υπάρχει σύνδεση. Δοκιμάστε ξανά – η αξιολόγηση δεν θα διπλασιαστεί.', errRate: 'Πολλές αξιολογήσεις από αυτή τη συσκευή. Δοκιμάστε αργότερα.',
       errFast: 'Περιμένετε λίγα δευτερόλεπτα και δοκιμάστε ξανά.', errGen: 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.', phoneBad: 'Ελέγξτε το τηλέφωνο ή αφαιρέστε την επιλογή.',
       stars: ['', 'Πολύ κακό', 'Κακό', 'Μέτριο', 'Καλό', 'Εξαιρετικό'], starAria: 'αστέρια',
@@ -261,8 +261,6 @@
       .then(function (x) {
         sending = false;
         if (x.s === 200 || x.s === 201 || x.s === 202) {
-          var g = (x.j && x.j.google_review_url) || cfg.google_review_url;
-          if (g) { $('#google').href = g; $('#google').hidden = false; }
           $('#form').hidden = true; $('#thanks').hidden = false; window.scrollTo(0, 0); return;
         }
         render(); showErr(x.s === 429 ? (x.j.error === 'too_fast' ? t.errFast : t.errRate) : t.errGen);
