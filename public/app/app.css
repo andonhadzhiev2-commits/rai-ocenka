@@ -1148,3 +1148,42 @@ label.f,.meta,.muted{color:var(--muted)}
 .fp-legend .fp-dot.bad{background:#c91f36;border-color:#a6142b}
 .fp-legend .fp-dot.good{background:#278465;border-color:#176044}
 .fp-legend .fp-dot.mixed{background:#cc8421;border-color:#94601a}
+
+/* A rated table is ONE solid tile. Never tint positive history red. */
+.fp-map button.fp-seat.bad,
+.stats-floorplan .fp-map button.fp-seat.bad,
+.fp-map button.fp-seat.bad.selected,
+.stats-floorplan .fp-map button.fp-seat.bad.selected,
+.fp-map button.fp-seat.bad:hover,
+.stats-floorplan .fp-map button.fp-seat.bad:hover{
+  background-color:#c91f36!important;
+  background-image:none!important;
+  opacity:1!important;
+  border-color:#a6142b!important;
+  color:#fff!important;
+}
+.fp-map button.fp-seat.good,
+.stats-floorplan .fp-map button.fp-seat.good{
+  background-color:#278465!important;
+  background-image:none!important;
+  opacity:1!important;
+}
+.fp-map button.fp-seat.mixed,
+.stats-floorplan .fp-map button.fp-seat.mixed{
+  background-color:#cc8421!important;
+  background-image:none!important;
+  opacity:1!important;
+}
+.fp-map button.fp-seat small.rai-seat-stars,
+.stats-floorplan .fp-map button.fp-seat small.rai-seat-stars{
+  color:#ffdf42!important;
+  -webkit-text-fill-color:#ffdf42!important;
+}
+.rai-review-detail-card{background:#fff!important;color:#24303b!important}
+.rai-review-detail-alert{border-color:#e8aaa4!important}
+.rai-low-rating-notice{background:#fff0ec!important;color:#a63a37!important;border-color:#e5b3ad!important}
+.rai-history-rating{background:#fff!important;border:1px solid #e9e9e5!important;color:#24303b!important}
+.rai-history-positive{border-left:4px solid #278465!important;background:#edf6f0!important}
+.rai-history-negative{border-left:4px solid #c91f36!important;background:#fff0f0!important}
+.rai-history-neutral{border-left:4px solid #d6ab45!important}
+.rai-history-rating .meta{color:#586671!important}
