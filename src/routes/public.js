@@ -49,7 +49,6 @@ router.get('/api/public/form/:code', async (req, res) => {
                         ORDER BY c.sort NULLS LAST, c.id, p.sort, p.id`);
   res.json({
     ok: true,
-    google_review_url: s.google_review_url || null,
     address: { bg: s.venue_address_bg, en: s.venue_address_en, el: s.venue_address_el },
     products: p.rows,
     issued_at: Date.now()
@@ -118,7 +117,7 @@ router.post('/api/public/reviews', express.json({ limit: '8kb' }), async (req, r
       const again = await db.q('SELECT id FROM reviews WHERE submission_id=$1', [b.submission_id]);
       return res.json({ ok: true, id: again.rows[0] && again.rows[0].id, duplicate: true });
     }
-    res.status(201).json({ ok: true, id: review.id, google_review_url: s.google_review_url || null });
+    res.status(201).json({ ok: true, id: review.id });
     // notify after answering the guest, so a slow push service never delays the form
     push.processPending().catch(e => logError('notify', e));
   } catch (e) {
