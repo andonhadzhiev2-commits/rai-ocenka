@@ -146,6 +146,44 @@
     render('high');
   }
 
+  // Owner-only pending callback queue; acknowledgement does not dismiss a callback.
+  function openCallbackQueue() {
+    if(!isOwner())return;
+    var old=document.getElementById('rai-quick-backdrop');if(old)old.remove();
+    var panel=document.createElement('div');panel.id='rai-quick-backdrop';panel.className='rai-quick-backdrop';
+    panel.innerHTML='<section class="rai-quick-panel rai-callback-panel" role="dialog" aria-modal="true" aria-label="Искат връзка с мен">'+
+      '<div class="rai-quick-head"><div><div class="rai-eyebrow">РАЙ · За собственика</div><h2>📞 Искат връзка с мен</h2><p class="meta">Известията остават, докато потвърдиш, че си позвънил.</p></div><button type="button" class="rai-quick-close" aria-label="Затвори">✕</button></div>'+
+      '<div class="rai-quick-list" id="rai-callback-list"><p class="muted">Зареждане…</p></div></section>';
+    document.body.appendChild(panel);
+    var closed=false,list=panel.querySelector('#rai-callback-list');
+    function close(){closed=true;panel.remove();document.removeEventListener('keydown',key);}
+    function key(e){if(e.key==='Escape')close();}
+    document.addEventListener('keydown',key);
+    panel.onclick=function(e){if(e.target===panel||e.target.closest('.rai-quick-close'))close();};
+    function load(){
+      api('/callbacks/pending').then(function(data){
+        if(closed)return;
+        list.innerHTML=data.rows.length?data.rows.map(function(r){
+          return '<div class="rai-callback-item" data-callback-id="'+esc(r.id)+'">'+
+            '<div class="rai-quick-review-top">'+stars(r.rating)+'<span class="meta">'+dt(r.created_at)+'</span></div>'+
+            '<strong>'+esc(place(r))+'</strong>'+
+            (r.comment?'<p>'+esc(r.comment)+'</p>':'')+
+            '<div class="rai-callback-actions"><a class="rai-callback-phone" href="tel:'+esc(r.phone)+'">📞 '+esc(r.phone)+'</a>'+
+            '<button type="button" class="btn rai-called-btn" data-called-id="'+esc(r.id)+'">✓ Позвъних</button></div>'+
+            '<a class="rai-callback-detail" href="#/review/'+esc(r.id)+'">Виж отзива ›</a></div>';
+        }).join(''):'<p class="rai-quick-empty">Няма чакащи обаждания.</p>';
+        list.querySelectorAll('[data-called-id]').forEach(function(b){b.onclick=function(){
+          b.disabled=true;
+          api('/callbacks/'+encodeURIComponent(b.dataset.calledId)+'/called',{method:'POST'}).then(function(){
+            toast('Обаждането е отбелязано');updateBadge();load();
+          }).catch(function(e){b.disabled=false;fail(e);});
+        };});
+        list.querySelectorAll('.rai-callback-detail').forEach(function(a){a.onclick=close;});
+      }).catch(function(e){if(!closed)list.innerHTML='<p class="muted">'+esc(e.message||e)+'</p>';});
+    }
+    load();
+  }
+
   // ---------- router ----------
   var routes = [];
   function route(re, fn) { routes.push([re, fn]); }
@@ -171,12 +209,19 @@
   }
   function updateBadge() {
     if (!me) return;
-    api('/stats?period=day').then(function (s) {
-      var n = s.open.alerts || 0, repeats = isOwner() ? (s.open.repeated || 0) : 0;
-      // Header badge removed: repeated and low ratings are shown in Signals.
-      if (navigator.setAppBadge) { var total = n + repeats; if (total) navigator.setAppBadge(total).catch(function () {}); else navigator.clearAppBadge().catch(function () {}); }
-    }).catch(function () {});
+    var badge=$('#rai-callback-badge');
+    if(isOwner()){
+      api('/callbacks/pending').then(function(info){
+        var n=info.total||0;
+        if(badge){badge.hidden=!n;badge.textContent='📞 '+n+' за позвъняване';}
+        var number=$('#rai-callback-number');
+        if(number){number.textContent=n;var card=number.closest('.rai-kpi-half');if(card)card.classList.toggle('rai-has-callbacks',!!n);}
+      }).catch(function(){});
+    }else if(badge)badge.hidden=true;
   }
+  var callbackBadge=$('#rai-callback-badge');
+  if(callbackBadge)callbackBadge.onclick=openCallbackQueue;
+  setInterval(function(){if(me&&isOwner()&&!document.hidden)updateBadge();},20000);
 
   // ---------- login ----------
   route(/^\/login$/, function () {
@@ -200,7 +245,7 @@
     return '<a class="rv ' + (alert ? 'alert' : 'r' + r.rating) + '" href="#/review/' + r.id + '">' +
       '<div class="row between"><span>' + stars(r.rating) + '</span><span class="pill ' + r.status + '">' + STATUS[r.status] + '</span></div>' +
       '<div class="meta">' + esc(place(r)) + ' · ' + dt(r.created_at) + ' · ' + (LANG[r.lang] || '') + '</div>' +
-      (r.phone ? '<div class="tags"><span class="tag" style="border-color:#a97945;color:#ffe2a4">☎ Иска обаждане</span></div>' : '') +
+      (r.phone && r.phone_consent ? '<div class="tags"><span class="tag'+(!r.callback_called_at?' rai-callback-flash':'')+'" style="border-color:#a97945;color:#8b4b23">☎ '+(r.callback_called_at?'Позвъняно':'Очаква да му позвъниш')+'</span></div>' : '') +
       (r.prior_count > 0 ? '<div class="tags"><span class="tag" style="border-color:#a97945;color:#ffe2a4">↻ Оценка №'+(r.prior_count+1)+' · предишна '+r.previous_rating+'★</span></div>' : '') +
       (r.suspected_repeat && /10 часа|48 часа/.test(r.suspicion_reason || '') ? '<div class="tags"><span class="tag" style="border-color:#d68b43;color:#ffd7a3">⚠ Чести оценки · за проверка</span></div>' : '') +
       (isOwner() ? '<div class="meta">Браузър: '+(r.browser_short_id ? esc(r.browser_short_id) : 'няма идентификатор')+'</div>' : '') +
@@ -361,7 +406,7 @@
             return '<button type="button" data-p="' + p[0] + '" class="' + (statP.period === p[0] ? 'selected' : '') + '" aria-pressed="' + (statP.period === p[0]) + '">' + p[1] + '</button>'; }).join('') + '</div>' +
           '<button type="button" class="rai-period-choice'+(statP.period==='custom'?' selected':'')+'" data-p="custom" aria-expanded="'+(statP.period==='custom')+'"><span>Период</span><small>'+(statP.period==='custom'&&statP.from?esc(statP.from.slice(5)+' – '+statP.to.slice(5)):'Избери дати')+'</small></button></div>' +
           (statP.period === 'custom' ? '<div class="rai-calendar-panel" id="rai-calendar" aria-label="Календар за избор на период"></div>' : '') + '</section>' +
-          '<div class="kpis"><button type="button" id="rai-all-ratings" class="kpi rai-action-kpi"><div class="v">' + s.total + '</div><div class="l"><span class="rai-kpi-emoji" aria-hidden="true">📝</span>Оценки ›</div></button>' +
+          '<div class="kpis">'+(isOwner()?'<div class="kpi rai-kpi-dual"><button type="button" id="rai-all-ratings" class="rai-kpi-half" aria-label="Всички оценки"><span class="v">' + s.total + '</span><span class="l">📝 Оценки ›</span></button><button type="button" id="rai-callbacks" class="rai-kpi-half" aria-label="Искат връзка с мен"><span class="v" id="rai-callback-number">—</span><span class="l">📞 За позвъняване ›</span></button></div>':'<button type="button" id="rai-all-ratings" class="kpi rai-action-kpi"><div class="v">' + s.total + '</div><div class="l">📝 Оценки ›</div></button>') +
           '<button type="button" id="rai-avg-ratings" class="kpi rai-action-kpi"><div class="v">' + (s.avg != null ? String(s.avg).replace('.', ',') + '<span class="rai-gold-star">★</span>' : '—') + '</div><div class="l"><span class="rai-kpi-emoji" aria-hidden="true">⭐</span>Средна оценка ›</div></button>' +
           '<button type="button" class="kpi rai-action-kpi" id="openTopReviews" aria-label="Топ 10 положителни и отрицателни отзиви"><div class="v">ТОП 10</div><div class="l"><span class="rai-kpi-emoji" aria-hidden="true">👍</span>Топ отзиви <span aria-hidden="true">›</span></div></button>' +
           '<button type="button" class="kpi rai-action-kpi rai-comments-kpi" id="rai-comments-quick" aria-label="Покажи всички коментари за избрания период"><div class="v">' + (s.comments_total || 0) + '</div><div class="l"><span class="rai-kpi-emoji" aria-hidden="true">💬</span>Коментари <span aria-hidden="true">›</span></div></button>' +
@@ -383,6 +428,8 @@
         var commentsButton=$('#rai-comments-quick');if(commentsButton)commentsButton.onclick=function(){openNewReviewsQuick({kind:'comments',period:statP.period,from:statP.from,to:statP.to});};
         var topButton = $('#openTopReviews'); if (topButton) topButton.onclick = function(){openTopReviews({period:statP.period,from:statP.from,to:statP.to});};
         var allButton=$('#rai-all-ratings');if(allButton)allButton.onclick=function(){openNewReviewsQuick({period:statP.period,from:statP.from,to:statP.to});};
+        var cbButton=$('#rai-callbacks');if(cbButton)cbButton.onclick=openCallbackQueue;
+        updateBadge();
         var avgButton=$('#rai-avg-ratings');if(avgButton)avgButton.onclick=function(){openNewReviewsQuick({period:statP.period,from:statP.from,to:statP.to});};
         view.querySelectorAll('.rai-period-bar [data-p]').forEach(function (b) { b.onclick = function () {
           if(b.dataset.p==='custom'){
