@@ -132,6 +132,7 @@
   }
   route(/^\/$/, function () {
     chrome(true);
+    var showBrowserRegistry = false;
     function draw() {
       var q='/reviews?period='+feedPeriod+'&limit=200';
       if(feedFilter==='new')q+='&status=new';
@@ -148,7 +149,24 @@
           '<div class="feed-filter-label">Период</div>'+
           buttons([['day','Днес'],['week','7 дни'],['month','30 дни'],['all','Всичко']],feedPeriod,'period')+
           '<div class="feed-sort"><span>Подредба по оценка</span><button type="button" class="btn small" id="ratingSort">'+(feedRatingSort==='asc'?'↑ От 1 към 5 ★':'↓ От 5 към 1 ★')+'</button></div></section>'+
+          (isOwner() ? '<div class="card" style="margin-bottom:12px"><div class="row between"><b>Регистър на браузърите</b><button type="button" class="btn small" id="browserRegistryToggle">'+(showBrowserRegistry?'Скрий':'Покажи')+'</button></div><div id="browserRegistryContent"></div></div>' : '')+
           (list.length?'<div class="list">'+list.map(reviewCard).join('')+'</div>':'<div class="feed-empty"><b>Няма отзиви за този избор</b><p>Промени периода или филтъра, за да видиш останалите оценки.</p><button type="button" class="btn small" id="resetFeed">Покажи всички за 7 дни</button></div>');
+        if (isOwner()) {
+          var regBtn=$('#browserRegistryToggle'), regSlot=$('#browserRegistryContent');
+          regBtn.onclick=function(){showBrowserRegistry=!showBrowserRegistry;draw().catch(fail);};
+          if(showBrowserRegistry){
+            regSlot.innerHTML='<p class="muted">Зареждане…</p>';
+            api('/browser-registry').then(function(rows){
+              if(!regSlot.isConnected)return;
+              regSlot.innerHTML=rows.length?'<p class="meta">Идентификаторите са съкратени. Списъкът съдържа браузъри с поне две оценки от всички маси и за целия период.</p>'+
+                '<div class="list">'+rows.map(function(b){
+                  return '<div class="item"><div class="grow"><b>Браузър '+esc(b.browser_id)+'</b><div class="meta">Първа: '+dt(b.first_seen_at)+' · Последна: '+dt(b.last_seen_at)+'</div>'+
+                    '<div class="meta">10 ч.: '+b.reviews_10h+' · 48 ч.: '+b.reviews_48h+' · Общо: '+b.total+'</div></div>'+
+                    (b.reviews_10h>=2||b.reviews_48h>=3||b.total>=5?'<span class="tag" style="color:#ffd7a3">⚠ За проверка</span>':'')+'</div>';
+                }).join('')+'</div>':'<p class="muted">Все още няма браузър с повторни оценки.</p>';
+            }).catch(function(e){if(regSlot.isConnected)regSlot.textContent=e.message||'Грешка при зареждането';});
+          }
+        }
         view.querySelectorAll('[data-feed]').forEach(function(b){b.onclick=function(){feedFilter=b.dataset.feed;draw().catch(fail);};});
         view.querySelectorAll('[data-period]').forEach(function(b){b.onclick=function(){feedPeriod=b.dataset.period;draw().catch(fail);};});
         $('#ratingSort').onclick=function(){feedRatingSort=feedRatingSort==='asc'?'desc':'asc';draw().catch(fail);};
