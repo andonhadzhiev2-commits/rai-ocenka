@@ -3,8 +3,8 @@ const CACHE = 'rai-pulse-mobile-20261124-75';
 const SHELL = [
   '/app/',
   '/app/index.html',
-  '/app/app.css?v=20261124-81',
-  '/app/app.js?v=20261124-81',
+  '/app/app.css?v=20261124-82',
+  '/app/app.js?v=20261124-82',
   '/app/floorplan.js?v=20261124-64',
   '/app/pdf-export.js?v=20261124-28',
   '/app/logo.png',
