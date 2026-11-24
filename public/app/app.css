@@ -593,3 +593,61 @@ label.f,.meta,.muted{color:var(--muted)}
 .rai-calendar-range{display:flex;justify-content:space-between;gap:12px;padding:9px 0 12px;border-top:1px solid #e2e5e0;font-size:12px;color:#4e626c}
 .rai-calendar-apply{width:100%;min-height:41px}
 @media(max-width:450px){.rai-calendar-panel{width:100%;padding:12px}.rai-period-bar{gap:6px}.rai-period-choice small{font-size:10px}}
+
+/* RAI table map clarity — stars-only scores and BAROMETER wheel legend colors. */
+.fp-map .fp-seat small.rai-seat-stars{
+  display:block;
+  max-width:100%;
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:clamp(7px,.9vw,10px);
+  font-weight:800;
+  color:#bd9437;
+  letter-spacing:-.85px;
+  white-space:nowrap;
+  line-height:1.05;
+  margin:0;
+  text-align:center;
+}
+.fp-map .fp-seat.selected{
+  border-color:#aebbbd;
+  outline:2px solid #9fb2b3;
+  outline-offset:1px;
+  box-shadow:0 2px 8px rgba(36,48,59,.16);
+}
+.fp-map .fp-seat.selected:hover{
+  border-color:#879fa1;
+  box-shadow:0 2px 8px rgba(36,48,59,.16);
+}
+.fp-map .fp-seat:hover:not(.selected){
+  border-color:#aebbbd;
+  box-shadow:0 1px 6px rgba(36,48,59,.15);
+}
+.fp-legend{
+  background:#ffffff;
+  border:1px solid #e9e9e5;
+}
+.fp-legend span{
+  color:#111827;
+  font-weight:750;
+}
+.fp-legend .fp-dot{
+  display:inline-block;
+  width:11px;
+  height:11px;
+  flex:0 0 11px;
+  border:0;
+  border-radius:3px;
+}
+.fp-legend .fp-dot.good{background:#278465;border-color:#278465}
+.fp-legend .fp-dot.mixed{background:#ee603e;border-color:#ee603e}
+.fp-legend .fp-dot.bad{background:#c9574f;border-color:#c9574f}
+.fp-legend .fp-dot.neutral{background:#73808c;border-color:#73808c}
+@media(max-width:600px){
+  .fp-map .fp-seat small.rai-seat-stars,
+  .stats-floorplan .fp-map .fp-seat small.rai-seat-stars{
+    font-size:clamp(6px,1.8vw,9px);
+    letter-spacing:-1px;
+  }
+  .stats-floorplan .fp-map-scroll.is-zoomed .fp-seat small.rai-seat-stars{font-size:10px}
+}
