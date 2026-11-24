@@ -2544,3 +2544,12 @@ body main#view.view{
   }
   body header.top.rai-top-nav nav.tabs.rai-header-tabs a .ti{font-size:21px}
 }
+
+/* Preserve the proportions of the Pulse mark traced from the user's screenshot. */
+body header.top.rai-top-nav .rai-pulse-brand{flex-basis:154px;max-width:154px}
+body header.top.rai-top-nav .rai-pulse-mark{
+  width:100%;height:auto;max-height:none;aspect-ratio:261/85;
+}
+@media(max-width:400px){
+  body header.top.rai-top-nav .rai-pulse-brand{flex-basis:132px;max-width:132px;min-width:90px}
+}
