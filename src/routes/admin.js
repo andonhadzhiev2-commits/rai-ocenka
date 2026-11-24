@@ -231,6 +231,14 @@ r.post('/tables/ensure-floorplan', OWNER, wrap(async (req, res) => {
       const added=(await client.query('INSERT INTO tables(zone_id,label,code) VALUES($1,$2,$3) RETURNING id,label,code,active,zone_id',[z,label,newCode()])).rows[0];
       results.push(added);created++;
     }
+    if (scope === 'all' || scope === 'inside' || scope === 'kids') {
+      // Include other previously registered tables for each requested area, too.
+      const extra = scope === 'all'
+        ? await client.query('SELECT id,label,code,active,zone_id FROM tables WHERE active ORDER BY id')
+        : await client.query('SELECT id,label,code,active,zone_id FROM tables WHERE active AND zone_id=$1 ORDER BY id', [zones[scope]]);
+      const seen = new Set(results.map(row=>Number(row.id)));
+      for (const t of extra.rows) if (!seen.has(Number(t.id))) { results.push(t); seen.add(Number(t.id)); }
+    }
     return { tables:results, created };
   });
   res.json(data);
