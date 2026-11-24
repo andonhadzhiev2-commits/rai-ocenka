@@ -102,7 +102,7 @@
         const [num,x,y,w,h,shape]=spec;const t=existing.get(String(num));
         const a=t?marks.get(Number(t.id)):null;
         const total=a?Number(a.total):0,avg=a?Number(a.avg_rating):null,low=a?Number(a.low_count):0;
-        const quality=!t?'pending':!total?'neutral':total<3?'few':avg<3.5?'bad':avg<4.3?'mixed':'good';
+        const quality=!t?'pending':!total?'neutral':avg<3.5?'bad':avg<4.3?'mixed':'good';
         const posX=t&&t.map_x!=null?Number(t.map_x):100*(x+w/2)/c.w;
         const posY=t&&t.map_y!=null?Number(t.map_y):100*(y+h/2)/c.h;
         const attr='style="left:'+posX+'%;top:'+posY+'%;width:'+(w/c.w*100)+'%;height:'+(h/c.h*100)+'%"';
@@ -135,8 +135,8 @@
         '<div class="fp-kpis"><div><span>Отзиви за залата</span><b>'+reviewsCount+'</b></div><div><span>Средна оценка</span><b>'+(reviewsCount?(weight/reviewsCount).toFixed(2):'—')+' ★</b></div><div><span>Ниски оценки</span><b>'+low+'</b></div></div>'+
         '<div class="fp-layout"><section class="fp-left"><div class="fp-map-head"><div class="fp-map-heading"><div class="fp-zone-switch" role="group" aria-label="Избор на зала">'+[['inside','Вътрешна зала'],['kids','Детски кът']].map(x=>'<button type="button" class="fp-zone-tab'+(zone===x[0]?' on':'')+'" aria-pressed="'+(zone===x[0])+'" data-fpz="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><span>Натисни маса, за да видиш подробности</span></div>'+(opt.embedded?'':'<button type="button" class="btn small" id="fp-edit">'+(edit?'Готово':'Подреди маси')+'</button>')+'</div>'+
         makeStage()+
-        '<div class="fp-legend"><span><i class="fp-dot good"></i>Добри</span><span><i class="fp-dot mixed"></i>Смесени</span><span><i class="fp-dot bad"></i>Проблемни</span><span><i class="fp-dot neutral"></i>Без отзиви/малко данни</span></div>'+
-        '<p class="meta">Цветовете се определят от оценките за периода. При под 3 отзива масата е неутрална. Номерата от скиците са запазени.</p></section>'+
+        '<div class="fp-legend"><span><i class="fp-dot good"></i>Добри</span><span><i class="fp-dot mixed"></i>Смесени</span><span><i class="fp-dot bad"></i>Проблемни</span><span><i class="fp-dot neutral"></i>Без отзиви</span></div>'+
+        '<p class="meta">Цветовете се определят от средната оценка още от първия отзив. Броят отзиви показва колко данни има за масата.</p></section>'+
         (opt.embedded ? '' : '<aside class="fp-right" id="fp-detail">'+detail()+'</aside>')+'</div>'+
         (opt.embedded && showDetail ? '<div class="fp-modal-backdrop" id="fp-modal-backdrop" role="presentation"><section class="fp-modal" role="dialog" aria-modal="true" aria-label="Отзиви за маса '+esc(selected)+'"><button type="button" class="fp-modal-close" id="fp-modal-close" aria-label="Затвори">✕</button><div id="fp-modal-body">'+detail()+'</div></section></div>' : '');
       target.querySelectorAll('[data-fpz]').forEach(b=>b.onclick=()=>{zone=b.dataset.fpz;selected=null;showDetail=false;reviews=[];draw();});
