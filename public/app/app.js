@@ -71,39 +71,33 @@
   }
   function fail(e) { toast(e.message || String(e)); }
 
-  // A single quick inbox for all NEW reviews, regardless of zone, table or date.
-  // Opening the list does not acknowledge or otherwise modify any review.
-  function openNewReviewsQuick() {
-    var existing = document.getElementById('rai-quick-backdrop');
-    if (existing) existing.remove();
-    var backdrop = document.createElement('div');
-    backdrop.id = 'rai-quick-backdrop';
-    backdrop.className = 'rai-quick-backdrop';
-    backdrop.innerHTML = '<section class="rai-quick-panel" role="dialog" aria-modal="true" aria-labelledby="rai-quick-title">' +
-      '<div class="rai-quick-head"><div><div class="rai-eyebrow">РАЙ · Всички зони</div><h2 id="rai-quick-title">Нови отзиви</h2><p class="meta">Непоетите оценки от всички маси, на едно място.</p></div>' +
-      '<button type="button" class="rai-quick-close" aria-label="Затвори">✕</button></div>' +
-      '<div class="rai-quick-list" id="rai-quick-list"><p class="muted">Зареждане…</p></div></section>';
-    document.body.appendChild(backdrop);
-    var onKey = function (e) { if (e.key === 'Escape') dismiss(); };
-    var dismiss = function () { backdrop.remove(); document.removeEventListener('keydown', onKey); };
-    document.addEventListener('keydown', onKey);
-    backdrop.addEventListener('click', function (e) { if (e.target === backdrop || e.target.closest('.rai-quick-close')) dismiss(); });
-    api('/reviews?period=all&status=new&limit=200&sort=recent').then(function (reviews) {
-      var list = document.getElementById('rai-quick-list');
-      if (!list || !backdrop.isConnected) return;
-      list.innerHTML = reviews.length ? reviews.map(function (r) {
-        return '<a class="rai-quick-review'+(r.rating <= 3 ? ' is-low' : '')+'" href="#/review/'+encodeURIComponent(r.id)+'">' +
-          '<div class="rai-quick-review-top"><span class="rai-quick-stars">'+stars(r.rating)+'</span><span class="rai-quick-date">'+dt(r.created_at)+'</span></div>' +
-          '<strong>'+esc(place(r))+'</strong>' +
-          (r.comment ? '<p>'+esc(r.comment)+'</p>' : '<p class="muted">Без коментар</p>') +
-          (r.tags && r.tags.length ? '<small>'+esc(r.tags.map(function (tag) { return TAGS[tag] || tag; }).join(' · '))+'</small>' : '') +
-          '<span class="rai-quick-open">Отвори отзива ›</span></a>';
-      }).join('') : '<div class="rai-quick-empty">Няма нови отзиви. Всички са поети или разрешени.</div>';
-      list.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', dismiss); });
-    }).catch(function (err) {
-      var list = document.getElementById('rai-quick-list');
-      if (list) list.textContent = 'Неуспешно зареждане: '+(err.message || err);
-    });
+  // Read-only quick list, paginated across every zone; reviews stay unmodified.
+  function openNewReviewsQuick(opts) {
+    opts=opts||{};var onlyNew=opts.kind==='new',rating=Number(opts.rating)||0,limit=100,offset=0,busy=false,closed=false;
+    var old=document.getElementById('rai-quick-backdrop');if(old)old.remove();
+    var panel=document.createElement('div');panel.id='rai-quick-backdrop';panel.className='rai-quick-backdrop';
+    var title=onlyNew?'Нови отзиви':rating?'Оценки с '+rating+' звезди':'Всички оценки и отзиви';
+    panel.innerHTML='<section class="rai-quick-panel" role="dialog" aria-modal="true" aria-label="'+esc(title)+'"><div class="rai-quick-head"><div><div class="rai-eyebrow">РАЙ · Всички маси</div><h2>'+esc(title)+'</h2><p class="meta">Натисни оценка, за да видиш подробностите</p></div><button type="button" class="rai-quick-close" aria-label="Затвори">✕</button></div><div class="rai-quick-list" id="rai-quick-list"><p class="muted">Зареждане…</p></div><div class="rai-quick-footer"><span id="rai-quick-count"></span><button class="btn small" id="rai-quick-more" type="button" hidden>Зареди още</button></div></section>';
+    document.body.appendChild(panel);
+    function close(){closed=true;panel.remove();document.removeEventListener('keydown',key);}
+    function key(e){if(e.key==='Escape')close();}
+    document.addEventListener('keydown',key);
+    panel.onclick=function(e){if(e.target===panel||e.target.closest('.rai-quick-close'))close();};
+    var list=panel.querySelector('#rai-quick-list'),more=panel.querySelector('#rai-quick-more'),count=panel.querySelector('#rai-quick-count');
+    function load(){
+      if(busy||closed)return;busy=true;more.disabled=true;
+      var q='/reviews?limit='+limit+'&offset='+offset+'&period='+encodeURIComponent(onlyNew?'all':opts.period||'all');
+      if(onlyNew)q+='&status=new';if(rating)q+='&rating='+rating;
+      if(!onlyNew&&opts.period==='custom'&&opts.from)q='/reviews?limit='+limit+'&offset='+offset+'&from='+encodeURIComponent(opts.from)+'&to='+encodeURIComponent(opts.to||opts.from)+(rating?'&rating='+rating:'');
+      api(q).then(function(rows){
+        if(closed)return;if(offset===0)list.innerHTML='';
+        if(!rows.length&&!offset)list.innerHTML='<p class="rai-quick-empty">Няма оценки за този избор.</p>';
+        list.insertAdjacentHTML('beforeend',rows.map(function(r){return '<a class="rai-quick-review'+(r.rating<=3?' is-low':'')+'" href="#/review/'+esc(r.id)+'"><div class="rai-quick-review-top">'+stars(r.rating)+'<span class="rai-quick-date">'+dt(r.created_at)+'</span></div><strong>'+esc(place(r))+'</strong><p>'+esc(r.comment||'Без коментар')+'</p>'+(r.tags&&r.tags.length?'<small>'+esc(r.tags.map(function(t){return TAGS[t]||t;}).join(' · '))+'</small>':'')+'<span class="rai-quick-open">Отвори отзива ›</span></a>';}).join(''));
+        list.querySelectorAll('a:not([data-wired])').forEach(function(a){a.dataset.wired='1';a.addEventListener('click',close);});
+        offset+=rows.length;count.textContent='Показани '+offset;more.hidden=rows.length<limit;
+      }).catch(function(e){list.insertAdjacentHTML('beforeend','<p class="muted">'+esc(e.message||e)+'</p>');}).finally(function(){busy=false;more.disabled=false;});
+    }
+    more.onclick=load;load();
   }
 
   // ---------- router ----------
@@ -130,7 +124,7 @@
     document.querySelectorAll('.owner-only').forEach(function (e) { e.hidden = !isOwner(); });
   }
   var quickBadge = $('#openBadge');
-  if (quickBadge) { quickBadge.setAttribute('role','button'); quickBadge.tabIndex=0; quickBadge.title='Покажи новите отзиви'; quickBadge.onclick=openNewReviewsQuick; quickBadge.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openNewReviewsQuick();}}; }
+  if (quickBadge) { quickBadge.setAttribute('role','button'); quickBadge.tabIndex=0; quickBadge.title='Покажи новите отзиви'; quickBadge.onclick=function(){openNewReviewsQuick({kind:'new'});}; quickBadge.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openNewReviewsQuick({kind:'new'});}}; }
   function updateBadge() {
     if (!me) return;
     api('/stats?period=day').then(function (s) {
@@ -273,8 +267,8 @@
           '<div class="seg">' + [['mtd', 'Този месец'], ['day', 'Днес'], ['week', '7 дни'], ['month', '30 дни'], ['all', 'Всичко'], ['custom', 'Период']].map(function (p) {
             return '<button type="button" data-p="' + p[0] + '" class="' + (statP.period === p[0] ? 'on' : '') + '">' + p[1] + '</button>'; }).join('') + '</div>' +
           (statP.period === 'custom' ? '<div class="row"><label class="f grow">От<input type="date" id="sf" value="' + statP.from + '"></label><label class="f grow">До<input type="date" id="st" value="' + statP.to + '"></label><button class="btn" id="sgo" style="align-self:flex-end">Покажи</button></div>' : '') +
-          '<div class="kpis"><div class="kpi"><div class="v">' + s.total + '</div><div class="l">оценки</div></div>' +
-          '<div class="kpi"><div class="v">' + (s.avg != null ? String(s.avg).replace('.', ',') + '<span class="rai-gold-star">★</span>' : '—') + '</div><div class="l">средна оценка</div></div>' +
+          '<div class="kpis"><button type="button" id="rai-all-ratings" class="kpi rai-action-kpi"><div class="v">' + s.total + '</div><div class="l">Оценки ›</div><span class="rai-kpi-hint">Виж всички по маси</span></button>' +
+          '<button type="button" id="rai-avg-ratings" class="kpi rai-action-kpi"><div class="v">' + (s.avg != null ? String(s.avg).replace('.', ',') + '<span class="rai-gold-star">★</span>' : '—') + '</div><div class="l">Средна оценка ›</div><span class="rai-kpi-hint">Виж оценките</span></button>' +
           '<button type="button" class="kpi rai-action-kpi" id="openNewReviewsQuick" aria-label="Покажи всички нови отзиви по маси"><div class="v">' + s.open.total + '</div><div class="l">Нови отзиви <span aria-hidden="true">›</span></div><span class="rai-kpi-hint">Виж всички по маси</span></button>' +
           '</div>' +
           '<div class="card"><h3>Разпределение</h3><div class="bars">' + s.distribution.slice().reverse().map(function (d) {
@@ -290,7 +284,9 @@
             return '<tr><td>' + esc([t.zone, t.label].filter(Boolean).join(' · ') || '—') + '</td><td class="n">' + t.n + '</td><td class="n">' + t.avg + '<span class="rai-gold-star">★</span></td><td class="n">' + t.alerts + '</td></tr>'; }).join('') + '</tbody></table></div>' : '<p class="muted">Няма данни.</p>') + '</div>' +
           '<div class="card"><h3>Коментари</h3>' + (s.comments.length ? '<div class="list">' + s.comments.map(function (c) {
             return '<a class="rv ' + (c.rating <= s.alert_max_rating ? 'alert' : 'r' + c.rating) + '" href="#/review/' + c.id + '"><div class="row between">' + stars(c.rating) + '<span class="meta">' + dt(c.created_at) + '</span></div><div class="comment">' + esc(c.comment) + '</div><div class="meta">' + esc([c.zone_name, c.table_label ? 'Маса ' + c.table_label : ''].filter(Boolean).join(' · ')) + '</div></a>'; }).join('') + '</div>' : '<p class="muted">Няма коментари.</p>') + '</div>';
-        var quickButton = $('#openNewReviewsQuick'); if (quickButton) quickButton.onclick = openNewReviewsQuick;
+        var quickButton = $('#openNewReviewsQuick'); if (quickButton) quickButton.onclick = function(){openNewReviewsQuick({kind:'new'});};
+        var allButton=$('#rai-all-ratings');if(allButton)allButton.onclick=function(){openNewReviewsQuick({period:statP.period,from:statP.from,to:statP.to});};
+        var avgButton=$('#rai-avg-ratings');if(avgButton)avgButton.onclick=function(){openNewReviewsQuick({period:statP.period,from:statP.from,to:statP.to});};
         view.querySelectorAll('.seg button').forEach(function (b) { b.onclick = function () { statP.period = b.dataset.p; draw().catch(fail); }; });
         if ($('#sgo')) $('#sgo').onclick = function () { statP.from = $('#sf').value; statP.to = $('#st').value; draw().catch(fail); };
         if(isOwner() && window.RAIFloorplan){var floorSlot=$('#stats-floorplan');if(floorSlot)window.RAIFloorplan.mount({view:floorSlot,api:api,toast:toast,fail:fail,tags:TAGS,embedded:true,period:statP.period,from:statP.from,to:statP.to}).catch(fail);}
