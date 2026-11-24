@@ -886,3 +886,58 @@ label.f,.meta,.muted{color:var(--muted)}
   #view:has(> .rai-page-heading){padding-top:16px}
   #view > .rai-page-heading{gap:3px}
 }
+
+/* Whole-room floorplan on a single page: fit every table in the available
+   viewport width without horizontal scrolling. Keep the full seating layout. */
+.fp-map-scroll,
+.stats-floorplan .fp-map-scroll{
+  overflow-x:hidden;
+  overflow-y:hidden;
+  width:100%;
+  max-width:100%;
+}
+.fp-map,
+.stats-floorplan .fp-map,
+.fp-map-inside,
+.stats-floorplan .fp-map-inside,
+.fp-map-kids,
+.stats-floorplan .fp-map-kids{
+  display:block;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+}
+.fp-map .fp-seat,
+.stats-floorplan .fp-map .fp-seat{
+  width:9%;
+  gap:2px;
+  padding:2px 1px;
+  font-size:clamp(9px,1.55vw,16px);
+  min-width:0;
+  overflow:hidden;
+}
+.fp-map .fp-seat small.rai-seat-stars,
+.stats-floorplan .fp-map .fp-seat small.rai-seat-stars{
+  font-size:clamp(7px,1.2vw,12px);
+  letter-spacing:-.085em;
+  max-width:100%;
+  line-height:1;
+  overflow:hidden;
+  text-overflow:clip;
+}
+@media(max-width:600px){
+  .fp-map .fp-seat,.stats-floorplan .fp-map .fp-seat{
+    width:9%;
+    font-size:clamp(8px,2.5vw,11px);
+    gap:1px;
+    padding:1px 0;
+    border-radius:5px;
+  }
+  .fp-map .fp-seat small.rai-seat-stars,
+  .stats-floorplan .fp-map .fp-seat small.rai-seat-stars{
+    font-size:clamp(6px,1.85vw,8px);
+    letter-spacing:-.11em;
+  }
+  .fp-map-inside .fp-seat{height:7.8%}
+  .fp-map-kids .fp-seat{height:10.2%}
+}
