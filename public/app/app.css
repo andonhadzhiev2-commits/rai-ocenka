@@ -463,3 +463,12 @@ input:focus,select:focus,textarea:focus{border-color:#ee603e!important;box-shado
 @media(min-width:900px){.tabs{background:white!important;border-color:#e5e8e4!important;box-shadow:0 8px 30px #24303b16}}
 @media(max-width:560px){.rai-quick-backdrop{padding:0;align-items:flex-end}.rai-quick-panel{width:100%;max-height:91dvh;border-radius:18px 18px 0 0}.rai-quick-head{padding:17px 15px}.rai-quick-list{padding:10px}.kpi .l{font-size:11px}}
 @media print{.rai-quick-backdrop{display:none!important}.stk{background:#0d0b0c!important;color:white!important}}
+
+/* Interactive rating distribution and calm light-mode quick-review footer */
+.rai-rating-bar{width:100%;border:0;background:transparent;color:var(--fg);font:inherit;text-align:left;padding:8px 7px;border-radius:9px;cursor:pointer}
+.rai-rating-bar:hover{background:#fff1e9}
+.rai-rating-bar:focus-visible{outline:2px solid #ee603e;outline-offset:2px}
+.rai-quick-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 18px;background:white;border-top:1px solid #e5e8e4;color:#73808c;font-size:12px}
+.rai-action-kpi{font-family:var(--body)}
+.rai-action-kpi:hover{transform:translateY(-1px)}
+@media(max-width:560px){.rai-rating-bar{padding:8px 3px}}
