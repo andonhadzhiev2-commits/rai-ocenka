@@ -129,6 +129,8 @@
     $('#top').hidden = !on; $('#tabs').hidden = !on;
     document.querySelectorAll('.owner-only').forEach(function (e) { e.hidden = !isOwner(); });
   }
+  var quickBadge = $('#openBadge');
+  if (quickBadge) { quickBadge.setAttribute('role','button'); quickBadge.tabIndex=0; quickBadge.title='Покажи новите отзиви'; quickBadge.onclick=openNewReviewsQuick; quickBadge.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openNewReviewsQuick();}}; }
   function updateBadge() {
     if (!me) return;
     api('/stats?period=day').then(function (s) {
@@ -247,11 +249,11 @@
               return '<div class="item" style="border-color:'+(h.rating < prior ? '#9b3947' : 'var(--line)')+'"><div class="row between"><b>'+esc(dt(h.created_at))+'</b><b>'+h.rating+'★</b></div><div class="meta">'+trend+'</div></div>';
             }).join('')+'</div></div>' : '') +
           (r.status === 'new' ? '<div class="card">' +
-            '<button class="btn primary block" id="ack">Поемам сигнала</button><button class="btn ok block" id="res">Разрешен</button></div>' :
-            '<div class="card"><div>Поет от <b>' + esc(r.ack_by_name || '—') + '</b> в ' + (r.ack_at ? tm(r.ack_at) : '—') + '</div>' +
-            (r.status === 'resolved' ? '<div>Разрешен от <b>' + esc(r.resolved_by_name || '—') + '</b> в ' + tm(r.resolved_at) + '</div>' : '<button class="btn ok block" id="res">Отбележи като разрешен</button>') + '</div>');
-        if ($('#ack')) $('#ack').onclick = function () { api('/reviews/' + id + '/ack', { method: 'POST' }).then(function () { toast('Поехте сигнала'); draw(); updateBadge(); }).catch(function (e) { fail(e); draw(); }); };
-        if ($('#res')) $('#res').onclick = function () { api('/reviews/' + id + '/resolve', { method: 'POST' }).then(function () { toast('Отбелязано като разрешен'); draw(); updateBadge(); }).catch(fail); };
+            '<button class="btn primary block" id="ack">Отбележи като прочетен</button><button class="btn ok block" id="res">Архивирай отзива</button></div>' :
+            '<div class="card"><div>Прегледан на ' + (r.ack_at ? tm(r.ack_at) : '—') + '</div>' +
+            (r.status === 'resolved' ? '<div>Архивиран на ' + tm(r.resolved_at) + '</div>' : '<button class="btn ok block" id="res">Архивирай отзива</button>') + '</div>');
+        if ($('#ack')) $('#ack').onclick = function () { api('/reviews/' + id + '/ack', { method: 'POST' }).then(function () { toast('Отзивът е отбелязан като прочетен'); draw(); updateBadge(); }).catch(function (e) { fail(e); draw(); }); };
+        if ($('#res')) $('#res').onclick = function () { api('/reviews/' + id + '/resolve', { method: 'POST' }).then(function () { toast('Отзивът е архивиран'); draw(); updateBadge(); }).catch(fail); };
       });
     }
     return draw();
