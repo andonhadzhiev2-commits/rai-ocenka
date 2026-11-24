@@ -319,3 +319,23 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#d4475c;box-sh
   .stats-floorplan .fp-map .fp-seat{font-size:clamp(7px,2.1vw,10px);border-width:1px}
   .stats-floorplan .fp-map .fp-seat small{font-size:.65em}
 }
+
+/* Compact table details dialog: keep the floorplan visible around it. */
+.fp-modal-backdrop{padding:22px}
+.fp-modal{
+  width:min(100%,395px);
+  max-height:min(66vh,560px);
+  padding:16px 15px;
+  border-radius:14px;
+}
+.fp-modal .fp-detail-head h2{font-size:18px}
+.fp-modal .fp-mini-stats{margin:12px 0 9px;gap:4px}
+.fp-modal .fp-mini-stats>div{padding:7px 3px;gap:3px}
+.fp-modal .fp-mini-stats b{font-size:15px}
+.fp-modal .fp-right h3,.fp-modal h3{margin:10px 0 5px;font-size:12px}
+.fp-modal .fp-review{padding:7px 0}
+.fp-modal-close{top:9px;right:9px;width:32px;height:32px;font-size:16px}
+@media(max-width:600px){
+ .fp-modal-backdrop{padding:14px}
+ .fp-modal{width:min(100%,360px);max-height:62dvh;padding:15px 12px}
+}
