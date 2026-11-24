@@ -106,7 +106,7 @@
         const posX=t&&t.map_x!=null?Number(t.map_x):100*(x+w/2)/c.w;
         const posY=t&&t.map_y!=null?Number(t.map_y):100*(y+h/2)/c.h;
         const attr='style="left:'+posX+'%;top:'+posY+'%"';
-        markup+='<button type="button" title="Маса '+esc(num)+' · '+(total?fmt(avg)+' звезди, '+total+' отзива':'Няма отзиви')+'" class="fp-seat '+quality+(selected===num?' selected':'')+(t&&printSelection.has(keyForNum(num))?' print-marked':'')+'" data-fps="'+esc(num)+'" '+attr+'><b>'+esc(num)+'</b>'+(total?'<small>'+fmt(avg)+' ★</small>':'')+'</button>';
+        markup+='<button type="button" title="Маса '+esc(num)+' · '+(total?fmt(avg)+' звезди, '+total+' отзива':'Няма отзиви')+'" class="fp-seat '+quality+(selected===num?' selected':'')+(printSelection.has(keyForNum(num))?' print-marked':'')+'" data-fps="'+esc(num)+'" '+attr+'><b>'+esc(num)+'</b>'+(total?'<small>'+fmt(avg)+' ★</small>':'')+'</button>';
       });
       const unplaced=tables.filter(t=>mapName(t)===zone&&!c.seats.some(q=>String(q[0])===String(t.label)));
       return '<div class="fp-map-scroll"><div class="fp-map" style="aspect-ratio:'+c.w+'/'+c.h+'">'+markup+'</div></div>'+
@@ -132,7 +132,7 @@
         periodControls()+
         (opt.embedded ? '' : '<div class="fp-print-toolbar"><span><b>'+printSelection.size+'</b> маси за печат</span><button type="button" class="btn small primary" id="fp-pdf-selected">Изтегли избраните PDF</button><button type="button" class="btn small" id="fp-pdf-zone">Цялата зала PDF</button><button type="button" class="btn small" id="fp-pdf-all">Всички маси PDF</button><button type="button" class="btn small" id="fp-print-clear">Изчисти</button></div>')+
         '<div class="fp-kpis"><div><span>Отзиви за залата</span><b>'+reviewsCount+'</b></div><div><span>Средна оценка</span><b>'+(reviewsCount?(weight/reviewsCount).toFixed(2):'—')+' ★</b></div><div><span>Ниски оценки</span><b>'+low+'</b></div></div>'+
-        '<div class="fp-layout"><section class="fp-left"><div class="fp-map-head"><div class="fp-map-heading"><div class="fp-zone-switch" role="group" aria-label="Избор на зала">'+[['inside','Вътрешна зала'],['kids','Детски кът']].map(x=>'<button type="button" class="fp-zone-tab'+(zone===x[0]?' on':'')+'" aria-pressed="'+(zone===x[0])+'" data-fpz="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><span>Натисни маса, за да видиш подробности</span></div>'+(opt.embedded?'':'<button type="button" class="btn small" id="fp-edit">'+(edit?'Готово':'Подреди маси')+'</button>')+'</div>'+
+        '<div class="fp-layout"><section class="fp-left"><div class="fp-map-head"><div class="fp-map-heading"><div class="fp-zone-switch" role="group" aria-label="Избор на зала">'+[['inside','Вътрешна зала'],['kids','Детски кът']].map(x=>'<button type="button" class="fp-zone-tab'+(zone===x[0]?' on':'')+'" aria-pressed="'+(zone===x[0])+'" data-fpz="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><span>'+(opt.embedded?'Натисни маса за подробности':'Натисни масите, които искаш да включиш в PDF')+'</span></div>'+(opt.embedded?'':'<button type="button" class="btn small" id="fp-edit">'+(edit?'Готово':'Подреди маси')+'</button>')+'</div>'+
         makeStage()+
         '<div class="fp-legend"><span><i class="fp-dot good"></i>Добри</span><span><i class="fp-dot mixed"></i>Смесени</span><span><i class="fp-dot bad"></i>Проблемни</span><span><i class="fp-dot neutral"></i>Без отзиви</span></div>'+
         '</section>'+
@@ -150,7 +150,7 @@
       const closeModal=()=>{showDetail=false;draw();};
       const closeBtn=target.querySelector('#fp-modal-close');if(closeBtn)closeBtn.onclick=closeModal;
       const backdrop=target.querySelector('#fp-modal-backdrop');if(backdrop)backdrop.onclick=e=>{if(e.target===backdrop)closeModal();};
-      target.querySelectorAll('[data-fps],[data-fpex]').forEach(b=>b.onclick=()=>{const num=Number(b.dataset.fps||b.dataset.fpex);selected=num;placing=edit?num:null;showDetail=!!opt.embedded;reviews=[];draw();const t=tables.find(x=>String(x.label)===String(num)&&mapName(x)===zone);if(t)loadReviews(t.id);});
+      target.querySelectorAll('[data-fps],[data-fpex]').forEach(b=>b.onclick=()=>{const num=Number(b.dataset.fps||b.dataset.fpex);selected=num;placing=edit?num:null;showDetail=!!opt.embedded;if(!opt.embedded&&!edit){const key=keyForNum(num);if(printSelection.has(key))printSelection.delete(key);else printSelection.add(key);}reviews=[];draw();const t=tables.find(x=>String(x.label)===String(num)&&mapName(x)===zone);if(t)loadReviews(t.id);});
       const map=target.querySelector('.fp-map');
       if(edit)map.onclick=e=>{
         if(e.target.closest('.fp-seat'))return;
