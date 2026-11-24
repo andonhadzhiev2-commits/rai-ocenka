@@ -112,10 +112,12 @@ router.post('/api/public/reviews', express.json({ limit: '8kb' }), async (req, r
           "FROM reviews WHERE browser_hash=$1 AND created_at >= now() - interval '48 hours'", [browserHash]);
         const n10 = previous.rows[0].total_10h + 1;
         const n48 = previous.rows[0].total_48h + 1;
-        // A second review within ten hours, or a third within two days, merits manual review.
+        const historic = await c.query('SELECT review_count FROM review_browser_registry WHERE browser_hash=$1', [browserHash]);
+        const lifetime = (historic.rows[0] ? historic.rows[0].review_count : 0) + 1;
         const reasons = [];
         if (n10 >= 2) reasons.push(n10 + ' оценки от един браузър за 10 часа');
         if (n48 >= 3) reasons.push(n48 + ' оценки от един браузър за 48 часа');
+        if (lifetime >= 5) reasons.push(lifetime + ' оценки общо от един браузър');
         repeated = reasons.length > 0;
         suspicionReason = repeated ? reasons.join('; ') : null;
       }
@@ -125,6 +127,14 @@ router.post('/api/public/reviews', express.json({ limit: '8kb' }), async (req, r
          ON CONFLICT (submission_id) DO NOTHING RETURNING *`,
         [b.submission_id, t.id, t.label, t.zone_name, rating, tags, comment, phone, consent, s.phone_retention_days, lang, ch, browserHash, repeated, suspicionReason]);
       if (!ins.rowCount) return null;
+      if (browserHash) {
+        await c.query(
+          `INSERT INTO review_browser_registry(browser_hash,first_seen_at,last_seen_at,review_count)
+           VALUES ($1,now(),now(),1)
+           ON CONFLICT (browser_hash) DO UPDATE SET
+             last_seen_at=now(), review_count=review_browser_registry.review_count+1`,
+          [browserHash]);
+      }
       const rev = ins.rows[0];
       const votes = b.products && typeof b.products === 'object' ? b.products : {};
       const ids = Object.keys(votes).map(Number).filter(Number.isInteger).slice(0, 50);
