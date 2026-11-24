@@ -414,7 +414,7 @@
             (isOwner()?'<button type="button" id="rai-callbacks" class="kpi rai-summary-cell" aria-label="Чакащи обаждания"><span class="v" id="rai-callback-number">—</span><span class="rai-summary-icon" aria-hidden="true">📞</span><span class="l">Обаждане</span></button>':'') +
             '<button type="button" id="openTopReviews" class="kpi rai-summary-cell" aria-label="Топ 10 положителни и отрицателни мнения"><span class="v rai-top-ten"><span class="rai-top-word">Топ</span><span class="rai-top-number">10</span></span><span class="rai-summary-icon" aria-hidden="true">👍👎</span><span class="l">Мнения</span></button>' +
           '</div>' +
-          '<div class="card rai-rating-distribution"><h3>Разпределение</h3><div class="rai-rating-tiles">' + s.distribution.slice().reverse().map(function (d) {
+          '<div class="card rai-rating-distribution"><h3>Оценки</h3><div class="rai-rating-tiles">' + s.distribution.slice().reverse().map(function (d) {
             var percent = s.total ? Math.round(d.n / s.total * 100) : 0;
             var accent = d.rating >= 4 ? '#278465' : d.rating === 3 ? '#b88727' : '#c91f36';
             return '<button type="button" class="rai-rating-tile rai-rating-accent" data-quick-rating="' + d.rating + '" aria-label="' + d.rating + ' звезди, ' + d.n + ' оценки, ' + percent + ' процента"><span class="rai-rating-accent-line" aria-hidden="true" style="background-color:' + accent + '"></span><strong class="rai-rating-tile-count">' + d.n + '</strong><span class="rai-rating-tile-stars" aria-hidden="true">' + '★'.repeat(d.rating) + '</span><span class="rai-rating-tile-percent">' + percent + '%</span></button>'; }).join('') + '</div></div>' +
