@@ -2432,3 +2432,53 @@ label.f,.meta,.muted{color:var(--muted)}
     padding-top:3px;
   }
 }
+
+/* "По маси": all four columns visible inside the card on a narrow phone. */
+#view .rai-tables-scroll{
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  overflow-x:hidden;
+}
+#view .rai-tables-table{
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  table-layout:fixed;
+  border-collapse:collapse;
+}
+#view .rai-tables-table th,
+#view .rai-tables-table td{
+  box-sizing:border-box;
+  overflow-wrap:anywhere;
+  word-break:normal;
+  padding:9px 5px;
+}
+#view .rai-tables-table th:not(:first-child),
+#view .rai-tables-table td:not(:first-child){
+  text-align:center;
+}
+#view .rai-tables-table .rai-table-stars{
+  white-space:nowrap;
+  letter-spacing:-1px;
+}
+@media(max-width:600px){
+  #view .rai-tables-table{
+    font-size:clamp(10px,2.75vw,12px);
+  }
+  #view .rai-tables-table th,
+  #view .rai-tables-table td{
+    padding:10px 2px;
+    line-height:1.28;
+  }
+  #view .rai-tables-table th:first-child,
+  #view .rai-tables-table td:first-child{
+    padding-left:1px;
+    padding-right:5px;
+    text-align:left;
+  }
+  #view .rai-tables-table .rai-table-stars{
+    font-size:clamp(9px,2.5vw,11px);
+    letter-spacing:-1.2px;
+  }
+}
