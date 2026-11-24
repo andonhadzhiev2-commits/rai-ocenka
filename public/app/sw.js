@@ -42,7 +42,7 @@ self.addEventListener('fetch',event=>{
 
 self.addEventListener('push', e => {
   let d = {};
-  try { d = e.data ? e.data.json() : {}; } catch (_) { d = { title: 'РАЙ ПУЛС', body: e.data && e.data.text() }; }
+  try { d = e.data ? e.data.json() : {}; } catch (_) { d = { title: 'Rai Pulse', body: e.data && e.data.text() }; }
   const opts = {
     body: d.body || '',
     tag: d.tag || undefined,
@@ -55,7 +55,7 @@ self.addEventListener('push', e => {
     timestamp: Date.now()
   };
   e.waitUntil(Promise.all([
-    self.registration.showNotification(d.title || 'РАЙ ПУЛС', opts),
+    self.registration.showNotification(d.title || 'Rai Pulse', opts),
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cs => cs.forEach(c => c.postMessage({ type: 'review', reviewId: d.reviewId })))
   ]));
 });
