@@ -87,9 +87,15 @@ router.post('/api/public/reviews', express.json({ limit: '8kb' }), async (req, r
     const tags = [...new Set(baseTags.concat(detailTags))];
     const comment = typeof b.comment === 'string' ? b.comment.trim().slice(0, 1000) || null : null;
     let phone = null, consent = false;
-    if (b.phone_consent === true && typeof b.phone === 'string') {
-      const cleaned = b.phone.replace(/[^\d+]/g, '');
-      if (/^\+?\d{7,15}$/.test(cleaned)) { phone = cleaned; consent = true; }
+    const suppliedPhone = typeof b.phone === 'string' ? b.phone.trim() : '';
+    // Fail visibly instead of silently saving a review without its callback number.
+    if (suppliedPhone && b.phone_consent !== true)
+      return res.status(400).json({ error: 'phone_consent_required' });
+    if (b.phone_consent === true) {
+      const cleaned = suppliedPhone.replace(/[^\d+]/g, '');
+      if (!/^\+?\d{7,15}$/.test(cleaned))
+        return res.status(400).json({ error: 'invalid_phone' });
+      phone = cleaned; consent = true;
     }
     const lang = ['bg', 'en', 'el'].includes(b.lang) ? b.lang : 'bg';
 
