@@ -71,6 +71,41 @@
   }
   function fail(e) { toast(e.message || String(e)); }
 
+  // A single quick inbox for all NEW reviews, regardless of zone, table or date.
+  // Opening the list does not acknowledge or otherwise modify any review.
+  function openNewReviewsQuick() {
+    var existing = document.getElementById('rai-quick-backdrop');
+    if (existing) existing.remove();
+    var backdrop = document.createElement('div');
+    backdrop.id = 'rai-quick-backdrop';
+    backdrop.className = 'rai-quick-backdrop';
+    backdrop.innerHTML = '<section class="rai-quick-panel" role="dialog" aria-modal="true" aria-labelledby="rai-quick-title">' +
+      '<div class="rai-quick-head"><div><div class="rai-eyebrow">РАЙ · Всички зони</div><h2 id="rai-quick-title">Нови отзиви</h2><p class="meta">Непоетите оценки от всички маси, на едно място.</p></div>' +
+      '<button type="button" class="rai-quick-close" aria-label="Затвори">✕</button></div>' +
+      '<div class="rai-quick-list" id="rai-quick-list"><p class="muted">Зареждане…</p></div></section>';
+    document.body.appendChild(backdrop);
+    var onKey = function (e) { if (e.key === 'Escape') dismiss(); };
+    var dismiss = function () { backdrop.remove(); document.removeEventListener('keydown', onKey); };
+    document.addEventListener('keydown', onKey);
+    backdrop.addEventListener('click', function (e) { if (e.target === backdrop || e.target.closest('.rai-quick-close')) dismiss(); });
+    api('/reviews?period=all&status=new&limit=200&sort=recent').then(function (reviews) {
+      var list = document.getElementById('rai-quick-list');
+      if (!list || !backdrop.isConnected) return;
+      list.innerHTML = reviews.length ? reviews.map(function (r) {
+        return '<a class="rai-quick-review'+(r.rating <= 3 ? ' is-low' : '')+'" href="#/review/'+encodeURIComponent(r.id)+'">' +
+          '<div class="rai-quick-review-top"><span class="rai-quick-stars">'+stars(r.rating)+'</span><span class="rai-quick-date">'+dt(r.created_at)+'</span></div>' +
+          '<strong>'+esc(place(r))+'</strong>' +
+          (r.comment ? '<p>'+esc(r.comment)+'</p>' : '<p class="muted">Без коментар</p>') +
+          (r.tags && r.tags.length ? '<small>'+esc(r.tags.map(function (tag) { return TAGS[tag] || tag; }).join(' · '))+'</small>' : '') +
+          '<span class="rai-quick-open">Отвори отзива ›</span></a>';
+      }).join('') : '<div class="rai-quick-empty">Няма нови отзиви. Всички са поети или разрешени.</div>';
+      list.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', dismiss); });
+    }).catch(function (err) {
+      var list = document.getElementById('rai-quick-list');
+      if (list) list.textContent = 'Неуспешно зареждане: '+(err.message || err);
+    });
+  }
+
   // ---------- router ----------
   var routes = [];
   function route(re, fn) { routes.push([re, fn]); }
@@ -238,14 +273,13 @@
           (statP.period === 'custom' ? '<div class="row"><label class="f grow">От<input type="date" id="sf" value="' + statP.from + '"></label><label class="f grow">До<input type="date" id="st" value="' + statP.to + '"></label><button class="btn" id="sgo" style="align-self:flex-end">Покажи</button></div>' : '') +
           '<div class="kpis"><div class="kpi"><div class="v">' + s.total + '</div><div class="l">оценки</div></div>' +
           '<div class="kpi"><div class="v">' + (s.avg != null ? String(s.avg).replace('.', ',') + '<span class="rai-gold-star">★</span>' : '—') + '</div><div class="l">средна оценка</div></div>' +
-          '<div class="kpi"><div class="v">' + s.open.total + '</div><div class="l">Нови отзиви</div></div>' +
+          '<button type="button" class="kpi rai-action-kpi" id="openNewReviewsQuick" aria-label="Покажи всички нови отзиви по маси"><div class="v">' + s.open.total + '</div><div class="l">Нови отзиви <span aria-hidden="true">›</span></div><span class="rai-kpi-hint">Виж всички по маси</span></button>' +
           '</div>' +
           '<div class="card"><h3>Разпределение</h3><div class="bars">' + s.distribution.slice().reverse().map(function (d) {
             return '<div class="bar"><span>' + stars(d.rating) + '</span><span class="track"><i style="width:' + (d.n / max * 100) + '%;background:' + (d.rating <= s.alert_max_rating ? 'var(--red2)' : d.rating === 3 ? 'var(--warn)' : 'var(--ok)') + '"></i></span><span class="num">' + d.n + '</span></div>'; }).join('') + '</div></div>' +
           (s.trend.length > 1 ? '<div class="card"><h3>Тенденция по дни</h3><div class="spark">' + s.trend.map(function (d) {
             return '<div title="' + d.d + ': ' + d.n + ' оценки, ' + d.avg + '★" style="height:' + Math.max(4, d.n / tmax * 100) + '%;background:' + (d.avg < 3 ? 'var(--red2)' : d.avg < 4 ? 'var(--warn)' : 'var(--ok)') + '"></div>'; }).join('') + '</div><div class="meta">Височина: брой оценки · цвят: средна оценка за деня</div></div>' : '') +
           (isOwner() ? '<section id="stats-floorplan" class="stats-floorplan" aria-label="Анализ по маси"><p class="muted">Зареждане на схемите…</p></section>' : '') +
-          '<div class="card"><h3>Реакция на сигнали (≤' + s.alert_max_rating + '★)</h3><div class="row"><span>Сигнали: <b>' + s.reaction.alerts + '</b></span><span>Поети: <b>' + s.reaction.acked + '</b></span></div></div>' +
           '<div class="card"><h3>Категории</h3>' + (s.tags.length ? '<div class="bars">' + s.tags.map(function (t) {
             return '<div class="bar"><span>' + esc(TAGS[t.tag] || t.tag) + '</span><span class="track"><i style="width:' + (t.n / tagMax * 100) + '%;background:' + (['slow', 'cold', 'wrong', 'price', 'clean', 'noise'].indexOf(t.tag) >= 0 ? 'var(--red2)' : 'var(--ok)') + '"></i></span><span class="num">' + t.n + ' · ' + t.avg + '★</span></div>'; }).join('') + '</div><div class="meta">Червено: споменато като проблем · зелено: като харесано</div>' : '<p class="muted">Няма данни.</p>') + '</div>' +
           '<div class="card"><h3>Ново меню 👍 / 👎</h3>' + (s.products.length ? '<div class="bars">' + s.products.map(function (p) { var t = p.up + p.down || 1;
@@ -254,6 +288,7 @@
             return '<tr><td>' + esc([t.zone, t.label].filter(Boolean).join(' · ') || '—') + '</td><td class="n">' + t.n + '</td><td class="n">' + t.avg + '<span class="rai-gold-star">★</span></td><td class="n">' + t.alerts + '</td></tr>'; }).join('') + '</tbody></table></div>' : '<p class="muted">Няма данни.</p>') + '</div>' +
           '<div class="card"><h3>Коментари</h3>' + (s.comments.length ? '<div class="list">' + s.comments.map(function (c) {
             return '<a class="rv ' + (c.rating <= s.alert_max_rating ? 'alert' : 'r' + c.rating) + '" href="#/review/' + c.id + '"><div class="row between">' + stars(c.rating) + '<span class="meta">' + dt(c.created_at) + '</span></div><div class="comment">' + esc(c.comment) + '</div><div class="meta">' + esc([c.zone_name, c.table_label ? 'Маса ' + c.table_label : ''].filter(Boolean).join(' · ')) + '</div></a>'; }).join('') + '</div>' : '<p class="muted">Няма коментари.</p>') + '</div>';
+        var quickButton = $('#openNewReviewsQuick'); if (quickButton) quickButton.onclick = openNewReviewsQuick;
         view.querySelectorAll('.seg button').forEach(function (b) { b.onclick = function () { statP.period = b.dataset.p; draw().catch(fail); }; });
         if ($('#sgo')) $('#sgo').onclick = function () { statP.from = $('#sf').value; statP.to = $('#st').value; draw().catch(fail); };
         if(isOwner() && window.RAIFloorplan){var floorSlot=$('#stats-floorplan');if(floorSlot)window.RAIFloorplan.mount({view:floorSlot,api:api,toast:toast,fail:fail,tags:TAGS,embedded:true,period:statP.period,from:statP.from,to:statP.to}).catch(fail);}
