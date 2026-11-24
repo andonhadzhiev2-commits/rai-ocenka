@@ -402,7 +402,7 @@
         var max = Math.max.apply(null, s.distribution.map(function (d) { return d.n; }).concat([1]));
         var tmax = Math.max.apply(null, s.trend.map(function (d) { return d.n; }).concat([1]));
         var tagMax = Math.max.apply(null, s.tags.map(function (d) { return d.n; }).concat([1]));
-        view.innerHTML = '<div class="rai-page-heading"><span class="rai-eyebrow">КОКТЕЙЛ-БАР РАЙ</span><h1>Мнения</h1></div>' +
+        view.innerHTML = '<div class="rai-page-heading"><span class="rai-eyebrow">КОКТЕЙЛ-БАР РАЙ</span><h1>Клиентски анализ</h1></div>' +
           '<section class="rai-period-panel"><div class="rai-period-bar"><div class="rai-period-tabs" role="group" aria-label="Избор на период">' + [['day', 'Ден'], ['week', 'Седмица'], ['mtd', 'Месец']].map(function (p) {
             return '<button type="button" data-p="' + p[0] + '" class="' + (statP.period === p[0] ? 'selected' : '') + '" aria-pressed="' + (statP.period === p[0]) + '">' + p[1] + '</button>'; }).join('') + '</div>' +
           '<button type="button" class="rai-period-choice'+(statP.period==='custom'?' selected':'')+'" data-p="custom" aria-expanded="'+(statP.period==='custom')+'"><span>Период</span><small>'+(statP.period==='custom'&&statP.from?esc(statP.from.slice(5)+' – '+statP.to.slice(5)):'Избери дати')+'</small></button></div>' +
