@@ -941,3 +941,13 @@ label.f,.meta,.muted{color:var(--muted)}
   .fp-map-inside .fp-seat{height:7.8%}
   .fp-map-kids .fp-seat{height:10.2%}
 }
+
+/* By Table report: average displayed as rounded stars, no numerical prefix. */
+.tbl .rai-table-stars{
+  display:inline-block;
+  color:#ae852d;
+  font:800 13px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  letter-spacing:-.9px;
+  white-space:nowrap;
+}
+@media(max-width:560px){.tbl .rai-table-stars{font-size:11px;letter-spacing:-1px}}
