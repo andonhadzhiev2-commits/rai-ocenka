@@ -121,6 +121,24 @@ r.post('/reviews/:id/resolve', ANY, wrap(async (req, res) => {
   res.json({ ok: true });
 }));
 
+// Aggregate per-table metrics for the interactive floor plan.
+// Always count all submitted ratings, including five stars.
+r.get('/floorplan/stats', ANY, wrap(async (req, res) => {
+  const { from, to } = period(req);
+  const rows = await db.q(`
+    SELECT table_id,
+           count(*)::int AS total,
+           round(avg(rating)::numeric, 2)::float AS avg_rating,
+           count(*) FILTER (WHERE rating <= 3)::int AS low_count,
+           count(*) FILTER (WHERE rating >= 4)::int AS high_count,
+           count(*) FILTER (WHERE rating <= 2)::int AS critical_count,
+           max(created_at) AS last_review_at
+    FROM reviews WHERE table_id IS NOT NULL
+      AND created_at >= $1 AND created_at < $2
+    GROUP BY table_id
+  `, [from, to]);
+  res.json(rows.rows);
+}));
 // ---------- stats ----------
 r.get('/stats', ANY, wrap(async (req, res) => {
   const { from, to } = period(req);
