@@ -236,7 +236,7 @@
             return '<div class="item"><span class="grow"><b>' + esc(t.label) + '</b> <span class="meta">' + esc(t.zone_name || 'без зона') + ' · ' + t.reviews + ' отзива' + (t.active ? '' : ' · неактивна') + '</span><br><span class="code">/r/' + esc(t.code) + '</span></span>' +
               '<select data-tz="' + t.id + '" aria-label="Зона">' + zopt(t.zone_id) + '</select>' +
               '<button class="btn small" data-tl="' + t.id + '">Номер</button><button class="btn small" data-ta="' + t.id + '" data-v="' + (!t.active) + '">' + (t.active ? 'Спри' : 'Пусни') + '</button>' +
-              ''<button class="btn small danger" data-td="' + t.id + '">Изтрий</button></div>'; }).join('') + '</div></div>';
+              '<button class="btn small danger" data-td="' + t.id + '">Изтрий</button></div>'; }).join('') + '</div></div>';
         $('#zf').onsubmit = function (e) { e.preventDefault(); api('/zones', { method: 'POST', body: { name: $('#zn').value } }).then(draw).catch(fail); };
         $('#tf').onsubmit = function (e) { e.preventDefault(); api('/tables', { method: 'POST', body: { zone_id: $('#tz').value || null, start: Number($('#ts').value), count: Number($('#tc').value) } }).then(function () { toast('Масите са добавени'); draw(); }).catch(fail); };
         view.querySelectorAll('[data-zr]').forEach(function (b) { b.onclick = function () { var n = promptInline(b, 'Ново име'); if (n) n.then(function (v) { return api('/zones/' + b.dataset.zr, { method: 'PATCH', body: { name: v } }); }).then(draw).catch(fail); }; });
