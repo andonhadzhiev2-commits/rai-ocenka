@@ -19,7 +19,7 @@ function createApp() {
         'script-src': ["'self'"],
         'style-src': ["'self'", 'https://fonts.googleapis.com', "'unsafe-inline'"],
         'font-src': ["'self'", 'https://fonts.gstatic.com'],
-        'img-src': ["'self'", 'data:'],
+        'img-src': ["'self'", 'data:', 'blob:'],
         'connect-src': ["'self'"],
         'worker-src': ["'self'"],
         'manifest-src': ["'self'"],
