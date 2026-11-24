@@ -241,3 +241,12 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#d4475c;box-sh
 .feed-empty{border:1px dashed #3b404b;border-radius:14px;padding:26px 20px;margin-top:10px;text-align:center}
 .feed-empty b{font:700 15px var(--display);color:#f2f2f3}
 .feed-empty p{font-size:13px;color:#abb1ba;margin:9px auto 17px;max-width:350px}
+
+/* Inline spatial analysis placed before incident response metrics */
+.stats-floorplan{margin:18px 0 20px}
+.stats-floorplan .fp-embedded-title{display:grid;gap:4px;margin:0 0 12px}
+.stats-floorplan .fp-embedded-title h2{font:750 18px var(--display);margin:0}
+.stats-floorplan .fp-embedded-title p{font-size:12px;margin:0}
+.stats-floorplan .fp-controls{margin:10px 0 12px}
+.stats-floorplan .fp-layout{grid-template-columns:minmax(0,1fr) minmax(210px,270px)}
+@media(max-width:850px){.stats-floorplan .fp-layout{grid-template-columns:1fr}}
