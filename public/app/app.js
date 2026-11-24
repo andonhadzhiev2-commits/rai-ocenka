@@ -106,8 +106,8 @@
     var old=document.getElementById('rai-quick-backdrop');if(old)old.remove();
     var panel=document.createElement('div');
     panel.id='rai-quick-backdrop';panel.className='rai-quick-backdrop';
-    panel.innerHTML='<section class="rai-quick-panel rai-top-panel" role="dialog" aria-modal="true" aria-label="Топ 10 отзиви">'+
-      '<div class="rai-quick-head"><div><div class="rai-eyebrow">РАЙ · Избран период</div><h2>Топ 10 отзиви</h2><p class="meta">Първо по звезди, после по дата · само отзиви с коментар</p></div>'+
+    panel.innerHTML='<section class="rai-quick-panel rai-top-panel" role="dialog" aria-modal="true" aria-label="Топ 10 мнения">'+
+      '<div class="rai-quick-head"><div><div class="rai-eyebrow">РАЙ · Избран период</div><h2>Топ 10 мнения</h2><p class="meta">Първо по звезди, после по дата · само отзиви с коментар</p></div>'+
       '<button type="button" class="rai-quick-close" aria-label="Затвори">✕</button></div>'+
       '<div class="rai-top-tabs" role="group" aria-label="Тип отзиви">'+
       '<button type="button" data-top-kind="high" class="on" aria-pressed="true">👍 Положителни (4–5★)</button>'+
@@ -402,14 +402,14 @@
         var max = Math.max.apply(null, s.distribution.map(function (d) { return d.n; }).concat([1]));
         var tmax = Math.max.apply(null, s.trend.map(function (d) { return d.n; }).concat([1]));
         var tagMax = Math.max.apply(null, s.tags.map(function (d) { return d.n; }).concat([1]));
-        view.innerHTML = '<div class="rai-page-heading"><span class="rai-eyebrow">КОКТЕЙЛ-БАР РАЙ</span><h1>Отзиви</h1></div>' +
+        view.innerHTML = '<div class="rai-page-heading"><span class="rai-eyebrow">КОКТЕЙЛ-БАР РАЙ</span><h1>Мнения</h1></div>' +
           '<section class="rai-period-panel"><div class="rai-period-bar"><div class="rai-period-tabs" role="group" aria-label="Избор на период">' + [['day', 'Ден'], ['week', 'Седмица'], ['mtd', 'Месец']].map(function (p) {
             return '<button type="button" data-p="' + p[0] + '" class="' + (statP.period === p[0] ? 'selected' : '') + '" aria-pressed="' + (statP.period === p[0]) + '">' + p[1] + '</button>'; }).join('') + '</div>' +
           '<button type="button" class="rai-period-choice'+(statP.period==='custom'?' selected':'')+'" data-p="custom" aria-expanded="'+(statP.period==='custom')+'"><span>Период</span><small>'+(statP.period==='custom'&&statP.from?esc(statP.from.slice(5)+' – '+statP.to.slice(5)):'Избери дати')+'</small></button></div>' +
           (statP.period === 'custom' ? '<div class="rai-calendar-panel" id="rai-calendar" aria-label="Календар за избор на период"></div>' : '') + '</section>' +
           '<div class="kpis">'+(isOwner()?'<div class="kpi rai-kpi-dual"><button type="button" id="rai-all-ratings" class="rai-kpi-half" aria-label="Всички оценки"><span class="v">' + s.total + '</span><span class="l">📝 Оценки ›</span></button><button type="button" id="rai-callbacks" class="rai-kpi-half" aria-label="Искат връзка с мен"><span class="v" id="rai-callback-number">—</span><span class="l">📞 За позвъняване ›</span></button></div>':'<button type="button" id="rai-all-ratings" class="kpi rai-action-kpi"><div class="v">' + s.total + '</div><div class="l">📝 Оценки ›</div></button>') +
           '<button type="button" id="rai-avg-ratings" class="kpi rai-action-kpi"><div class="v">' + (s.avg != null ? String(s.avg).replace('.', ',') + '<span class="rai-gold-star">★</span>' : '—') + '</div><div class="l"><span class="rai-kpi-emoji" aria-hidden="true">⭐</span>Средна оценка ›</div></button>' +
-          '<button type="button" class="kpi rai-action-kpi" id="openTopReviews" aria-label="Топ 10 положителни и отрицателни отзиви"><div class="v">ТОП 10</div><div class="l"><span class="rai-kpi-emoji" aria-hidden="true">👍</span>Топ отзиви <span aria-hidden="true">›</span></div></button>' +
+          '<button type="button" class="kpi rai-action-kpi" id="openTopReviews" aria-label="Топ 10 положителни и отрицателни отзиви"><div class="v">ТОП 10</div><div class="l"><span class="rai-kpi-emoji" aria-hidden="true">👍</span>Топ мнения <span aria-hidden="true">›</span></div></button>' +
           '<button type="button" class="kpi rai-action-kpi rai-comments-kpi" id="rai-comments-quick" aria-label="Покажи всички коментари за избрания период"><div class="v">' + (s.comments_total || 0) + '</div><div class="l"><span class="rai-kpi-emoji" aria-hidden="true">💬</span>Коментари <span aria-hidden="true">›</span></div></button>' +
           '</div>' +
           '<div class="card"><h3>Разпределение</h3><div class="bars">' + s.distribution.slice().reverse().map(function (d) {
