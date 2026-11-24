@@ -107,7 +107,7 @@ function period(req) {
   return { from, to };
 }
 const REVIEW_COLS = `r.id, r.created_at, r.table_label, r.zone_name, r.rating, r.tags, r.comment, r.lang, r.status, r.ack_at, r.resolved_at, r.escalated_at,
-  r.phone_consent, r.phone, r.suspected_repeat, r.suspicion_reason, left(r.browser_hash, 10) AS browser_short_id,
+  r.phone_consent, r.phone, r.callback_called_at, r.suspected_repeat, r.suspicion_reason, left(r.browser_hash, 10) AS browser_short_id,
   (SELECT count(*)::int FROM reviews prev WHERE prev.browser_hash=r.browser_hash AND (prev.created_at < r.created_at OR (prev.created_at=r.created_at AND prev.id < r.id))) AS prior_count,
   (SELECT prev.rating FROM reviews prev WHERE prev.browser_hash=r.browser_hash AND (prev.created_at < r.created_at OR (prev.created_at=r.created_at AND prev.id < r.id)) ORDER BY prev.created_at DESC, prev.id DESC LIMIT 1) AS previous_rating,
   (SELECT prev.created_at FROM reviews prev WHERE prev.browser_hash=r.browser_hash AND (prev.created_at < r.created_at OR (prev.created_at=r.created_at AND prev.id < r.id)) ORDER BY prev.created_at DESC, prev.id DESC LIMIT 1) AS previous_at,
@@ -214,6 +214,26 @@ r.get('/stats', ANY, wrap(async (req, res) => {
     products: prod.rows, trend: trend.rows, open: open.rows[0], reaction: { ...react.rows[0], alerts: alertsInPeriod, target_min: s.ack_target_minutes },
     comments: comments.rows, comments_total: commentTotal.rows[0].n, callbacks_total: callbacks.rows[0].n, alert_max_rating: s.alert_max_rating
   });
+}));
+
+// Pending requests for the owner to call a guest back: independent of review status.
+r.get('/callbacks/pending', OWNER, wrap(async (req, res) => {
+  const rows = await db.q(`SELECT r.id, r.created_at, r.rating, r.table_label, r.zone_name,
+          r.comment, r.phone, r.callback_called_at
+        FROM reviews r
+        WHERE r.phone_consent = true AND r.phone IS NOT NULL
+          AND r.callback_called_at IS NULL
+        ORDER BY r.created_at ASC LIMIT 100`);
+  res.json({ total: rows.rows.length, rows: rows.rows });
+}));
+r.post('/callbacks/:id/called', OWNER, wrap(async (req, res) => {
+  if (!/^[0-9a-f-]{36}$/i.test(req.params.id)) return bad(res, 'Невалиден отзив.');
+  const q = await db.q(`UPDATE reviews SET callback_called_at=now(), callback_called_by=$2
+     WHERE id=$1 AND phone_consent=true AND phone IS NOT NULL
+       AND callback_called_at IS NULL RETURNING id, callback_called_at`,
+    [req.params.id, req.user.id]);
+  if (!q.rowCount) return bad(res, 'Няма чакащо обаждане за този отзив.', 409);
+  res.json({ ok:true, ...q.rows[0] });
 }));
 
 // ---------- zones & tables (owner) ----------
