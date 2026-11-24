@@ -307,7 +307,7 @@
         statP.from=calDraftFrom;statP.to=calDraftTo;statP.period='custom';draw().catch(fail);
       };
     }
-    function qs() { return statP.period === 'custom' && statP.from ? '?from=' + statP.from + '&to=' + (statP.to || statP.from) : '?period=' + statP.period; }
+    function qs() { return statP.period === 'custom' ? (statP.from && statP.to ? '?from=' + statP.from + '&to=' + statP.to : '?period=mtd') : '?period=' + statP.period; }
     function draw() {
       return api('/stats' + qs()).then(function (s) {
         var max = Math.max.apply(null, s.distribution.map(function (d) { return d.n; }).concat([1]));
