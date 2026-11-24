@@ -77,7 +77,7 @@
     var old=document.getElementById('rai-quick-backdrop');if(old)old.remove();
     var panel=document.createElement('div');panel.id='rai-quick-backdrop';panel.className='rai-quick-backdrop';
     var title=onlyNew?'Нови отзиви':onlyComments?'Коментари за периода':rating?'Оценки с '+rating+' звезди':'Всички оценки и отзиви';
-    panel.innerHTML='<section class="rai-quick-panel" role="dialog" aria-modal="true" aria-label="'+esc(title)+'"><div class="rai-quick-head"><div><div class="rai-eyebrow">РАЙ · Всички маси</div><h2>'+esc(title)+'</h2><p class="meta">Натисни оценка, за да видиш подробностите</p></div><button type="button" class="rai-quick-close" aria-label="Затвори">✕</button></div><div class="rai-quick-list" id="rai-quick-list"><p class="muted">Зареждане…</p></div><div class="rai-quick-footer"><span id="rai-quick-count"></span><button class="btn small" id="rai-quick-more" type="button" hidden>Зареди още</button></div></section>';
+    panel.innerHTML='<section class="rai-quick-panel" role="dialog" aria-modal="true" aria-label="'+esc(title)+'"><div class="rai-quick-head"><div><h2>'+esc(title)+'</h2></div><button type="button" class="rai-quick-close" aria-label="Затвори">✕</button></div><div class="rai-quick-list" id="rai-quick-list"><p class="muted">Зареждане…</p></div><div class="rai-quick-footer"><span id="rai-quick-count"></span><button class="btn small" id="rai-quick-more" type="button" hidden>Зареди още</button></div></section>';
     document.body.appendChild(panel);
     function close(){closed=true;panel.remove();document.removeEventListener('keydown',key);}
     function key(e){if(e.key==='Escape')close();}
@@ -107,13 +107,13 @@
     var panel=document.createElement('div');
     panel.id='rai-quick-backdrop';panel.className='rai-quick-backdrop';
     panel.innerHTML='<section class="rai-quick-panel rai-top-panel" role="dialog" aria-modal="true" aria-label="Топ 10 мнения">'+
-      '<div class="rai-quick-head"><div><div class="rai-eyebrow">РАЙ · Избран период</div><h2>Топ 10 мнения</h2><p class="meta">Първо по звезди, после по дата · само отзиви с коментар</p></div>'+
+      '<div class="rai-quick-head"><div><h2>Топ 10 мнения</h2></div>'+
       '<button type="button" class="rai-quick-close" aria-label="Затвори">✕</button></div>'+
       '<div class="rai-top-tabs" role="group" aria-label="Тип отзиви">'+
       '<button type="button" data-top-kind="high" class="on" aria-pressed="true">👍 Положителни (4–5★)</button>'+
       '<button type="button" data-top-kind="low" aria-pressed="false">👎 Отрицателни (1–3★)</button></div>'+
       '<div class="rai-quick-list" id="rai-top-list"><p class="muted">Зареждане…</p></div>'+
-      '<div class="rai-quick-footer" id="rai-top-footer">До 10 отзива от избрания период</div></section>';
+      '<div class="rai-quick-footer" id="rai-top-footer"></div></section>';
     document.body.appendChild(panel);
     var closed=false,active='high',token=0,cache={};
     function close(){closed=true;panel.remove();document.removeEventListener('keydown',onKey);}
@@ -140,7 +140,7 @@
           '<strong>'+esc(place(r))+'</strong><p>'+esc(r.comment||'')+'</p></a>';
       }).join(''):'<p class="rai-quick-empty">Няма '+(kind==='high'?'положителни':'отрицателни')+' отзиви с коментар за избрания период.</p>';
       list.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});
-      panel.querySelector('#rai-top-footer').textContent='Показани '+rows.length+' от максимум 10 · '+(kind==='high'?'Положителни':'Отрицателни');
+      panel.querySelector('#rai-top-footer').textContent='Показани '+rows.length;
     }
     panel.querySelectorAll('[data-top-kind]').forEach(function(b){b.onclick=function(){render(b.dataset.topKind);};});
     render('high');
@@ -152,7 +152,7 @@
     var old=document.getElementById('rai-quick-backdrop');if(old)old.remove();
     var panel=document.createElement('div');panel.id='rai-quick-backdrop';panel.className='rai-quick-backdrop';
     panel.innerHTML='<section class="rai-quick-panel rai-callback-panel" role="dialog" aria-modal="true" aria-label="Искат връзка с мен">'+
-      '<div class="rai-quick-head"><div><div class="rai-eyebrow">РАЙ · За собственика</div><h2>📞 Искат връзка с мен</h2><p class="meta">Известията остават, докато потвърдиш, че си позвънил.</p></div><button type="button" class="rai-quick-close" aria-label="Затвори">✕</button></div>'+
+      '<div class="rai-quick-head"><div><h2>📞 Искат връзка с мен</h2></div><button type="button" class="rai-quick-close" aria-label="Затвори">✕</button></div>'+
       '<div class="rai-quick-list" id="rai-callback-list"><p class="muted">Зареждане…</p></div></section>';
     document.body.appendChild(panel);
     var closed=false,list=panel.querySelector('#rai-callback-list');
