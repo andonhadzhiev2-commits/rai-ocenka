@@ -420,7 +420,7 @@
             '<button type="button" id="openTopReviews" class="rai-summary-cell" aria-label="Топ 10 положителни и отрицателни мнения"><span class="v rai-top-ten">ТОП 10</span><span class="l">👍👎 Мнения</span></button>' +
           '</div>' +
           '</div>' +
-          '<div class="card"><h3>Разпределение</h3><div class="bars">' + s.distribution.slice().reverse().map(function (d) {
+          '<div class="card rai-rating-distribution"><h3>Разпределение</h3><div class="bars rai-rating-rows">' + s.distribution.slice().reverse().map(function (d) {
             return '<button type="button" class="bar rai-rating-bar" data-quick-rating="' + d.rating + '" aria-label="Виж оценките с ' + d.rating + ' звезди"><span>' + stars(d.rating) + '</span><span class="track"><i style="width:' + (d.n / max * 100) + '%;background:' + (d.rating <= s.alert_max_rating ? 'var(--red2)' : d.rating === 3 ? 'var(--warn)' : 'var(--ok)') + '"></i></span><span class="num">' + d.n + '</span></button>'; }).join('') + '</div></div>' +
           (s.trend.length > 1 ? '<div class="card"><h3>Тенденция по дни</h3><div class="spark">' + s.trend.map(function (d) {
             return '<div title="' + d.d + ': ' + d.n + ' оценки, ' + d.avg + '★" style="height:' + Math.max(4, d.n / tmax * 100) + '%;background:' + (d.avg < 3 ? 'var(--red2)' : d.avg < 4 ? 'var(--warn)' : 'var(--ok)') + '"></div>'; }).join('') + '</div><div class="meta">Височина: брой оценки · цвят: средна оценка за деня</div></div>' : '') +
