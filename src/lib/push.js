@@ -177,7 +177,7 @@ async function escalateOverdue() {
 
 async function sendTest(userId) {
   return sendToUsers('AND u.id = $1', [userId], {
-    title: 'РАЙ ПУЛС · тест', body: 'Известията работят на това устройство.', tag: 'test', url: '/app/#/me', alert: false
+    title: 'Rai Pulse · тест', body: 'Известията работят на това устройство.', tag: 'test', url: '/app/#/me', alert: false
   });
 }
 module.exports = { configure, publicKey, setSender, notifyReview, queueReview, processPending, escalateOverdue, sendTest, buildPayload, TAG_BG };
