@@ -2432,16 +2432,3 @@ label.f,.meta,.muted{color:var(--muted)}
     padding-top:3px;
   }
 }
-
-/* Mobile overall content magnification (not just text scaling).
-   Zoom the complete card area and compensate its layout width to fit the screen.
-   Fixed app header and bottom tab bar deliberately stay at their current size. */
-@media(max-width:600px){
-  main#view.view{
-    zoom:1.12;
-    width:calc(100% / 1.12);
-    max-width:calc(760px / 1.12);
-    margin-left:auto;
-    margin-right:auto;
-  }
-}
