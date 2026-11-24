@@ -124,7 +124,7 @@
       const c=CONFIG[zone], selectedStats=aggregated.filter(a=>tables.some(t=>t.id===Number(a.table_id)&&mapName(t)===zone));
       const reviewsCount=selectedStats.reduce((n,a)=>n+Number(a.total),0);
       const low=selectedStats.reduce((n,a)=>n+Number(a.low_count),0);
-      target.innerHTML=(opt.embedded ? '' : '<a href="#/stats" class="muted">← Отзиви</a><div class="row between"><div><h1>Анализ по маси</h1><p class="muted">Интерактивна схема по реалното разположение на масите</p></div><button class="btn small" id="fp-refresh">Обнови</button></div>')+
+      target.innerHTML=(opt.embedded ? '' : '<a href="#/stats" class="muted">← Мнения</a><div class="row between"><div><h1>Анализ по маси</h1><p class="muted">Интерактивна схема по реалното разположение на масите</p></div><button class="btn small" id="fp-refresh">Обнови</button></div>')+
         (opt.embedded ? '' : periodControls())+
         (opt.embedded ? '' : '<div class="fp-print-toolbar"><span><b>'+printSelection.size+'</b> маси за печат</span><button type="button" class="btn small primary" id="fp-pdf-selected">Изтегли избраните PDF</button><button type="button" class="btn small" id="fp-pdf-zone">Цялата зала PDF</button><button type="button" class="btn small" id="fp-pdf-all">Всички маси PDF</button><button type="button" class="btn small" id="fp-print-clear">Изчисти</button></div>')+
         (opt.embedded ? '' : '<div class="fp-kpis"><div><span>Отзиви за залата</span><b>'+reviewsCount+'</b></div><div><span>Обща оценка на РАЙ</span><b>'+fmt(venueRating)+' <span class="rai-gold-star">★</span></b></div><div><span>Ниски оценки</span><b>'+low+'</b></div></div>')+
