@@ -271,7 +271,10 @@ r.get('/tables/:id/qr.svg', ANY, wrap(async (req, res) => {
   const s = await settings.all();
   const t = (await db.q('SELECT code FROM tables WHERE id=$1', [req.params.id])).rows[0];
   if (!t) return bad(res, 'Няма такава маса.', 404);
-  res.type('image/svg+xml').send(await QRCode.toString(`${s.public_base_url}/r/${t.code}`, { type: 'svg', errorCorrectionLevel: 'M', margin: 1 }));
+  // Before a permanent domain is confirmed, test QR codes must point at the live app, not an unconfigured hostname.
+  const base = s.public_base_url_confirmed ? s.public_base_url : `${req.protocol}://${req.get('host')}`;
+  res.set('Cache-Control', 'no-store');
+  res.type('image/svg+xml').send(await QRCode.toString(`${base}/r/${t.code}`, { type: 'svg', errorCorrectionLevel: 'M', margin: 1 }));
 }));
 
 // ---------- menu (owner) ----------
