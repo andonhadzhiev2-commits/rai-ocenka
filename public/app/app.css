@@ -2572,3 +2572,20 @@ body header.top.rai-top-nav .rai-pulse-mark{
   background:#e4e8e5;
   pointer-events:none;
 }
+
+/* Symmetrical red breathing room around Pulse; carry red behind iPhone safe-area. */
+html{background:#bd1730}
+body header.top.rai-top-nav{
+  padding-top:calc(12px + env(safe-area-inset-top,0px));
+  padding-bottom:12px;
+  padding-left:max(12px,env(safe-area-inset-left,0px));
+  padding-right:max(12px,env(safe-area-inset-right,0px));
+}
+@media(max-width:400px){
+  body header.top.rai-top-nav{
+    padding-top:calc(10px + env(safe-area-inset-top,0px));
+    padding-bottom:10px;
+    padding-left:max(10px,env(safe-area-inset-left,0px));
+    padding-right:max(10px,env(safe-area-inset-right,0px));
+  }
+}
