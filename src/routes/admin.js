@@ -123,9 +123,10 @@ r.get('/reviews', ANY, wrap(async (req, res) => {
   if (req.query.rating_group === 'high') where += ' AND r.rating BETWEEN 4 AND 5';
   if (req.query.table) { params.push(Number(req.query.table)); where += ` AND r.table_id = $${params.length}`; }
   if (req.query.with_comment === '1') where += ` AND r.comment IS NOT NULL`;
-  const limit = Math.min(200, Number(req.query.limit) || 50);
+  const limit = Math.min(200, Math.max(1, Number(req.query.limit) || 50));
+  const offset = Math.min(1000000, Math.max(0, parseInt(req.query.offset, 10) || 0));
   const rows = await db.q(`SELECT ${REVIEW_COLS} FROM reviews r LEFT JOIN users ua ON ua.id=r.ack_by LEFT JOIN users ur ON ur.id=r.resolved_by
-                           WHERE ${where} ORDER BY ${req.query.sort === 'rating_asc' ? 'r.rating ASC, r.created_at DESC' : req.query.sort === 'rating_desc' ? 'r.rating DESC, r.created_at DESC' : 'r.created_at DESC'} LIMIT ${limit}`, params);
+                           WHERE ${where} ORDER BY ${req.query.sort === 'rating_asc' ? 'r.rating ASC, r.created_at DESC' : req.query.sort === 'rating_desc' ? 'r.rating DESC, r.created_at DESC' : 'r.created_at DESC'} LIMIT ${limit} OFFSET ${offset}`, params);
   res.json(rows.rows);
 }));
 r.get('/reviews/:id', ANY, wrap(async (req, res) => {
