@@ -132,7 +132,7 @@
       const weight=selectedStats.reduce((n,a)=>n+Number(a.avg_rating)*Number(a.total),0);
       target.innerHTML=(opt.embedded ? '<div class="fp-embedded-title"><h2>Анализ по маси</h2><p class="muted">Двете зали · средни оценки, проблемни участъци и отзиви по маси</p></div>' : '<a href="#/stats" class="muted">← Анализи</a><div class="row between"><div><h1>Анализ по маси</h1><p class="muted">Интерактивна схема по реалното разположение на масите</p></div><button class="btn small" id="fp-refresh">Обнови</button></div>')+
         periodControls()+
-        '<div class="fp-print-toolbar"><span><b>'+printSelection.size+'</b> маси за печат</span><button type="button" class="btn small primary" id="fp-pdf-selected">Изтегли избраните PDF</button><button type="button" class="btn small" id="fp-pdf-zone">Цялата зала PDF</button><button type="button" class="btn small" id="fp-pdf-all">Всички маси PDF</button><button type="button" class="btn small" id="fp-print-clear">Изчисти</button></div>'+
+        (opt.embedded ? '' : '<div class="fp-print-toolbar"><span><b>'+printSelection.size+'</b> маси за печат</span><button type="button" class="btn small primary" id="fp-pdf-selected">Изтегли избраните PDF</button><button type="button" class="btn small" id="fp-pdf-zone">Цялата зала PDF</button><button type="button" class="btn small" id="fp-pdf-all">Всички маси PDF</button><button type="button" class="btn small" id="fp-print-clear">Изчисти</button></div>')+
         '<div class="fp-kpis"><div><span>Отзиви за залата</span><b>'+reviewsCount+'</b></div><div><span>Средна оценка</span><b>'+(reviewsCount?(weight/reviewsCount).toFixed(2):'—')+' ★</b></div><div><span>Ниски оценки</span><b>'+low+'</b></div></div>'+
         '<div class="fp-layout"><section class="fp-left"><div class="fp-map-head"><div><b>'+c.title+'</b><span>Натисни маса, за да видиш подробности</span></div><button type="button" class="btn small" id="fp-edit">'+(edit?'Готово':'Подреди маси')+'</button></div>'+
         makeStage()+
@@ -143,10 +143,10 @@
       target.querySelectorAll('[data-fpp]').forEach(b=>b.onclick=()=>{period=b.dataset.fpp;selected=null;reviews=[];if(period==='custom')draw();else load();});
       const go=target.querySelector('#fp-go');if(go)go.onclick=()=>{from=target.querySelector('#fp-from').value;to=target.querySelector('#fp-to').value;if(!from||!to||from>to){opt.toast('Избери валиден период');return;}selected=null;reviews=[];load();};
       if(target.querySelector('#fp-refresh')) target.querySelector('#fp-refresh').onclick=()=>load();
-      target.querySelector('#fp-pdf-selected').onclick=()=>pdf('selected',[...printSelection].map(k=>Number(k.split(':')[1])),'RAI_QR_izbrani_masi.pdf');
-      target.querySelector('#fp-pdf-zone').onclick=()=>pdf(zone,CONFIG[zone].seats.map(q=>q[0]),'RAI_QR_'+(zone==='kids'?'detski_kat':'vatreshna_zala')+'.pdf');
-      target.querySelector('#fp-pdf-all').onclick=()=>pdf('all',[],'RAI_QR_vsichki_masi.pdf');
-      target.querySelector('#fp-print-clear').onclick=()=>{printSelection.clear();draw();};
+      if(target.querySelector('#fp-pdf-selected')) target.querySelector('#fp-pdf-selected').onclick=()=>pdf('selected',[...printSelection].map(k=>Number(k.split(':')[1])),'RAI_QR_izbrani_masi.pdf');
+      if(target.querySelector('#fp-pdf-zone')) target.querySelector('#fp-pdf-zone').onclick=()=>pdf(zone,CONFIG[zone].seats.map(q=>q[0]),'RAI_QR_'+(zone==='kids'?'detski_kat':'vatreshna_zala')+'.pdf');
+      if(target.querySelector('#fp-pdf-all')) target.querySelector('#fp-pdf-all').onclick=()=>pdf('all',[],'RAI_QR_vsichki_masi.pdf');
+      if(target.querySelector('#fp-print-clear')) target.querySelector('#fp-print-clear').onclick=()=>{printSelection.clear();draw();};
       target.querySelector('#fp-edit').onclick=()=>{edit=!edit;placing=null;draw();};
       target.querySelectorAll('[data-fps],[data-fpex]').forEach(b=>b.onclick=()=>{const num=Number(b.dataset.fps||b.dataset.fpex);selected=num;placing=edit?num:null;reviews=[];draw();const t=tables.find(x=>String(x.label)===String(num)&&mapName(x)===zone);if(t)loadReviews(t.id);});
       const map=target.querySelector('.fp-map');
