@@ -182,7 +182,7 @@
           '<section class="feed-filters"><div class="feed-filter-label">Покажи</div>'+
           buttons([['all','Всички'],['new','Нови отзиви'],['low','Ниски 1–3★'],['high','Високи 4–5★']],feedFilter,'feed')+
           '<div class="feed-filter-label">Период</div>'+
-          buttons([['day','Днес'],['week','7 дни'],['month','30 дни'],['all','Всичко']],feedPeriod,'period')+
+          buttons([['day','Днес'],['week','7 дни'],['month','30 дни']],feedPeriod,'period')+
           '<div class="feed-sort"><span>Подредба по оценка</span><button type="button" class="btn small" id="ratingSort">'+(feedRatingSort==='asc'?'↑ От 1 към 5 ★':'↓ От 5 към 1 ★')+'</button></div></section>'+
           (isOwner() ? '<div class="card" style="margin-bottom:12px"><div class="row between"><b>Регистър на браузърите</b><button type="button" class="btn small" id="browserRegistryToggle">'+(showBrowserRegistry?'Скрий':'Покажи')+'</button></div><div id="browserRegistryContent"></div></div>' : '')+
           (list.length?'<div class="list">'+list.map(reviewCard).join('')+'</div>':'<div class="feed-empty"><b>Няма отзиви за този избор</b><p>Промени периода или филтъра, за да видиш останалите оценки.</p><button type="button" class="btn small" id="resetFeed">Покажи всички за 7 дни</button></div>');
@@ -264,7 +264,7 @@
         var tmax = Math.max.apply(null, s.trend.map(function (d) { return d.n; }).concat([1]));
         var tagMax = Math.max.apply(null, s.tags.map(function (d) { return d.n; }).concat([1]));
         view.innerHTML = '<h1>Анализи</h1>' +
-          '<div class="seg">' + [['mtd', 'Този месец'], ['day', 'Днес'], ['week', '7 дни'], ['month', '30 дни'], ['all', 'Всичко'], ['custom', 'Период']].map(function (p) {
+          '<div class="seg">' + [['day', 'Ден'], ['week', 'Седмица'], ['mtd', 'Месец'], ['custom', 'Период']].map(function (p) {
             return '<button type="button" data-p="' + p[0] + '" class="' + (statP.period === p[0] ? 'on' : '') + '">' + p[1] + '</button>'; }).join('') + '</div>' +
           (statP.period === 'custom' ? '<div class="row"><label class="f grow">От<input type="date" id="sf" value="' + statP.from + '"></label><label class="f grow">До<input type="date" id="st" value="' + statP.to + '"></label><button class="btn" id="sgo" style="align-self:flex-end">Покажи</button></div>' : '') +
           '<div class="kpis"><button type="button" id="rai-all-ratings" class="kpi rai-action-kpi"><div class="v">' + s.total + '</div><div class="l">Оценки ›</div><span class="rai-kpi-hint">Виж всички по маси</span></button>' +
