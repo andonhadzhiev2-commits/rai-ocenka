@@ -77,14 +77,13 @@ function period(req) {
     const startToday = new Date(d.getTime() + offset);
     // Month-to-date is a calendar month in Europe/Sofia, not a rolling 30-day window.
     // Recalculate the offset on the 1st: DST can differ from the current day.
-    const localMonthStart = new Date(d);
-    localMonthStart.setDate(1);
-    localMonthStart.setHours(0, 0, 0, 0);
-    const monthUTC = new Date(localMonthStart.getTime() +
-      (now - new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Sofia' }))));
-    // Resolve Sofia UTC offset at the requested local month start.
-    const monthAtOffset = new Date(monthUTC.toLocaleString('en-US', { timeZone: 'Europe/Sofia' }));
-    const monthStart = new Date(localMonthStart.getTime() + (monthUTC - monthAtOffset));
+    const monthDate = new Date(d);
+    const year = monthDate.getFullYear(), month = monthDate.getMonth();
+    // Noon on the 1st reliably gives the applicable Sofia offset, even across DST.
+    const probe = new Date(Date.UTC(year, month, 1, 12));
+    const sofiaWallClock = new Date(probe.toLocaleString('en-US', { timeZone: 'Europe/Sofia' }));
+    const utcOffset = probe.getTime() - sofiaWallClock.getTime();
+    const monthStart = new Date(Date.UTC(year, month, 1) + utcOffset);
     from = p === 'day' ? startToday : p === 'mtd' ? monthStart : p === 'month' ? new Date(startToday.getTime() - 29 * 864e5) : p === 'all' ? new Date(0) : new Date(startToday.getTime() - 6 * 864e5);
   }
   if (!to || isNaN(to)) to = new Date(now.getTime() + 60000);
