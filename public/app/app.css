@@ -265,3 +265,16 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#d4475c;box-sh
 .fp-modal-close{position:absolute;right:12px;top:12px;width:38px;height:38px;border-radius:10px;background:#303640;border:1px solid #69707c;color:#f7f7f7;font-size:18px;cursor:pointer}
 .fp-modal .fp-mini-stats{margin-top:20px}
 @media(max-width:600px){.fp-modal-backdrop{padding:10px}.fp-modal{padding:20px 14px;max-height:86dvh}}
+
+/* Compact zone tabs at the actual sketch heading — no duplicate upper zone selector. */
+.fp-map-heading{display:flex!important;flex-direction:column;align-items:flex-start;gap:6px;min-width:0;flex:1}
+.fp-zone-switch{display:inline-flex;max-width:100%;gap:3px;padding:3px;border:1px solid #373d49;background:#1e232c;border-radius:11px}
+.fp-zone-tab{font:700 12px var(--display);color:#aeb6c3;background:transparent;border:1px solid transparent;border-radius:8px;padding:9px 12px;min-height:36px;cursor:pointer;white-space:nowrap}
+.fp-zone-tab.on{color:#fff;background:#59303c;border-color:#9d4d63}
+.fp-zone-tab:hover{color:#fff}
+/* The online Analytics sketch is compact; the management sketch retains its old size. */
+@media(min-width:801px){
+ .stats-floorplan .fp-left{max-width:548px;width:100%;margin-left:auto;margin-right:auto}
+ .stats-floorplan .fp-map-scroll{max-width:510px;margin-left:auto;margin-right:auto}
+ .stats-floorplan .fp-map{min-width:0;width:100%}
+}
