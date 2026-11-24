@@ -50,8 +50,9 @@ textarea{min-height:84px;resize:vertical}
 .btn-main:disabled{background:#3a2a2e;color:#7d6f72;cursor:not-allowed}
 .hint{font-size:12px;color:var(--muted);margin:6px 0 0}
 .err{color:#ff8a98;font-size:13px;margin:8px 0 0}
-.thanks{text-align:center;align-items:stretch}
-.thanks .big{font-size:44px}
+.thanks{text-align:center;align-items:center;gap:14px;padding-top:52px;padding-bottom:52px}
+.thanks h1{max-width:440px;font-size:clamp(21px,5.5vw,25px);line-height:1.35}
+.thanks .sub{max-width:390px;margin:0;font-size:15px;line-height:1.65}
 .optional{color:var(--muted);font-weight:500;font-size:13px}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .foot{text-align:center;font-size:12px;color:var(--muted);padding:0 18px 24px}
