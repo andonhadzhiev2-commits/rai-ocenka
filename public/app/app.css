@@ -349,7 +349,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#d4475c;box-sh
 .fp-mini-stats>div:first-child{background:linear-gradient(145deg,#28261e,#20242b);box-shadow:inset 0 0 0 1px rgba(245,197,66,.16)}
 .fp-review .rai-gold-star,.fp-seat .rai-gold-star{font-size:1em}
 
-/* Low-rated guest comments in the selected table history; gold stars stay unchanged. */
-.fp-review.rai-low-review p,.fp-review.rai-low-review small{color:#f08086}
-.fp-review.rai-low-review b{color:#f08086}
-.fp-review.rai-low-review .rai-gold-star{color:#f5c542!important}
+
+/* Actual star count in table review history: 1–5 golden stars. */
+.fp-review .rai-review-stars{color:#f5c542;display:inline-block;letter-spacing:2px;white-space:nowrap;text-shadow:0 0 9px rgba(245,197,66,.2);font-size:16px}
