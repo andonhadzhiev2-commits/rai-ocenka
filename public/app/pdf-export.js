@@ -27,21 +27,22 @@ function bytes(b64){const binary=atob(b64),out=new Uint8Array(binary.length);for
 async function image(src){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(Error('Невалидно изображение'));im.src=src;});}
 function write(ctx,v,x,y,size,color,weight){ctx.fillStyle=color;ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=(weight||'700')+' '+Math.round(size*scale)+'px Montserrat,Arial,sans-serif';ctx.fillText(v,x*scale,y*scale);}
 function sticker(ctx,t,qr,logo,x,y){
- const px=n=>n*scale,cx=x+35;
- ctx.fillStyle='#111217';ctx.fillRect(px(x),px(y),px(70),px(90));
- ctx.strokeStyle='#9da1aa';ctx.lineWidth=2;ctx.setLineDash([9,7]);ctx.strokeRect(px(x)+1,px(y)+1,px(70)-2,px(90)-2);ctx.setLineDash([]);
- if(logo){const ww=34,hh=logo.height/logo.width*ww;ctx.drawImage(logo,px(cx-ww/2),px(y+5),px(ww),px(hh));}
- else write(ctx,'РАЙ',cx,y+14,8,'#fff','800');
- write(ctx,'Вашето мнение',cx,y+28,4.1,'#fff','700');
- write(ctx,'е важно за нас',cx,y+33,4.1,'#fff','700');
- // Keep a clear quiet zone and 6 mm breathing space below the QR.
- ctx.fillStyle='#fff';ctx.fillRect(px(cx-22),px(y+36),px(44),px(44));
+ const px=n=>n*scale,cx=x+25;
+ const w=50,h=80;
+ ctx.fillStyle='#111217';ctx.fillRect(px(x),px(y),px(w),px(h));
+ ctx.strokeStyle='#9da1aa';ctx.lineWidth=2;ctx.setLineDash([9,7]);ctx.strokeRect(px(x)+1,px(y)+1,px(w)-2,px(h)-2);ctx.setLineDash([]);
+ if(logo){const ww=29,hh=logo.height/logo.width*ww;ctx.drawImage(logo,px(cx-ww/2),px(y+4),px(ww),px(hh));}
+ else write(ctx,'РАЙ',cx,y+12,7,'#fff','800');
+ write(ctx,'Вашето мнение',cx,y+25,3.15,'#fff','700');
+ write(ctx,'е важно за нас',cx,y+29,3.15,'#fff','700');
+ // Quiet zone: QR image sits within white field, sufficiently clear of any typography.
+ ctx.fillStyle='#fff';ctx.fillRect(px(cx-19),px(y+34),px(38),px(38));
  ctx.imageSmoothingEnabled=false;
- ctx.drawImage(qr,px(cx-20),px(y+38),px(40),px(40));
+ ctx.drawImage(qr,px(cx-17),px(y+36),px(34),px(34));
  ctx.imageSmoothingEnabled=true;
- write(ctx,'BG  ·  EN  ·  GR',cx,y+84,3.0,'#e3e4e8','700');
- // This identifying label must stay OUTSIDE the cut line.
- write(ctx,(t.zone_name||'')+' — МАСА '+t.label,cx,y+97,3.4,'#171a20','800');
+ write(ctx,'BG  ·  EN  ·  GR',cx,y+75.5,2.35,'#e3e4e8','700');
+ // Identification is outside the 50 x 80 mm cut line.
+ write(ctx,(t.zone_name||'')+' — МАСА '+t.label,cx,y+86,2.9,'#171a20','800');
 }
 let ongoing=false;
 async function exportPdf(ids,opts){
@@ -67,9 +68,9 @@ async function exportPdf(ids,opts){
   for(let i=0;i<tables.length;i+=4){
    const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
    const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
-   const spots=[[22,15],[118,15],[22,157],[118,157]];
+   const spots=[[37,17],[123,17],[37,153],[123,153]];
    for(let j=0;j<4&&i+j<tables.length;j++)sticker(ctx,tables[i+j],qrs[i+j],logo,spots[j][0],spots[j][1]);
-   write(ctx,'РАЙ Оценка · 70 × 90 мм · печат 100%',105,291,2.5,'#8a8c92','600');
+   write(ctx,'РАЙ Оценка · 50 × 80 мм · печат 100%',105,291,2.5,'#8a8c92','600');
    const uri=canvas.toDataURL('image/jpeg',.96);pictures.push(bytes(uri.slice(uri.indexOf(',')+1)));
    canvas.width=canvas.height=1;
   }
