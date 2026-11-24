@@ -90,9 +90,7 @@
       return '?period='+(period==='custom'?'month':period);
     }
     function periodControls() {
-      return '<div class="fp-controls"><div class="fp-pills" role="group" aria-label="Зала">' +
-        [['inside','Вътрешна зала'],['kids','Детски кът']].map(x=>'<button type="button" class="fp-pill '+(zone===x[0]?'on':'')+'" data-fpz="'+x[0]+'">'+x[1]+'</button>').join('')+
-        '</div><div class="fp-pills" role="group" aria-label="Период">'+
+      return '<div class="fp-controls"><div class="fp-pills" role="group" aria-label="Период">'+
         [['mtd','Този месец'],['day','Днес'],['week','7 дни'],['month','30 дни'],['all','Всичко'],['custom','Период']].map(x=>'<button type="button" class="fp-pill '+(period===x[0]?'on':'')+'" data-fpp="'+x[0]+'">'+x[1]+'</button>').join('')+
         '</div>'+ (period==='custom'?'<div class="fp-dates"><label>От <input id="fp-from" type="date" value="'+esc(from)+'"></label><label>До <input id="fp-to" type="date" value="'+esc(to)+'"></label><button type="button" class="btn small primary" id="fp-go">Покажи</button></div>':'')+'</div>';
     }
@@ -135,7 +133,7 @@
         periodControls()+
         (opt.embedded ? '' : '<div class="fp-print-toolbar"><span><b>'+printSelection.size+'</b> маси за печат</span><button type="button" class="btn small primary" id="fp-pdf-selected">Изтегли избраните PDF</button><button type="button" class="btn small" id="fp-pdf-zone">Цялата зала PDF</button><button type="button" class="btn small" id="fp-pdf-all">Всички маси PDF</button><button type="button" class="btn small" id="fp-print-clear">Изчисти</button></div>')+
         '<div class="fp-kpis"><div><span>Отзиви за залата</span><b>'+reviewsCount+'</b></div><div><span>Средна оценка</span><b>'+(reviewsCount?(weight/reviewsCount).toFixed(2):'—')+' ★</b></div><div><span>Ниски оценки</span><b>'+low+'</b></div></div>'+
-        '<div class="fp-layout"><section class="fp-left"><div class="fp-map-head"><div><b>'+c.title+'</b><span>Натисни маса, за да видиш подробности</span></div>'+(opt.embedded?'':'<button type="button" class="btn small" id="fp-edit">'+(edit?'Готово':'Подреди маси')+'</button>')+'</div>'+
+        '<div class="fp-layout"><section class="fp-left"><div class="fp-map-head"><div class="fp-map-heading"><div class="fp-zone-switch" role="group" aria-label="Избор на зала">'+[['inside','Вътрешна зала'],['kids','Детски кът']].map(x=>'<button type="button" class="fp-zone-tab'+(zone===x[0]?' on':'')+'" aria-pressed="'+(zone===x[0])+'" data-fpz="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><span>Натисни маса, за да видиш подробности</span></div>'+(opt.embedded?'':'<button type="button" class="btn small" id="fp-edit">'+(edit?'Готово':'Подреди маси')+'</button>')+'</div>'+
         makeStage()+
         '<div class="fp-legend"><span><i class="fp-dot good"></i>Добри</span><span><i class="fp-dot mixed"></i>Смесени</span><span><i class="fp-dot bad"></i>Проблемни</span><span><i class="fp-dot neutral"></i>Без отзиви/малко данни</span></div>'+
         '<p class="meta">Цветовете се определят от оценките за периода. При под 3 отзива масата е неутрална. Номерата от скиците са запазени.</p></section>'+
