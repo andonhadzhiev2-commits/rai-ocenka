@@ -225,3 +225,11 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#d4475c;box-sh
 .fp-extra{display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:10px 0;font-size:12px;color:#aab0bb}
 @media(max-width:800px){.fp-layout{grid-template-columns:1fr}.fp-left,.fp-right{padding:11px}.fp-map{min-width:560px}.fp-kpis b{font-size:20px}}
 @media(max-width:440px){.fp-kpis>div{padding:10px 7px}.fp-kpis b{font-size:17px}.fp-kpis span{font-size:10px}.fp-pill{font-size:11px;padding:9px 10px}}
+
+/* Multi-table QR print selection */
+.fp-print-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:12px 13px;margin:12px 0;border:1px solid #383e4a;border-radius:13px;background:#1b2029}
+.fp-print-toolbar>span{margin-right:auto;font-size:12px;color:#d9dbe3}
+.fp-print-toolbar>span b{color:#fff;font-size:16px}
+.fp-print-choices{display:flex;gap:7px;flex-wrap:wrap;margin:11px 0}
+.fp-seat.print-marked{outline:3px solid #f4ce82;outline-offset:2px;z-index:2}
+@media(max-width:600px){.fp-print-toolbar .btn{font-size:11px;padding:8px 9px}.fp-print-toolbar>span{width:100%}}
