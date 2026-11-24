@@ -53,7 +53,20 @@
   function mount(opt) {
     let zone='inside', period='week', from='',to='', mode='avg', selected=null, placing=null, edit=false, seq=0;
     let tables=[], aggregated=[], reviews=[];
+    const printSelection=new Set();
+    function pdf(ids,filename) {
+      if (!window.RAIPdf) { opt.toast('PDF модулът не е зареден. Презареди приложението.'); return; }
+      if(!ids.length) { opt.toast('Маркирай поне една маса.');return; }
+      opt.toast('Подготвя се PDF за '+ids.length+' маси…');
+      window.RAIPdf.export(ids,{filename:filename}).then(r=>opt.toast('Готов PDF: '+r.count+' маси, '+r.pages+' стр.')).catch(opt.fail);
+    }
     const target=opt.view, api=opt.api;
+    target.addEventListener('click',function(e){
+      const m=e.target.closest('#fp-mark'),o=e.target.closest('#fp-one-pdf');if(!m&&!o)return;
+      const t=tables.find(t=>String(t.label)===String(selected)&&mapName(t)===zone);if(!t)return;
+      if(m){if(printSelection.has(t.id))printSelection.delete(t.id);else printSelection.add(t.id);draw();}
+      if(o)pdf([t.id],'RAI_QR_masa_'+t.label+'.pdf');
+    });
     const fmt = n => n==null?'—':Number(n).toFixed(2);
     function params() {
       if(period==='custom' && from && to) return '?from='+encodeURIComponent(from)+'&to='+encodeURIComponent(to);
@@ -78,7 +91,7 @@
         const posX=t&&t.map_x!=null?Number(t.map_x):100*(x+w/2)/c.w;
         const posY=t&&t.map_y!=null?Number(t.map_y):100*(y+h/2)/c.h;
         const attr='style="left:'+posX+'%;top:'+posY+'%;width:'+(w/c.w*100)+'%;height:'+(h/c.h*100)+'%"';
-        markup+='<button type="button" title="Маса '+esc(num)+' · '+(total?fmt(avg)+' звезди, '+total+' отзива':'Няма отзиви')+'" class="fp-seat '+quality+(shape==='round'?' round':'')+(selected===num?' selected':'')+'" data-fps="'+esc(num)+'" '+attr+'><b>'+esc(num)+'</b>'+(total?'<small>'+fmt(avg)+' ★</small>':'')+'</button>';
+        markup+='<button type="button" title="Маса '+esc(num)+' · '+(total?fmt(avg)+' звезди, '+total+' отзива':'Няма отзиви')+'" class="fp-seat '+quality+(shape==='round'?' round':'')+(selected===num?' selected':'')+(t&&printSelection.has(t.id)?' print-marked':'')+'" data-fps="'+esc(num)+'" '+attr+'><b>'+esc(num)+'</b>'+(total?'<small>'+fmt(avg)+' ★</small>':'')+'</button>';
       });
       const unplaced=tables.filter(t=>mapName(t)===zone&&!c.seats.some(q=>String(q[0])===String(t.label)));
       return '<div class="fp-map-scroll"><div class="fp-map" style="aspect-ratio:'+c.w+'/'+c.h+'">'+markup+'</div></div>'+
@@ -90,6 +103,7 @@
       if(!t)return '<div class="fp-empty"><b>Маса '+esc(selected)+'</b><p>Тази маса е на скицата, но още не е добавена в приложението. Добави я от „Маси и зони“, без да променяш номера.</p><a class="btn small" href="#/tables">Отвори масите</a></div>';
       const a=aggregated.find(a=>Number(a.table_id)===Number(t.id));
       return '<div class="fp-detail-head"><div><h2>Маса '+esc(t.label)+'</h2><div class="meta">'+esc(t.zone_name||CONFIG[zone].title)+'</div></div><a class="btn small" href="#/print/'+t.id+'">QR / Лепенка</a></div>'+
+        '<div class="fp-print-choices"><button type="button" class="btn small" id="fp-mark">'+(printSelection.has(t.id)?'☑ Маркирана за печат':'☐ Маркирай за печат')+'</button><button type="button" class="btn small primary" id="fp-one-pdf">Изтегли QR PDF</button></div>'+
         '<div class="fp-mini-stats"><div><b>'+fmt(a&&a.avg_rating)+' ★</b><small>Средна оценка</small></div><div><b>'+Number(a&&a.total||0)+'</b><small>Всички отзиви</small></div><div><b>'+Number(a&&a.low_count||0)+'</b><small>Ниски 1–3★</small></div></div>'+
         '<p class="meta">Показани са реалните оценки за избрания период. Малък брой отзиви не е достатъчен за категоричен извод.</p>'+
         (reviews.length?'<h3>Последни отзиви</h3>'+reviews.slice(0,12).map(r=>'<a href="#/review/'+esc(r.id)+'" class="fp-review"><span><b>'+r.rating+' ★</b> · '+new Date(r.created_at).toLocaleString('bg-BG',{timeZone:'Europe/Sofia',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span>'+(r.comment?'<p>'+esc(r.comment)+'</p>':'')+(Array.isArray(r.tags)&&r.tags.length?'<small>'+r.tags.map(x=>esc((opt.tags||{})[x]||x)).join(' · ')+'</small>':'')+'</a>').join(''):'<p class="muted">Няма отзиви за този период.</p>')+
@@ -103,6 +117,7 @@
       target.innerHTML='<a href="#/manage" class="muted">← Управление</a>'+
         '<div class="row between"><div><h1>Карта на оценките</h1><p class="muted">Интерактивна схема по реалното разположение на масите</p></div><button class="btn small" id="fp-refresh">Обнови</button></div>'+
         periodControls()+
+        '<div class="fp-print-toolbar"><span><b>'+printSelection.size+'</b> маси за печат</span><button type="button" class="btn small primary" id="fp-pdf-selected">Изтегли избраните PDF</button><button type="button" class="btn small" id="fp-pdf-zone">Цялата зала PDF</button><button type="button" class="btn small" id="fp-pdf-all">Всички маси PDF</button><button type="button" class="btn small" id="fp-print-clear">Изчисти</button></div>'+
         '<div class="fp-kpis"><div><span>Отзиви за залата</span><b>'+reviewsCount+'</b></div><div><span>Средна оценка</span><b>'+(reviewsCount?(weight/reviewsCount).toFixed(2):'—')+' ★</b></div><div><span>Ниски оценки</span><b>'+low+'</b></div></div>'+
         '<div class="fp-layout"><section class="fp-left"><div class="fp-map-head"><div><b>'+c.title+'</b><span>Натисни маса, за да видиш подробности</span></div><button type="button" class="btn small" id="fp-edit">'+(edit?'Готово':'Подреди маси')+'</button></div>'+
         makeStage()+
@@ -113,6 +128,10 @@
       target.querySelectorAll('[data-fpp]').forEach(b=>b.onclick=()=>{period=b.dataset.fpp;selected=null;reviews=[];if(period==='custom')draw();else load();});
       const go=target.querySelector('#fp-go');if(go)go.onclick=()=>{from=target.querySelector('#fp-from').value;to=target.querySelector('#fp-to').value;if(!from||!to||from>to){opt.toast('Избери валиден период');return;}selected=null;reviews=[];load();};
       target.querySelector('#fp-refresh').onclick=()=>load();
+      target.querySelector('#fp-pdf-selected').onclick=()=>pdf([...printSelection],'RAI_QR_izbrani_masi.pdf');
+      target.querySelector('#fp-pdf-zone').onclick=()=>pdf(tables.filter(t=>t.active&&mapName(t)===zone).map(t=>t.id),'RAI_QR_'+(zone==='kids'?'detski_kat':'vatreshna_zala')+'.pdf');
+      target.querySelector('#fp-pdf-all').onclick=()=>pdf(tables.filter(t=>t.active).map(t=>t.id),'RAI_QR_vsichki_masi.pdf');
+      target.querySelector('#fp-print-clear').onclick=()=>{printSelection.clear();draw();};
       target.querySelector('#fp-edit').onclick=()=>{edit=!edit;placing=null;draw();};
       target.querySelectorAll('[data-fps],[data-fpex]').forEach(b=>b.onclick=()=>{const num=Number(b.dataset.fps||b.dataset.fpex);selected=num;placing=edit?num:null;reviews=[];draw();const t=tables.find(x=>String(x.label)===String(num)&&mapName(x)===zone);if(t)loadReviews(t.id);});
       const map=target.querySelector('.fp-map');
