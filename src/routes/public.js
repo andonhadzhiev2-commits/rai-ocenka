@@ -7,7 +7,17 @@ const push = require('../lib/push');
 const { logError } = require('../lib/errors');
 
 const router = express.Router();
-const LOW_TAGS = ['slow', 'cold', 'wrong', 'price', 'clean', 'noise'];
+const LOW_TAGS = ['slow', 'cold', 'wrong', 'price', 'clean', 'noise', 'quality', 'attitude'];
+const DETAIL_TAGS = {
+  slow: ['slow_order', 'slow_food', 'slow_drinks', 'slow_bill'],
+  cold: ['cold_arrived'],
+  wrong: ['wrong_item', 'wrong_missing'],
+  price: ['price_food', 'price_drinks', 'price_value'],
+  clean: ['clean_table', 'clean_dishes', 'clean_wc', 'clean_area'],
+  noise: ['noise_music', 'noise_guests', 'noise_kids'],
+  quality: ['quality_taste', 'quality_cooking', 'quality_portion'],
+  attitude: ['attitude_rude', 'attitude_ignored', 'attitude_help']
+};
 const HIGH_TAGS = ['food', 'drinks', 'staff', 'atmosphere', 'music', 'value'];
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CODE = /^[A-Za-z0-9]{6,20}$/;
@@ -71,7 +81,11 @@ router.post('/api/public/reviews', express.json({ limit: '8kb' }), async (req, r
     if (perTable.rows[0].n >= s.rate_limit_per_table_30min) return res.status(429).json({ error: 'rate_limited' });
 
     const allowed = rating <= 3 ? LOW_TAGS : HIGH_TAGS;
-    const tags = Array.isArray(b.tags) ? [...new Set(b.tags.filter(x => allowed.includes(x)))] : [];
+    const selected = Array.isArray(b.tags) ? b.tags.filter(x => typeof x === 'string') : [];
+    const baseTags = [...new Set(selected.filter(x => allowed.includes(x)))];
+    // Detail labels are valid only for their selected main reason. Never count as separate review submissions.
+    const detailTags = rating <= 3 ? selected.filter(x => baseTags.some(k => (DETAIL_TAGS[k] || []).includes(x))) : [];
+    const tags = [...new Set(baseTags.concat(detailTags))];
     const comment = typeof b.comment === 'string' ? b.comment.trim().slice(0, 1000) || null : null;
     let phone = null, consent = false;
     if (b.phone_consent === true && typeof b.phone === 'string') {
