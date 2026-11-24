@@ -1495,3 +1495,97 @@ label.f,.meta,.muted{color:var(--muted)}
     min-height:16px;
   }
 }
+
+/* Shared five-column rhythm: 2 + 1 + 2 top KPIs align exactly with five
+   star categories below (one cell per column, same tile height). */
+.kpis.rai-summary-kpis.rai-summary-212{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  column-gap:0;
+  row-gap:0;
+}
+.kpis.rai-summary-kpis.rai-summary-212>.rai-summary-group.rai-summary-pair{
+  grid-column:span 2;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+.kpis.rai-summary-kpis.rai-summary-212>.rai-summary-group.rai-summary-center{
+  grid-column:span 1;
+  grid-template-columns:minmax(0,1fr);
+}
+.kpis.rai-summary-kpis.rai-summary-212>.kpi.rai-summary-group{
+  height:86px;
+  min-height:86px;
+  border-radius:0;
+  border-left:0;
+  border-right:1px solid var(--border);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.kpis.rai-summary-kpis.rai-summary-212>.kpi.rai-summary-group:first-child{
+  border-left:1px solid var(--border);
+  border-radius:11px 0 0 11px;
+}
+.kpis.rai-summary-kpis.rai-summary-212>.kpi.rai-summary-group:last-child{
+  border-radius:0 11px 11px 0;
+}
+.kpis.rai-summary-kpis.rai-summary-212 .rai-summary-cell .l{
+  font-size:clamp(10px,1.14vw,13px);
+  line-height:1.2;
+}
+.rai-rating-distribution{
+  padding:12px 0 0;
+  gap:0;
+  overflow:hidden;
+}
+.rai-rating-distribution h3{
+  text-align:center;
+  font-size:16px;
+  padding:3px 12px 12px;
+  margin:0;
+}
+.rai-rating-distribution .rai-rating-tiles{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  border:0;
+  border-top:1px solid var(--border);
+  border-radius:0;
+  width:100%;
+}
+.rai-rating-distribution .rai-rating-tile{
+  height:86px;
+  min-height:86px;
+  padding:7px 2px;
+  gap:5px;
+}
+.rai-rating-distribution .rai-rating-tile-stars{
+  font-size:clamp(11px,1.5vw,18px);
+  letter-spacing:-1.25px;
+  overflow:hidden;
+}
+@media(max-width:600px){
+  .kpis.rai-summary-kpis.rai-summary-212{
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:0;
+  }
+  .kpis.rai-summary-kpis.rai-summary-212>.kpi.rai-summary-group{
+    height:84px;
+    min-height:84px;
+  }
+  .kpis.rai-summary-kpis.rai-summary-212 .rai-summary-cell .v{
+    font-size:clamp(19px,5.1vw,24px);
+  }
+  .kpis.rai-summary-kpis.rai-summary-212 .rai-summary-cell .v.rai-top-ten{
+    font-size:clamp(15px,4vw,20px);
+  }
+  .kpis.rai-summary-kpis.rai-summary-212 .rai-summary-cell .l{
+    font-size:clamp(9px,2.5vw,11px);
+    line-height:1.15;
+  }
+  .rai-rating-distribution h3{font-size:15px;padding-bottom:10px}
+  .rai-rating-distribution .rai-rating-tile{height:84px;min-height:84px;gap:5px;padding:7px 1px}
+  .rai-rating-distribution .rai-rating-tile-stars{
+    font-size:clamp(10px,2.65vw,12px);
+    letter-spacing:-1.45px;
+    min-height:16px;
+  }
+}
