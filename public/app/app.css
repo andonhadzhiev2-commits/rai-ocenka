@@ -627,3 +627,51 @@ html,body{background:var(--paper)!important;color:var(--ink)!important}
 .rai-rating-bar:hover{background:#fff0e9}
 .rai-quick-review.is-low{background:#faeeeb;border-left-color:var(--red)}
 .fp-map-scroll,.fp-map,.fp-sketch{background:var(--paper)}
+
+/* Unified RAI typography — one font family, consistent hierarchy.
+   Match BAROMETER's system/Segoe UI typography instead of mixed Inter/Montserrat. */
+:root{
+  --display:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  --body:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  --font-xs:11px;--font-sm:12px;--font-md:14px;
+}
+html,body,button,input,select,textarea,
+.top,.top *,.tabs,.tabs *,.view,.view *,.rai-quick-backdrop,.rai-quick-backdrop *{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+}
+body{font-size:14px;line-height:1.5;letter-spacing:normal}
+.view>h1,.view>.row>h1{font-size:clamp(23px,3vw,28px);line-height:1.2;letter-spacing:-.035em;font-weight:750}
+h1{font-size:clamp(23px,3vw,28px);line-height:1.2;letter-spacing:-.035em;font-weight:750}
+h2,.fp-detail-head h2,.fp-modal .fp-detail-head h2{font-size:18px;line-height:1.3;letter-spacing:-.02em;font-weight:700}
+h3,.card h3,.fp-right h3,.fp-modal h3{font-size:13px;line-height:1.4;letter-spacing:0;font-weight:700;text-transform:none}
+.top-title{font-size:16px;letter-spacing:-.025em;font-weight:800}
+.brand-sub{font-size:10px;letter-spacing:.05em;font-weight:650}
+.tabs a{font-size:11px;font-weight:650;letter-spacing:0;line-height:1.3}
+.kpi .v{font-size:clamp(27px,3.5vw,33px);line-height:1.15;letter-spacing:-.035em;font-weight:750;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12px;line-height:1.4;letter-spacing:0;font-weight:700;text-transform:none}
+.kpi .rai-kpi-hint{font-size:11px;line-height:1.4;font-weight:600;letter-spacing:0}
+.fp-kpis b{font-size:22px;letter-spacing:-.025em;font-weight:750;font-variant-numeric:tabular-nums}
+.fp-mini-stats b{font-size:16px;letter-spacing:-.015em;font-weight:700;font-variant-numeric:tabular-nums}
+.fp-mini-stats small,.fp-kpis span{font-size:11px;line-height:1.3;font-weight:600}
+.btn,.btn.small{font-size:13px;font-weight:650;letter-spacing:0;line-height:1.35}
+.seg button,.fp-pill,.fp-zone-tab{font-size:12px;font-weight:650;letter-spacing:0;line-height:1.3}
+.seg button.on,.fp-pill.on,.fp-zone-tab.on{font-weight:750!important}
+.meta,.muted,.rai-quick-date{font-size:12px;line-height:1.45}
+.rv,.item,.fp-review,.rai-quick-review{font-size:13px;line-height:1.5}
+.comment,.rv .comment,.fp-review p,.rai-quick-review p{font-size:13px;line-height:1.55}
+.tag,.pill,.fp-legend,.feed-filter-label{font-size:11px;line-height:1.4;font-weight:650;letter-spacing:0}
+.tbl,.tbl td,.tbl th{font-size:12px;line-height:1.5;letter-spacing:0;text-transform:none}
+.tbl th{font-weight:700}
+.fp-map-head b,.fp-empty b{font-size:15px;font-weight:700}
+.fp-map .fp-seat{font-weight:700;letter-spacing:0}
+.fp-map .fp-seat small{letter-spacing:0}
+.rai-quick-head h2{font-size:21px;font-weight:750}
+.rai-quick-review strong{font-size:14px;font-weight:700}
+.rai-review-stars,.stars,.rai-gold-star{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important}
+@media(max-width:560px){
+  .view>h1,.view>.row>h1,h1{font-size:24px}
+  .kpi .v{font-size:28px}
+  .fp-kpis b{font-size:18px}
+  .fp-mini-stats b{font-size:15px}
+  .tabs a{font-size:10px}
+}
