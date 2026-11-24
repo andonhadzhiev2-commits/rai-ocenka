@@ -81,7 +81,11 @@
       const m=e.target.closest('#fp-mark'),o=e.target.closest('#fp-one-pdf');if(!m&&!o)return;
       if(selected===null)return;
       if(m){const k=keyForNum(selected);if(printSelection.has(k))printSelection.delete(k);else printSelection.add(k);draw();}
-      if(o)pdf('selected',[Number(selected)],'RAI_QR_masa_'+selected+'.pdf');
+      if(o){
+        const chosen=[...printSelection].map(k=>Number(k.split(':')[1]));
+        const numbers=chosen.length?chosen:[Number(selected)];
+        pdf('selected',numbers,numbers.length===1?'RAI_QR_masa_'+numbers[0]+'.pdf':'RAI_QR_'+numbers.length+'_izbrani_masi.pdf');
+      }
     };
     target.addEventListener('click',target.__raiFloorplanHandler);
     const fmt = n => n==null?'—':Number(n).toFixed(2);
@@ -115,10 +119,10 @@
     function detail() {
       if(selected===null)return '<div class="fp-empty"><b>Избери маса от скицата</b><p>Ще видиш средната оценка, оплакванията и часовете на получените отзиви за избрания период.</p></div>';
       const t=tables.find(t=>String(t.label)===String(selected)&&mapName(t)===zone);
-      if(!t)return opt.embedded ? '<div class="fp-empty"><b>Маса '+esc(selected)+'</b><p>За тази маса все още няма регистриран QR код и няма отзиви. Можеш да я добавиш от „Управление“.</p></div>' : '<div class="fp-empty"><b>Маса '+esc(selected)+'</b><p>При първия печат ще се запише постоянен индивидуален QR код за масата.</p><button type="button" class="btn small primary" id="fp-one-pdf">Изтегли QR PDF</button><button type="button" class="btn small" id="fp-mark">'+(printSelection.has(keyForNum(selected))?'☑ Маркирана':'☐ Маркирай за печат')+'</button></div>';
+      if(!t)return opt.embedded ? '<div class="fp-empty"><b>Маса '+esc(selected)+'</b><p>За тази маса все още няма регистриран QR код и няма отзиви. Можеш да я добавиш от „Управление“.</p></div>' : '<div class="fp-empty"><b>Маса '+esc(selected)+'</b><p>При първия печат ще се запише постоянен индивидуален QR код за масата.</p><button type="button" class="btn small primary" id="fp-one-pdf">'+(printSelection.size>1?'Изтегли '+printSelection.size+' избрани PDF':printSelection.size===1?'Изтегли маркираната маса PDF':'Изтегли QR PDF')+'</button><button type="button" class="btn small" id="fp-mark">'+(printSelection.has(keyForNum(selected))?'☑ Маркирана':'☐ Маркирай за печат')+'</button></div>';
       const a=aggregated.find(a=>Number(a.table_id)===Number(t.id));
       return '<div class="fp-detail-head"><div><h2>Маса '+esc(t.label)+'</h2><div class="meta">'+esc(t.zone_name||CONFIG[zone].title)+'</div></div>'+(opt.embedded?'':'<a class="btn small" href="#/print/'+t.id+'">QR / Лепенка</a>')+'</div>'+
-        (opt.embedded?'':'<div class="fp-print-choices"><button type="button" class="btn small" id="fp-mark">'+(printSelection.has(keyForNum(t.label))?'☑ Маркирана за печат':'☐ Маркирай за печат')+'</button><button type="button" class="btn small primary" id="fp-one-pdf">Изтегли QR PDF</button></div>')+
+        (opt.embedded?'':'<div class="fp-print-choices"><button type="button" class="btn small" id="fp-mark">'+(printSelection.has(keyForNum(t.label))?'☑ Маркирана за печат':'☐ Маркирай за печат')+'</button><button type="button" class="btn small primary" id="fp-one-pdf">'+(printSelection.size>1?'Изтегли '+printSelection.size+' избрани PDF':printSelection.size===1?'Изтегли маркираната маса PDF':'Изтегли QR PDF')+'</button></div>')+
         '<div class="fp-mini-stats"><div><b>'+fmt(a&&a.avg_rating)+' ★</b><small>Средна оценка</small></div><div><b>'+Number(a&&a.total||0)+'</b><small>Всички отзиви</small></div><div><b>'+Number(a&&a.low_count||0)+'</b><small>Ниски 1–3★</small></div></div>'+
         (reviews.length?'<h3>Последни отзиви</h3>'+reviews.slice(0,12).map(r=>'<a href="#/review/'+esc(r.id)+'" class="fp-review"><span><b>'+r.rating+' ★</b> · '+new Date(r.created_at).toLocaleString('bg-BG',{timeZone:'Europe/Sofia',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span>'+(r.comment?'<p>'+esc(r.comment)+'</p>':'')+(Array.isArray(r.tags)&&r.tags.length?'<small>'+r.tags.map(x=>esc((opt.tags||{})[x]||x)).join(' · ')+'</small>':'')+'</a>').join(''):'<p class="muted">Няма отзиви за този период.</p>')+
         (edit?'<p class="meta">Режим редакция: избери маса и после натисни място върху схемата, за да я преместиш.</p>':'');
