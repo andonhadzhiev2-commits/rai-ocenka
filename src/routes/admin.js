@@ -198,6 +198,16 @@ r.patch('/tables/:id', OWNER, wrap(async (req, res) => {
     [req.params.id, label ? String(label).trim() : null, zone_id !== undefined, zone_id ? Number(zone_id) : null, typeof active === 'boolean' ? active : null, !!regenerate, newCode()]);
   t.rowCount ? res.json(t.rows[0]) : bad(res, 'Няма такава маса.', 404);
 }));
+// Positions are percentages within each zone's editable floor plan.
+// Changing a position never changes a table's QR code.
+r.patch('/tables/:id/position', OWNER, wrap(async (req, res) => {
+  const x = Number(req.body && req.body.x), y = Number(req.body && req.body.y);
+  if (!Number.isFinite(x) || !Number.isFinite(y) || x < 2 || x > 98 || y < 2 || y > 98)
+    return bad(res, 'Невалидна позиция. Изберете точка в схемата.');
+  const result = await db.q('UPDATE tables SET map_x=$2, map_y=$3 WHERE id=$1 RETURNING id,map_x,map_y,code',
+    [req.params.id, x, y]);
+  result.rowCount ? res.json(result.rows[0]) : bad(res, 'Няма такава маса.', 404);
+}));
 r.delete('/tables/:id', OWNER, wrap(async (req, res) => {
   // reviews keep their table label snapshot, so statistics survive deleting a table
   await db.q('DELETE FROM tables WHERE id=$1', [req.params.id]); res.json({ ok: true });
