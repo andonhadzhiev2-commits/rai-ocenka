@@ -76,7 +76,7 @@
   function route(re, fn) { routes.push([re, fn]); }
   function go() {
     clearInterval(refreshTimer);
-    var h = location.hash.replace(/^#/, '') || '/';
+    var h = location.hash.replace(/^#/, '') || '/stats';
     if (!me && h !== '/login') { location.hash = '#/login'; return; }
     for (var i = 0; i < routes.length; i++) {
       var m = h.match(routes[i][0]);
@@ -87,7 +87,7 @@
         return Promise.resolve(routes[i][1].apply(null, m.slice(1))).catch(fail);
       }
     }
-    location.hash = '#/';
+    location.hash = '#/stats';
   }
   window.addEventListener('hashchange', go);
   function chrome(on) {
@@ -113,7 +113,7 @@
     $('#lf').onsubmit = function (e) {
       e.preventDefault();
       api('/auth/login', { method: 'POST', body: { email: $('#le').value, password: $('#lp').value } })
-        .then(loadMe).then(function () { location.hash = '#/'; })
+        .then(loadMe).then(function () { location.hash = '#/stats'; })
         .catch(function (err) { $('#lerr').textContent = err.message; });
     };
   });
@@ -140,7 +140,7 @@
         window.__alertMax=s.alert_max_rating;
         var banner=s.open.alerts ? '<div class="banner"><div><b>'+s.open.alerts+' сигнала за реакция</b><div class="meta">Оценки '+s.alert_max_rating+'★ и по-ниски</div></div><button class="btn small primary" id="seeOpen">Виж</button></div>' : '';
         var buttons=function(opts,active,data){return '<div class="fp-pills" role="group">'+opts.map(function(f){return '<button type="button" class="fp-pill'+(active===f[0]?' on':'')+'" data-'+data+'="'+f[0]+'">'+f[1]+'</button>';}).join('')+'</div>';};
-        view.innerHTML='<div class="row between"><h1>Отзиви</h1><button class="btn small" id="rf">Обнови</button></div>'+banner+
+        view.innerHTML='<div class="row between"><h1>Сигнали</h1><button class="btn small" id="rf">Обнови</button></div>'+banner+
           '<section class="feed-filters"><div class="feed-filter-label">Покажи</div>'+
           buttons([['all','Всички'],['new','Нови отзиви'],['low','Ниски 1–3★'],['high','Високи 4–5★']],feedFilter,'feed')+
           '<div class="feed-filter-label">Период</div>'+
@@ -170,7 +170,7 @@
         var reactSec = r.ack_at ? Math.floor((new Date(r.ack_at) - new Date(r.created_at)) / 1000) : null;
         var target = s.ack_target_minutes * 60;
         function mmss(sec) { return Math.floor(sec / 60) + ':' + ('0' + (sec % 60)).slice(-2); }
-        view.innerHTML = '<a href="#/" class="muted">← Отзиви</a>' +
+        view.innerHTML = '<a href="#/" class="muted">← Сигнали</a>' +
           '<div class="card" style="' + (alert ? 'border-color:#5a2129;background:#1c1215' : '') + '">' +
           '<div class="row between">' + stars(r.rating) + '<span class="pill ' + r.status + '">' + STATUS[r.status] + '</span></div>' +
           (alert ? '<div class="notice" style="background:#2a0f14;border-color:#5a2129;color:#ffc2ca">⚠️ Сигнал: оценка ' + r.rating + '★. Цел: реакция до ' + s.ack_target_minutes + ' мин.</div>' : '') +
@@ -502,6 +502,6 @@
   }
   document.addEventListener('visibilitychange', function () { if (!document.hidden && me) updateBadge(); });
   fetch('/api/admin/auth/me', { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.json() : null; })
-    .then(function (u) { me = u; if (!u) location.hash = '#/login'; go(); })
+    .then(function (u) { me = u; if (!u) location.hash = '#/login'; else if (!location.hash || location.hash === '#') location.hash = '#/stats'; go(); })
     .catch(function () { location.hash = '#/login'; go(); });
 })();
