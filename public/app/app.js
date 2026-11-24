@@ -171,7 +171,7 @@
         var tmax = Math.max.apply(null, s.trend.map(function (d) { return d.n; }).concat([1]));
         var tagMax = Math.max.apply(null, s.tags.map(function (d) { return d.n; }).concat([1]));
         var inTarget = s.reaction.acked ? Math.round(s.reaction.in_target / s.reaction.acked * 100) + '%' : '—';
-        view.innerHTML = '<h1>Статистика</h1>' +
+        view.innerHTML = '<div class="row between"><h1>Статистика</h1>' + (isOwner() ? '<a class="btn small primary" href="#/floorplan">Карта на оценките</a>' : '') + '</div>' +
           '<div class="seg">' + [['day', 'Днес'], ['week', '7 дни'], ['month', '30 дни'], ['all', 'Всичко'], ['custom', 'Период']].map(function (p) {
             return '<button type="button" data-p="' + p[0] + '" class="' + (statP.period === p[0] ? 'on' : '') + '">' + p[1] + '</button>'; }).join('') + '</div>' +
           (statP.period === 'custom' ? '<div class="row"><label class="f grow">От<input type="date" id="sf" value="' + statP.from + '"></label><label class="f grow">До<input type="date" id="st" value="' + statP.to + '"></label><button class="btn" id="sgo" style="align-self:flex-end">Покажи</button></div>' : '') +
