@@ -170,6 +170,16 @@
   var lang = T[langPref] ? langPref : (nav === 'el' ? 'el' : 'bg');
   var cfg = null, rating = 0, chips = {}, details = {}, votes = {}, sending = false;
   var submissionId = uuid();
+  // First-party random browser marker; persists across table QR scans in the same browser.
+  // No fingerprinting, phone number, or exact location is used.
+  var browserId = null;
+  try {
+    browserId = localStorage.getItem('rai_review_browser_id');
+    if (!browserId || !/^[0-9a-f-]{36}$/i.test(browserId)) {
+      browserId = uuid();
+      localStorage.setItem('rai_review_browser_id', browserId);
+    }
+  } catch(e) { browserId = null; }
   var starSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6.2 6.8.7-5.1 4.6 1.5 6.7L12 17.3l-6.1 3.4 1.5-6.7L2.3 9.4l6.8-.7z"/></svg>';
 
   function uuid() {
@@ -265,7 +275,7 @@
     showErr(''); sending = true; render();
     var prods = {}; Object.keys(votes).forEach(function (k) { if (votes[k]) prods[k] = votes[k]; });
     fetch('/api/public/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
-      submission_id: submissionId, code: code, rating: rating, tags: Object.keys(chips).filter(function (k) { return chips[k]; }).concat(Object.keys(details).filter(function(k){return details[k];})),
+      submission_id: submissionId, browser_id: browserId, code: code, rating: rating, tags: Object.keys(chips).filter(function (k) { return chips[k]; }).concat(Object.keys(details).filter(function(k){return details[k];})),
       products: prods, comment: $('#comment').value, phone: consent ? cleanedPhone : '', phone_consent: consent, lang: lang,
       issued_at: cfg.issued_at, website: $('#website').value })
     }).then(function (r) { return r.json().then(function (j) { return { s: r.status, j: j }; }); })
