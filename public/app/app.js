@@ -215,7 +215,7 @@
         var n=info.total||0;
         if(badge){badge.hidden=!n;badge.textContent='📞 '+n+' за позвъняване';}
         var number=$('#rai-callback-number');
-        if(number){number.textContent=n;var card=number.closest('.rai-kpi-half');if(card)card.classList.toggle('rai-has-callbacks',!!n);}
+        if(number){number.textContent=n;var card=number.closest('.rai-summary-cell, .rai-kpi-half');if(card)card.classList.toggle('rai-has-callbacks',!!n);}
       }).catch(function(){});
     }else if(badge)badge.hidden=true;
   }
