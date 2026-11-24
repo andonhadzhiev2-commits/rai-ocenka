@@ -103,16 +103,27 @@ router.post('/api/public/reviews', express.json({ limit: '8kb' }), async (req, r
       ? crypto.createHmac('sha256', process.env.SESSION_SECRET || 'rai-review-fallback').update(b.browser_id).digest('hex') : null;
     const review = await db.tx(async c => {
       let repeated = false;
+      let suspicionReason = null;
       if (browserHash) {
+        // One shared PostgreSQL history across all tables, IP networks and app sessions.
         await c.query('SELECT pg_advisory_xact_lock(hashtext($1)::bigint)', [browserHash]);
-        const seen = await c.query("SELECT 1 FROM reviews WHERE browser_hash=$1 LIMIT 1", [browserHash]);
-        repeated = seen.rowCount > 0;
+        const previous = await c.query(
+          "SELECT count(*)::int AS total_48h, count(*) FILTER (WHERE created_at >= now() - interval '10 hours')::int AS total_10h " +
+          "FROM reviews WHERE browser_hash=$1 AND created_at >= now() - interval '48 hours'", [browserHash]);
+        const n10 = previous.rows[0].total_10h + 1;
+        const n48 = previous.rows[0].total_48h + 1;
+        // A second review within ten hours, or a third within two days, merits manual review.
+        const reasons = [];
+        if (n10 >= 2) reasons.push(n10 + ' оценки от един браузър за 10 часа');
+        if (n48 >= 3) reasons.push(n48 + ' оценки от един браузър за 48 часа');
+        repeated = reasons.length > 0;
+        suspicionReason = repeated ? reasons.join('; ') : null;
       }
       const ins = await c.query(
         `INSERT INTO reviews (submission_id, table_id, table_label, zone_name, rating, tags, comment, phone, phone_consent, phone_purge_at, lang, client_hash, browser_hash, suspected_repeat, suspicion_reason)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, CASE WHEN $8::text IS NULL THEN NULL ELSE now() + make_interval(days => $10) END, $11, $12, $13, $14, $15)
          ON CONFLICT (submission_id) DO NOTHING RETURNING *`,
-        [b.submission_id, t.id, t.label, t.zone_name, rating, tags, comment, phone, consent, s.phone_retention_days, lang, ch, browserHash, repeated, repeated ? 'От този браузър вече е изпращана оценка' : null]);
+        [b.submission_id, t.id, t.label, t.zone_name, rating, tags, comment, phone, consent, s.phone_retention_days, lang, ch, browserHash, repeated, suspicionReason]);
       if (!ins.rowCount) return null;
       const rev = ins.rows[0];
       const votes = b.products && typeof b.products === 'object' ? b.products : {};
