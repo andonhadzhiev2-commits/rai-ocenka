@@ -60,3 +60,14 @@ textarea{min-height:84px;resize:vertical}
 .notfound{padding:48px 18px;text-align:center;color:var(--muted)}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Lightweight contextual feedback details */
+.form-multi-hint{font-size:12px;color:var(--muted);margin:7px 0 0;line-height:1.45}
+.details-wrap{margin-top:16px;padding:14px;border-radius:13px;background:#181619;border:1px solid #3b3033}
+.details-wrap>.q{margin:0}
+.details-wrap>.form-multi-hint{margin:4px 0 12px}
+.detail-group{padding-top:11px;margin-top:11px;border-top:1px solid #342b30}
+.detail-heading{font:700 12px var(--display);color:#e1d5d4;margin-bottom:8px}
+.detail-choices{display:flex;flex-wrap:wrap;gap:7px}
+.detail-chip{font:500 12px var(--body);color:#e5dcda;background:#261f22;border:1px solid #514248;border-radius:9px;min-height:38px;padding:7px 10px;cursor:pointer}
+.detail-chip[aria-pressed="true"]{background:#3c2029;border-color:#de6477;color:#fff}
