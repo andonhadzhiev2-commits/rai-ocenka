@@ -233,7 +233,7 @@
             return '<a class="rv ' + (c.rating <= s.alert_max_rating ? 'alert' : 'r' + c.rating) + '" href="#/review/' + c.id + '"><div class="row between">' + stars(c.rating) + '<span class="meta">' + dt(c.created_at) + '</span></div><div class="comment">' + esc(c.comment) + '</div><div class="meta">' + esc([c.zone_name, c.table_label ? 'Маса ' + c.table_label : ''].filter(Boolean).join(' · ')) + '</div></a>'; }).join('') + '</div>' : '<p class="muted">Няма коментари.</p>') + '</div>';
         view.querySelectorAll('.seg button').forEach(function (b) { b.onclick = function () { statP.period = b.dataset.p; draw().catch(fail); }; });
         if ($('#sgo')) $('#sgo').onclick = function () { statP.from = $('#sf').value; statP.to = $('#st').value; draw().catch(fail); };
-        if(isOwner() && window.RAIFloorplan){var floorSlot=$('#stats-floorplan');if(floorSlot)window.RAIFloorplan.mount({view:floorSlot,api:api,toast:toast,fail:fail,tags:TAGS,embedded:true}).catch(fail);}
+        if(isOwner() && window.RAIFloorplan){var floorSlot=$('#stats-floorplan');if(floorSlot)window.RAIFloorplan.mount({view:floorSlot,api:api,toast:toast,fail:fail,tags:TAGS,embedded:true,period:statP.period,from:statP.from,to:statP.to}).catch(fail);}
       });
     }
     return draw();
