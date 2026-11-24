@@ -310,9 +310,9 @@
       return Promise.all([api('/reviews/' + id), api('/settings')]).then(function (x) {
         var r = x[0], s = x[1], alert = r.rating <= s.alert_max_rating;
         view.innerHTML = '<a href="#/" class="muted">← Сигнали</a>' +
-          '<div class="card" style="' + (alert ? 'border-color:#5a2129;background:#1c1215' : '') + '">' +
+          '<div class="card rai-review-detail-card'+(alert?' rai-review-detail-alert':'')+'">' +
           '<div class="row between">' + stars(r.rating) + '<span class="pill ' + r.status + '">' + STATUS[r.status] + '</span></div>' +
-          (alert ? '<div class="notice" style="background:#2a0f14;border-color:#5a2129;color:#ffc2ca">⚠️ Ниска оценка: ' + r.rating + '★.</div>' : '') +
+          (alert ? '<div class="notice rai-low-rating-notice">⚠️ Ниска оценка: ' + r.rating + '★.</div>' : '') +
           '<h2>' + esc(place(r)) + '</h2><div class="meta">' + dt(r.created_at) + ' · език ' + (LANG[r.lang] || '') + '</div>' +
           (r.tags && r.tags.length ? '<div class="tags">' + r.tags.map(function (t) { return '<span class="tag">' + esc(TAGS[t] || t) + '</span>'; }).join('') + '</div>' : '') +
           (r.comment ? '<div class="comment">' + esc(r.comment) + '</div>' : '<div class="meta">Без коментар</div>') +
@@ -328,7 +328,7 @@
             '<div class="list">' + r.browser_history.map(function(h,i,all){
               var prior=i ? all[i-1].rating : null;
               var trend=prior===null ? 'Първа оценка' : h.rating > prior ? '↑ Подобрение с '+(h.rating-prior)+'★' : h.rating < prior ? '↓ Спад с '+(prior-h.rating)+'★' : '→ Без промяна';
-              return '<div class="item" style="border-color:'+(h.rating < prior ? '#9b3947' : 'var(--line)')+'"><div class="row between"><b>'+esc(dt(h.created_at))+'</b><b>'+h.rating+'★</b></div><div class="meta">'+trend+'</div></div>';
+              return '<div class="item rai-history-rating '+(Number(h.rating)>=4?'rai-history-positive':Number(h.rating)<=2?'rai-history-negative':'rai-history-neutral')+'"><div class="row between"><b>'+esc(dt(h.created_at))+'</b><b>'+h.rating+'★</b></div><div class="meta">'+trend+'</div></div>';
             }).join('')+'</div></div>' : '') +
           (r.status === 'new' ? '<div class="card">' +
             '<button class="btn primary block" id="ack">Отбележи като прочетен</button><button class="btn ok block" id="res">Архивирай отзива</button></div>' :
