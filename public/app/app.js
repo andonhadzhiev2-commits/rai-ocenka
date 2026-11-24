@@ -236,7 +236,7 @@
             return '<div class="item"><span class="grow"><b>' + esc(t.label) + '</b> <span class="meta">' + esc(t.zone_name || 'без зона') + ' · ' + t.reviews + ' отзива' + (t.active ? '' : ' · неактивна') + '</span><br><span class="code">/r/' + esc(t.code) + '</span></span>' +
               '<select data-tz="' + t.id + '" aria-label="Зона">' + zopt(t.zone_id) + '</select>' +
               '<button class="btn small" data-tl="' + t.id + '">Номер</button><button class="btn small" data-ta="' + t.id + '" data-v="' + (!t.active) + '">' + (t.active ? 'Спри' : 'Пусни') + '</button>' +
-              '<button class="btn small" data-tn="' + t.id + '">Нов код</button><button class="btn small danger" data-td="' + t.id + '">Изтрий</button></div>'; }).join('') + '</div></div>';
+              ''<button class="btn small danger" data-td="' + t.id + '">Изтрий</button></div>'; }).join('') + '</div></div>';
         $('#zf').onsubmit = function (e) { e.preventDefault(); api('/zones', { method: 'POST', body: { name: $('#zn').value } }).then(draw).catch(fail); };
         $('#tf').onsubmit = function (e) { e.preventDefault(); api('/tables', { method: 'POST', body: { zone_id: $('#tz').value || null, start: Number($('#ts').value), count: Number($('#tc').value) } }).then(function () { toast('Масите са добавени'); draw(); }).catch(fail); };
         view.querySelectorAll('[data-zr]').forEach(function (b) { b.onclick = function () { var n = promptInline(b, 'Ново име'); if (n) n.then(function (v) { return api('/zones/' + b.dataset.zr, { method: 'PATCH', body: { name: v } }); }).then(draw).catch(fail); }; });
@@ -277,12 +277,14 @@
         view.innerHTML = '<div class="noprint"><a href="#/tables" class="muted">← Маси</a><h1>Печат на стикери</h1>' +
           (s.public_base_url_confirmed ? '<p class="muted">Адрес: ' + esc(s.public_base_url) + '. Печат в реален размер (100%), стикер 70 × 90 мм. Номерът е под пунктира, извън стикера.</p>' :
             '<div class="notice">Адресът не е потвърден – стикерите са маркирани „ТЕСТ“ и не са за окончателен печат.</div>') +
-          '<button class="btn primary" id="pr">Печат</button></div>' +
+          '<button class="btn primary" id="downloadPdf">Изтегли PDF за агенцията</button> <button class="btn" id="pr">Печат от браузъра</button></div>' +
           '<div class="sheet">' + tables.map(function (t, i) {
             return '<div class="stk-wrap"><div class="stk"><img class="lg" src="/app/logo.png" alt=""><div class="h">Вашето мнение<br>е важно за нас</div><div class="s">Сканирайте · 10 секунди</div>' +
               '<div class="qr">' + svgs[i] + '</div><div class="lng">BG · EN · GR</div>' + (s.public_base_url_confirmed ? '' : '<div class="test">ТЕСТ</div>') + '</div>' +
               '<div class="stk-label">' + esc((t.zone_name ? t.zone_name + ' · ' : '') + 'Маса ' + t.label) + '</div></div>'; }).join('') + '</div>';
         $('#pr').onclick = function () { window.print(); };
+        var pdfButton = $('#downloadPdf');
+        if (pdfButton) pdfButton.onclick = function () { window.RAIPdf.export(tables.map(function (t) { return t.id; }), { filename: tableId ? 'RAI_QR_masa_' + tables[0].label + '.pdf' : 'RAI_QR_vsichki_masi.pdf' }).then(function () { toast('PDF файлът е изтеглен'); }).catch(fail); };
       });
     });
   });
