@@ -263,7 +263,7 @@
         var max = Math.max.apply(null, s.distribution.map(function (d) { return d.n; }).concat([1]));
         var tmax = Math.max.apply(null, s.trend.map(function (d) { return d.n; }).concat([1]));
         var tagMax = Math.max.apply(null, s.tags.map(function (d) { return d.n; }).concat([1]));
-        view.innerHTML = '<h1>Анализи</h1>' +
+        view.innerHTML = '<div class="rai-page-heading"><span class="rai-eyebrow">КОКТЕЙЛ-БАР РАЙ</span><h1>Анализи</h1></div>' +
           '<div class="seg">' + [['day', 'Ден'], ['week', 'Седмица'], ['mtd', 'Месец'], ['custom', 'Период']].map(function (p) {
             return '<button type="button" data-p="' + p[0] + '" class="' + (statP.period === p[0] ? 'on' : '') + '">' + p[1] + '</button>'; }).join('') + '</div>' +
           (statP.period === 'custom' ? '<div class="row"><label class="f grow">От<input type="date" id="sf" value="' + statP.from + '"></label><label class="f grow">До<input type="date" id="st" value="' + statP.to + '"></label><button class="btn" id="sgo" style="align-self:flex-end">Покажи</button></div>' : '') +
