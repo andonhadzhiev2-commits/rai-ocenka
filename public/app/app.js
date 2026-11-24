@@ -204,9 +204,16 @@
     chrome(true);
     if (!isOwner()) { location.hash = '#/'; return; }
     view.innerHTML = '<h1>Управление</h1><div class="list">' +
-      [['#/tables', 'Маси и зони', 'Добавяне, QR кодове, печат на стикери'], ['#/menu', 'Ново меню', 'Продукти и категории за оценка'],
+      [['#/floorplan', 'Карта на оценките', 'Интерактивни планове на двете зали, оценки по маси и QR лепенки'], ['#/tables', 'Маси и зони', 'Добавяне, QR кодове, печат на стикери'], ['#/menu', 'Ново меню', 'Продукти и категории за оценка'],
        ['#/users', 'Потребители', 'Управители, известия, дежурен'], ['#/settings', 'Настройки', 'Известия, адрес, Google, GDPR, защита']].map(function (x) {
         return '<a class="item" href="' + x[0] + '" style="text-decoration:none;color:var(--fg)"><span class="grow"><b>' + x[1] + '</b><br><span class="meta">' + x[2] + '</span></span><span>›</span></a>'; }).join('') + '</div>';
+  });
+
+  // ---------- interactive room maps ----------
+  route(/^\/floorplan$/, function () {
+    chrome(true);
+    if (!isOwner()) { location.hash = '#/'; return; }
+    return window.RAIFloorplan.mount({ view: view, api: api, toast: toast, fail: fail, tags: TAGS });
   });
 
   // ---------- tables ----------
@@ -262,10 +269,10 @@
   }
 
   // ---------- print stickers ----------
-  route(/^\/print$/, function () {
+  route(/^\/print(?:\/(\d+))?$/, function (tableId) {
     chrome(true);
     return Promise.all([api('/tables'), api('/settings')]).then(function (x) {
-      var tables = x[0].filter(function (t) { return t.active; }), s = x[1];
+      var tables = x[0].filter(function (t) { return t.active && (!tableId || String(t.id) === String(tableId)); }), s = x[1];
       return Promise.all(tables.map(function (t) { return fetch('/api/admin/tables/' + t.id + '/qr.svg', { credentials: 'same-origin' }).then(function (r) { return r.text(); }); })).then(function (svgs) {
         view.innerHTML = '<div class="noprint"><a href="#/tables" class="muted">← Маси</a><h1>Печат на стикери</h1>' +
           (s.public_base_url_confirmed ? '<p class="muted">Адрес: ' + esc(s.public_base_url) + '. Печат в реален размер (100%), стикер 70 × 90 мм. Номерът е под пунктира, извън стикера.</p>' :
