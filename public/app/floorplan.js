@@ -42,7 +42,7 @@
     return /дет|дк|kids/i.test(t.zone_name||'') ? 'kids':'inside';
   };
   function mount(opt) {
-    let zone='inside', period=opt.period||'mtd', from=opt.from||'',to=opt.to||'', mode='avg', selected=null, placing=null, edit=false, zoomed=false, seq=0;
+    let zone='inside', period=opt.period||'mtd', from=opt.from||'',to=opt.to||'', mode='avg', selected=null, placing=null, edit=false, seq=0;
     let tables=[], aggregated=[], reviews=[], venueRating=null;
     let showDetail=false;
     // Selection stores permanent zone:number keys, including not-yet-registered tables.
@@ -104,7 +104,7 @@
         markup+='<button type="button" title="Маса '+esc(num)+' · '+(total?fmt(avg)+' звезди, '+total+' отзива':'Няма отзиви')+'" class="fp-seat '+quality+(selected===num?' selected':'')+(printSelection.has(keyForNum(num))?' print-marked':'')+'" data-fps="'+esc(num)+'" '+attr+'><b>'+esc(num)+'</b>'+(total?'<small>'+Number(avg).toFixed(1).replace('.',',')+'<span class="rai-gold-star">★</span></small>':'')+'</button>';
       });
       const unplaced=tables.filter(t=>mapName(t)===zone&&!c.seats.some(q=>String(q[0])===String(t.label)));
-      return '<div class="fp-map-scroll'+(zoomed?' is-zoomed':'')+'"><div class="fp-map" style="aspect-ratio:'+c.w+'/'+c.h+'">'+markup+'</div></div>'+
+      return '<div class="fp-map-scroll"><div class="fp-map" style="aspect-ratio:'+c.w+'/'+c.h+'">'+markup+'</div></div>'+
       (unplaced.length?'<div class="fp-extra"><b>Маси извън първоначалната скица:</b> '+unplaced.map(t=>'<button class="btn small" data-fpex="'+esc(t.label)+'">'+esc(t.label)+'</button>').join(' ')+'</div>':'');
     }
     function detail() {
@@ -126,14 +126,13 @@
         (opt.embedded ? '' : periodControls())+
         (opt.embedded ? '' : '<div class="fp-print-toolbar"><span><b>'+printSelection.size+'</b> маси за печат</span><button type="button" class="btn small primary" id="fp-pdf-selected">Изтегли избраните PDF</button><button type="button" class="btn small" id="fp-pdf-zone">Цялата зала PDF</button><button type="button" class="btn small" id="fp-pdf-all">Всички маси PDF</button><button type="button" class="btn small" id="fp-print-clear">Изчисти</button></div>')+
         (opt.embedded ? '' : '<div class="fp-kpis"><div><span>Отзиви за залата</span><b>'+reviewsCount+'</b></div><div><span>Обща оценка на РАЙ</span><b>'+fmt(venueRating)+' <span class="rai-gold-star">★</span></b></div><div><span>Ниски оценки</span><b>'+low+'</b></div></div>')+
-        '<div class="fp-layout"><section class="fp-left"><div class="fp-map-head"><div class="fp-map-heading"><div class="fp-zone-switch" role="group" aria-label="Избор на зала">'+[['inside','Вътрешна зала'],['kids','Детски кът']].map(x=>'<button type="button" class="fp-zone-tab'+(zone===x[0]?' on':'')+'" aria-pressed="'+(zone===x[0])+'" data-fpz="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><span>'+(opt.embedded?'Натисни маса за подробности':'Натисни масите, които искаш да включиш в PDF')+'</span></div><button type="button" class="fp-zoom-btn" id="fp-zoom" aria-pressed="'+zoomed+'">'+(zoomed?'⊖ Намали':'⊕ Увеличи')+'</button>'+(opt.embedded?'':'<button type="button" class="btn small" id="fp-edit">'+(edit?'Готово':'Подреди маси')+'</button>')+'</div>'+
+        '<div class="fp-layout"><section class="fp-left"><div class="fp-map-head"><div class="fp-map-heading"><div class="fp-zone-switch" role="group" aria-label="Избор на зала">'+[['inside','Вътрешна зала'],['kids','Детски кът']].map(x=>'<button type="button" class="fp-zone-tab'+(zone===x[0]?' on':'')+'" aria-pressed="'+(zone===x[0])+'" data-fpz="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><span>'+(opt.embedded?'Натисни маса за подробности':'Натисни масите, които искаш да включиш в PDF')+'</span></div>'+(opt.embedded?'':'<button type="button" class="btn small" id="fp-edit">'+(edit?'Готово':'Подреди маси')+'</button>')+'</div>'+
         makeStage()+
         '<div class="fp-legend"><span><i class="fp-dot good"></i>Добри</span><span><i class="fp-dot mixed"></i>Смесени</span><span><i class="fp-dot bad"></i>Проблемни</span><span><i class="fp-dot neutral"></i>Без отзиви</span></div>'+
         '</section>'+
         (opt.embedded ? '' : '<aside class="fp-right" id="fp-detail">'+detail()+'</aside>')+'</div>'+
         (opt.embedded && showDetail ? '<div class="fp-modal-backdrop" id="fp-modal-backdrop" role="presentation"><section class="fp-modal" role="dialog" aria-modal="true" aria-label="Отзиви за маса '+esc(selected)+'"><button type="button" class="fp-modal-close" id="fp-modal-close" aria-label="Затвори">✕</button><div id="fp-modal-body">'+detail()+'</div></section></div>' : '');
       target.querySelectorAll('[data-fpz]').forEach(b=>b.onclick=()=>{zone=b.dataset.fpz;selected=null;showDetail=false;reviews=[];draw();});
-      const zoomBtn=target.querySelector('#fp-zoom');if(zoomBtn)zoomBtn.onclick=()=>{zoomed=!zoomed;draw();};
       target.querySelectorAll('[data-fpp]').forEach(b=>b.onclick=()=>{period=b.dataset.fpp;selected=null;showDetail=false;reviews=[];if(period==='custom')draw();else load();});
       const go=target.querySelector('#fp-go');if(go)go.onclick=()=>{from=target.querySelector('#fp-from').value;to=target.querySelector('#fp-to').value;if(!from||!to||from>to){opt.toast('Избери валиден период');return;}selected=null;showDetail=false;reviews=[];load();};
       if(target.querySelector('#fp-refresh')) target.querySelector('#fp-refresh').onclick=()=>load();
