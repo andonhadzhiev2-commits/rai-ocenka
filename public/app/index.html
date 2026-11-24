@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d0b0c">
+<meta name="robots" content="noindex">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="РАЙ Оценка">
+<title>РАЙ Оценка</title>
+<link rel="manifest" href="/app/manifest.webmanifest">
+<link rel="icon" href="/app/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/app/icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/app/app.css">
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <img src="/app/logo.png" alt="Рай" class="top-logo">
+  <div class="brand-stack"><span class="top-title">РАЙ <em>Оценка</em></span><span class="brand-sub">Клиентско преживяване</span></div>
+  <span class="top-badge" id="openBadge" hidden></span>
+</header>
+<main id="view" class="view"><p class="muted pad">Зареждане…</p></main>
+<nav class="tabs" id="tabs" hidden>
+  <a href="#/" data-tab="feed"><span class="ti" aria-hidden="true">✦</span>Отзиви</a>
+  <a href="#/stats" data-tab="stats"><span class="ti" aria-hidden="true">▥</span>Анализи</a>
+  <a href="#/manage" data-tab="manage" class="owner-only"><span class="ti" aria-hidden="true">⚙</span>Управление</a>
+  <a href="#/me" data-tab="me"><span class="ti" aria-hidden="true">◉</span>Профил</a>
+</nav>
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="/app/app.js"></script>
+</body>
+</html>

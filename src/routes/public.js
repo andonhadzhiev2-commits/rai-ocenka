@@ -1,0 +1,117 @@
+const express = require('express');
+const crypto = require('crypto');
+const path = require('path');
+const db = require('../lib/db');
+const settings = require('../lib/settings');
+const push = require('../lib/push');
+const { logError } = require('../lib/errors');
+
+const router = express.Router();
+const LOW_TAGS = ['slow', 'cold', 'wrong', 'price', 'clean', 'noise'];
+const HIGH_TAGS = ['food', 'drinks', 'staff', 'atmosphere', 'music', 'value'];
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const CODE = /^[A-Za-z0-9]{6,20}$/;
+
+function clientHash(req) {
+  const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
+  return crypto.createHash('sha256').update(ip + '|' + (req.headers['user-agent'] || '') + '|' + (process.env.SESSION_SECRET || 'salt')).digest('hex').slice(0, 32);
+}
+async function tableByCode(code) {
+  if (!CODE.test(code || '')) return null;
+  const r = await db.q(`SELECT t.id, t.label, z.name AS zone_name FROM tables t LEFT JOIN zones z ON z.id = t.zone_id
+                        WHERE t.code = $1 AND t.active`, [code]);
+  return r.rows[0] || null;
+}
+
+// The guest form. The QR points to /r/<random code>; the table number is never sent to the browser.
+router.get('/r/:code', (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, '..', '..', 'public', 'form', 'index.html'));
+});
+
+router.get('/api/public/form/:code', async (req, res) => {
+  const t = await tableByCode(req.params.code);
+  if (!t) return res.status(404).json({ error: 'not_found' });
+  const s = await settings.all();
+  const p = await db.q(`SELECT p.id, p.name_bg, p.name_en, p.name_el, c.name_bg AS cat_bg, c.name_en AS cat_en, c.name_el AS cat_el
+                        FROM products p LEFT JOIN product_categories c ON c.id = p.category_id
+                        WHERE p.active AND p.is_new AND (c.id IS NULL OR c.active)
+                        ORDER BY c.sort NULLS LAST, c.id, p.sort, p.id`);
+  res.json({
+    ok: true,
+    google_review_url: s.google_review_url || null,
+    address: { bg: s.venue_address_bg, en: s.venue_address_en, el: s.venue_address_el },
+    products: p.rows,
+    issued_at: Date.now()
+  });
+});
+
+router.post('/api/public/reviews', express.json({ limit: '8kb' }), async (req, res) => {
+  try {
+    const b = req.body || {};
+    const s = await settings.all();
+    // honeypot: real people never fill the hidden "website" field
+    if (b.website) return res.status(202).json({ ok: true });
+    if (!UUID.test(b.submission_id || '')) return res.status(400).json({ error: 'bad_submission' });
+    const t = await tableByCode(b.code);
+    if (!t) return res.status(404).json({ error: 'not_found' });
+    const rating = Number(b.rating);
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) return res.status(400).json({ error: 'bad_rating' });
+    const issued = Number(b.issued_at);
+    if (!issued || Date.now() - issued < s.min_fill_seconds * 1000) return res.status(429).json({ error: 'too_fast' });
+
+    // duplicate (double tap, retry on bad network) -> same answer, no second record
+    const dup = await db.q('SELECT id FROM reviews WHERE submission_id=$1', [b.submission_id]);
+    if (dup.rowCount) return res.json({ ok: true, id: dup.rows[0].id, duplicate: true });
+
+    const ch = clientHash(req);
+    const perDevice = await db.q(`SELECT count(*)::int n FROM reviews WHERE client_hash=$1 AND created_at > now() - interval '10 minutes'`, [ch]);
+    if (perDevice.rows[0].n >= s.rate_limit_per_device_10min) return res.status(429).json({ error: 'rate_limited' });
+    const perTable = await db.q(`SELECT count(*)::int n FROM reviews WHERE table_id=$1 AND created_at > now() - interval '30 minutes'`, [t.id]);
+    if (perTable.rows[0].n >= s.rate_limit_per_table_30min) return res.status(429).json({ error: 'rate_limited' });
+
+    const allowed = rating <= 3 ? LOW_TAGS : HIGH_TAGS;
+    const tags = Array.isArray(b.tags) ? [...new Set(b.tags.filter(x => allowed.includes(x)))] : [];
+    const comment = typeof b.comment === 'string' ? b.comment.trim().slice(0, 1000) || null : null;
+    let phone = null, consent = false;
+    if (b.phone_consent === true && typeof b.phone === 'string') {
+      const cleaned = b.phone.replace(/[^\d+]/g, '');
+      if (/^\+?\d{7,15}$/.test(cleaned)) { phone = cleaned; consent = true; }
+    }
+    const lang = ['bg', 'en', 'el'].includes(b.lang) ? b.lang : 'bg';
+
+    const review = await db.tx(async c => {
+      const ins = await c.query(
+        `INSERT INTO reviews (submission_id, table_id, table_label, zone_name, rating, tags, comment, phone, phone_consent, phone_purge_at, lang, client_hash)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, CASE WHEN $8::text IS NULL THEN NULL ELSE now() + make_interval(days => $10) END, $11, $12)
+         ON CONFLICT (submission_id) DO NOTHING RETURNING *`,
+        [b.submission_id, t.id, t.label, t.zone_name, rating, tags, comment, phone, consent, s.phone_retention_days, lang, ch]);
+      if (!ins.rowCount) return null;
+      const rev = ins.rows[0];
+      const votes = b.products && typeof b.products === 'object' ? b.products : {};
+      const ids = Object.keys(votes).map(Number).filter(Number.isInteger).slice(0, 50);
+      if (ids.length) {
+        const pr = await c.query('SELECT id, name_bg FROM products WHERE id = ANY($1) AND active', [ids]);
+        for (const p of pr.rows) {
+          const v = Number(votes[p.id]);
+          if (v === 1 || v === -1) await c.query('INSERT INTO review_products(review_id, product_id, product_name, vote) VALUES ($1,$2,$3,$4) ON CONFLICT DO NOTHING', [rev.id, p.id, p.name_bg, v]);
+        }
+      }
+      await push.queueReview(rev, c, 'new', s);
+      return rev;
+    });
+    if (!review) {
+      const again = await db.q('SELECT id FROM reviews WHERE submission_id=$1', [b.submission_id]);
+      return res.json({ ok: true, id: again.rows[0] && again.rows[0].id, duplicate: true });
+    }
+    res.status(201).json({ ok: true, id: review.id, google_review_url: s.google_review_url || null });
+    // notify after answering the guest, so a slow push service never delays the form
+    push.processPending().catch(e => logError('notify', e));
+  } catch (e) {
+    await logError('public.review', e);
+    res.status(500).json({ error: 'server_error' });
+  }
+});
+
+router.get('/privacy', (req, res) => res.sendFile(path.join(__dirname, '..', '..', 'public', 'form', 'privacy.html')));
+module.exports = { router, LOW_TAGS, HIGH_TAGS };
