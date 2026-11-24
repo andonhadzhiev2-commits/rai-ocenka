@@ -127,7 +127,8 @@
       '<div class="row between"><span>' + stars(r.rating) + '</span><span class="pill ' + r.status + '">' + STATUS[r.status] + '</span></div>' +
       '<div class="meta">' + esc(place(r)) + ' · ' + dt(r.created_at) + ' · ' + (LANG[r.lang] || '') + '</div>' +
       (r.phone ? '<div class="tags"><span class="tag" style="border-color:#a97945;color:#ffe2a4">☎ Иска обаждане</span></div>' : '') +
-      (r.suspected_repeat ? '<div class="tags"><span class="tag" style="border-color:#d68b43;color:#ffd7a3">⚠ За проверка · повторен браузър</span></div>' : '') +
+      (r.prior_count > 0 ? '<div class="tags"><span class="tag" style="border-color:#a97945;color:#ffe2a4">↻ Оценка №'+(r.prior_count+1)+' · предишна '+r.previous_rating+'★</span></div>' : '') +
+      (r.suspected_repeat && /10 часа|48 часа/.test(r.suspicion_reason || '') ? '<div class="tags"><span class="tag" style="border-color:#d68b43;color:#ffd7a3">⚠ Чести оценки · за проверка</span></div>' : '') +
       (isOwner() ? '<div class="meta">Браузър: '+(r.browser_short_id ? esc(r.browser_short_id) : 'няма идентификатор')+'</div>' : '') +
       (r.tags && r.tags.length ? '<div class="tags">' + r.tags.map(function (t) { return '<span class="tag">' + esc(TAGS[t] || t) + '</span>'; }).join('') + '</div>' : '') +
       (r.comment ? '<div class="comment">' + esc(r.comment) + '</div>' : '') + '</a>';
@@ -165,7 +166,7 @@
                 '<div class="list">'+rows.map(function(b){
                   return '<div class="item"><div class="grow"><b>Браузър '+esc(b.browser_id)+'</b><div class="meta">Първа: '+dt(b.first_seen_at)+' · Последна: '+dt(b.last_seen_at)+'</div>'+
                     '<div class="meta">10 ч.: '+b.reviews_10h+' · 48 ч.: '+b.reviews_48h+' · Общо: '+b.total+'</div></div>'+
-                    (b.reviews_10h>=2||b.reviews_48h>=3||b.total>=5?'<span class="tag" style="color:#ffd7a3">⚠ За проверка</span>':'')+'</div>';
+                    (b.reviews_10h>=2||b.reviews_48h>=3?'<span class="tag" style="color:#ffd7a3">⚠ Чести оценки</span>':'<span class="tag">↻ История</span>')+'</div>';
                 }).join('')+'</div>':'<p class="muted">Все още няма браузър с повторни оценки.</p>';
             }).catch(function(e){if(regSlot.isConnected)regSlot.textContent=e.message||'Грешка при зареждането';});
           }
@@ -200,7 +201,8 @@
           '<h2>' + esc(place(r)) + '</h2><div class="meta">' + dt(r.created_at) + ' · език ' + (LANG[r.lang] || '') + '</div>' +
           (r.tags && r.tags.length ? '<div class="tags">' + r.tags.map(function (t) { return '<span class="tag">' + esc(TAGS[t] || t) + '</span>'; }).join('') + '</div>' : '') +
           (r.comment ? '<div class="comment">' + esc(r.comment) + '</div>' : '<div class="meta">Без коментар</div>') +
-          (r.suspected_repeat ? '<div class="notice" style="background:#302013;border-color:#a36b32;color:#ffe0b6">⚠ Възможна манипулация — ' + esc(r.suspicion_reason || 'повторна оценка от същия браузър') + '. Това не доказва измама.</div>' : '') +
+          (r.prior_count > 0 ? '<div class="notice" style="background:#211f20;border-color:#655251;color:#f4efe9">↻ История на този браузър: оценка №' + (r.prior_count + 1) + ' · предишна ' + r.previous_rating + '★ от ' + dt(r.previous_at) + ' · сега ' + r.rating + '★ (' + (r.rating > r.previous_rating ? 'подобрение' : r.rating < r.previous_rating ? 'понижение' : 'без промяна') + ')</div>' : '') +
+          (r.suspected_repeat && /10 часа|48 часа/.test(r.suspicion_reason || '') ? '<div class="notice" style="background:#302013;border-color:#a36b32;color:#ffe0b6">⚠ Чести оценки от един браузър — ' + esc(r.suspicion_reason) + '. Проверете контекста; това не доказва манипулация.</div>' : '') +
           (isOwner() ? '<div class="meta">Идентификатор на браузър: '+(r.browser_short_id ? esc(r.browser_short_id) : 'не е наличен за този отзив')+'</div>' : '') +
           (r.products && r.products.length ? '<div><h3>Ново меню</h3><div class="tags" style="margin-top:6px">' + r.products.map(function (p) { return '<span class="tag">' + (p.vote > 0 ? '👍 ' : '👎 ') + esc(p.name) + '</span>'; }).join('') + '</div></div>' : '') +
           (r.phone ? '<div><h3>Телефон (със съгласие)</h3><div class="row" style="margin-top:6px"><span class="code" style="font-size:16px;color:var(--fg)">' + esc(r.phone) + '</span><a class="btn small" href="tel:' + esc(r.phone) + '">Обади се</a></div></div>' : (r.phone_consent ? '<div class="meta">Телефонът е изтрит след срока за съхранение.</div>' : '')) +
