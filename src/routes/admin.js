@@ -122,7 +122,7 @@ r.get('/reviews', ANY, wrap(async (req, res) => {
   if (req.query.rating_group === 'low') where += ' AND r.rating BETWEEN 1 AND 3';
   if (req.query.rating_group === 'high') where += ' AND r.rating BETWEEN 4 AND 5';
   if (req.query.table) { params.push(Number(req.query.table)); where += ` AND r.table_id = $${params.length}`; }
-  if (req.query.with_comment === '1') where += ` AND r.comment IS NOT NULL`;
+  if (req.query.with_comment === '1') where += ` AND NULLIF(btrim(r.comment), '') IS NOT NULL`;
   const limit = Math.min(200, Math.max(1, Number(req.query.limit) || 50));
   const offset = Math.min(1000000, Math.max(0, parseInt(req.query.offset, 10) || 0));
   const rows = await db.q(`SELECT ${REVIEW_COLS} FROM reviews r LEFT JOIN users ua ON ua.id=r.ack_by LEFT JOIN users ur ON ur.id=r.resolved_by
@@ -184,7 +184,7 @@ r.get('/stats', ANY, wrap(async (req, res) => {
   const s = await settings.all();
   const P = [from, to];
   const W = 'created_at >= $1 AND created_at < $2';
-  const [tot, dist, tags, tbl, prod, trend, open, react, comments] = await Promise.all([
+  const [tot, dist, tags, tbl, prod, trend, open, react, comments, commentTotal] = await Promise.all([
     db.q(`SELECT count(*)::int n, round(avg(rating)::numeric, 2)::float avg FROM reviews WHERE ${W}`, P),
     db.q(`SELECT rating, count(*)::int n FROM reviews WHERE ${W} GROUP BY rating`, P),
     db.q(`SELECT t AS tag, count(*)::int n, round(avg(rating)::numeric,2)::float avg FROM reviews, unnest(tags) t WHERE ${W} GROUP BY t ORDER BY n DESC`, P),
@@ -202,14 +202,15 @@ r.get('/stats', ANY, wrap(async (req, res) => {
                  count(*)::int acked,
                  sum(CASE WHEN ack_at - created_at <= make_interval(mins => $4) THEN 1 ELSE 0 END)::int in_target
           FROM reviews WHERE ${W} AND ack_at IS NOT NULL AND rating <= $3`, [...P, s.alert_max_rating, s.ack_target_minutes]),
-    db.q(`SELECT id, created_at, rating, comment, table_label, zone_name FROM reviews WHERE ${W} AND comment IS NOT NULL ORDER BY created_at DESC LIMIT 30`, P)
+    db.q(`SELECT id, created_at, rating, comment, table_label, zone_name FROM reviews WHERE ${W} AND NULLIF(btrim(comment), '') IS NOT NULL ORDER BY created_at DESC LIMIT 30`, P),
+    db.q(`SELECT count(*)::int n FROM reviews WHERE ${W} AND NULLIF(btrim(comment), '') IS NOT NULL`, P)
   ]);
   const distribution = [1, 2, 3, 4, 5].map(k => ({ rating: k, n: (dist.rows.find(x => x.rating === k) || { n: 0 }).n }));
   const alertsInPeriod = (await db.q(`SELECT count(*)::int n FROM reviews WHERE ${W} AND rating <= $3`, [...P, s.alert_max_rating])).rows[0].n;
   res.json({
     from, to, total: tot.rows[0].n, avg: tot.rows[0].avg, distribution, tags: tags.rows, tables: tbl.rows,
     products: prod.rows, trend: trend.rows, open: open.rows[0], reaction: { ...react.rows[0], alerts: alertsInPeriod, target_min: s.ack_target_minutes },
-    comments: comments.rows, alert_max_rating: s.alert_max_rating
+    comments: comments.rows, comments_total: commentTotal.rows[0].n, alert_max_rating: s.alert_max_rating
   });
 }));
 
