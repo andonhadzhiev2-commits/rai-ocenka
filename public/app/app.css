@@ -2015,3 +2015,27 @@ label.f,.meta,.muted{color:var(--muted)}
     height:4px!important;
   }
 }
+
+/* Clean distribution: one understated separator immediately above percentages,
+   no colored stripe at the card's top; original dimensions stay unchanged. */
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent::before,
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-accent-line{
+  display:none!important;
+  content:none!important;
+}
+#view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-percent{
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  position:relative;
+  width:82%;
+  padding-top:7px;
+  box-sizing:border-box;
+  border-top:1px solid #e4e8e5;
+}
+@media(max-width:600px){
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-percent{
+    width:82%;
+    padding-top:6px;
+  }
+}
