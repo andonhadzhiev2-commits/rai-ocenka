@@ -224,7 +224,9 @@ r.get('/callbacks/pending', OWNER, wrap(async (req, res) => {
         WHERE r.phone_consent = true AND r.phone IS NOT NULL
           AND r.callback_called_at IS NULL
         ORDER BY r.created_at ASC LIMIT 100`);
-  res.json({ total: rows.rows.length, rows: rows.rows });
+  const count = await db.q(`SELECT count(*)::int n FROM reviews
+    WHERE phone_consent=true AND phone IS NOT NULL AND callback_called_at IS NULL`);
+  res.json({ total: count.rows[0].n, rows: rows.rows });
 }));
 r.post('/callbacks/:id/called', OWNER, wrap(async (req, res) => {
   if (!/^[0-9a-f-]{36}$/i.test(req.params.id)) return bad(res, 'Невалиден отзив.');
