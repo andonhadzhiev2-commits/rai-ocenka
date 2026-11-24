@@ -2593,3 +2593,28 @@ body header.top.rai-top-nav{
     padding-right:max(10px,env(safe-area-inset-right,0px));
   }
 }
+
+/* Refined PULSE header: fine black outline, consistent stroke icons,
+   and carefully antialiased screenshot-derived logo. */
+body header.top.rai-top-nav{
+  border:1px solid #161014;
+}
+body header.top.rai-top-nav nav.tabs.rai-header-tabs a .ti{
+  display:flex;align-items:center;justify-content:center;
+  width:25px;height:25px;
+  line-height:1;
+}
+body header.top.rai-top-nav nav.tabs.rai-header-tabs a .ti svg{
+  width:23px;height:23px;display:block;
+  stroke:currentColor;overflow:visible;
+}
+body header.top.rai-top-nav .rai-pulse-mark{
+  shape-rendering:geometricPrecision;
+  image-rendering:auto;
+  overflow:visible;
+}
+@media(max-width:400px){
+  body header.top.rai-top-nav nav.tabs.rai-header-tabs a .ti svg{
+    width:21px;height:21px;
+  }
+}
