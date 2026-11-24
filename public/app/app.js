@@ -99,7 +99,7 @@
     api('/stats?period=day').then(function (s) {
       var b = $('#openBadge'), n = s.open.alerts || 0, repeats = isOwner() ? (s.open.repeated || 0) : 0;
       b.hidden = !n && !repeats;
-      b.textContent = [repeats ? repeats + (repeats === 1 ? ' повторна' : ' повторни') : '', n ? n + (n === 1 ? ' ниска' : ' ниски') : ''].filter(Boolean).join(' · ');
+      b.textContent = [repeats ? repeats + (repeats === 1 ? ' с история' : ' с история') : '', n ? n + (n === 1 ? ' ниска' : ' ниски') : ''].filter(Boolean).join(' · ');
       if (navigator.setAppBadge) { var total = n + repeats; if (total) navigator.setAppBadge(total).catch(function () {}); else navigator.clearAppBadge().catch(function () {}); }
     }).catch(function () {});
   }
