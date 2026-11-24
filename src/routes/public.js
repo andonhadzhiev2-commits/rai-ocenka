@@ -152,6 +152,8 @@ router.post('/api/public/reviews', express.json({ limit: '8kb' }), async (req, r
         }
       }
       await push.queueReview(rev, c, 'new', s);
+      // Explicit guest request: notify the owner even for 4–5-star ratings.
+      if (rev.phone_consent && rev.phone) await push.queueReview(rev, c, 'callback', s);
       return rev;
     });
     if (!review) {
