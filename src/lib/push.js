@@ -77,11 +77,19 @@ async function queueReview(review, client, kind = 'new', currentSettings = null)
   const s = currentSettings || await settings.all();
   if (kind === 'new' && !s.notify_ratings.includes(review.rating)) return 0;
   const query = client ? client.query.bind(client) : db.q;
-  const payload = buildPayload(review, s, kind);
+  const payload = kind === 'callback' ? {
+    title: '📞 Клиент иска връзка с теб',
+    body: placeOf(review) + ' · ' + timeOf(review.created_at) + ' · Обади се на клиента.',
+    tag: 'callback-' + review.id,
+    url: '/app/#/review/' + review.id,
+    alert: true,
+    requireInteraction: true,
+    reviewId: review.id
+  } : buildPayload(review, s, kind);
   const result = await query(
     `INSERT INTO push_outbox(review_id, subscription_id, kind, payload)
      SELECT $1, ps.id, $2, $3::jsonb FROM push_subscriptions ps
-     JOIN users u ON u.id=ps.user_id WHERE u.active AND u.notify
+     JOIN users u ON u.id=ps.user_id WHERE u.active AND u.notify AND ($2 <> 'callback' OR u.role='owner')
      ON CONFLICT(review_id, subscription_id, kind) DO NOTHING`,
     [review.id, kind, JSON.stringify(payload)]);
   return result.rowCount;
