@@ -52,7 +52,7 @@
   };
   function mount(opt) {
     let zone='inside', period=opt.period||'mtd', from=opt.from||'',to=opt.to||'', mode='avg', selected=null, placing=null, edit=false, seq=0;
-    let tables=[], aggregated=[], reviews=[];
+    let tables=[], aggregated=[], reviews=[], venueRating=null;
     let showDetail=false;
     // Selection stores permanent zone:number keys, including not-yet-registered tables.
     const printSelection=new Set();
@@ -131,11 +131,10 @@
       const c=CONFIG[zone], selectedStats=aggregated.filter(a=>tables.some(t=>t.id===Number(a.table_id)&&mapName(t)===zone));
       const reviewsCount=selectedStats.reduce((n,a)=>n+Number(a.total),0);
       const low=selectedStats.reduce((n,a)=>n+Number(a.low_count),0);
-      const weight=selectedStats.reduce((n,a)=>n+Number(a.avg_rating)*Number(a.total),0);
       target.innerHTML=(opt.embedded ? '' : '<a href="#/stats" class="muted">← Анализи</a><div class="row between"><div><h1>Анализ по маси</h1><p class="muted">Интерактивна схема по реалното разположение на масите</p></div><button class="btn small" id="fp-refresh">Обнови</button></div>')+
         periodControls()+
         (opt.embedded ? '' : '<div class="fp-print-toolbar"><span><b>'+printSelection.size+'</b> маси за печат</span><button type="button" class="btn small primary" id="fp-pdf-selected">Изтегли избраните PDF</button><button type="button" class="btn small" id="fp-pdf-zone">Цялата зала PDF</button><button type="button" class="btn small" id="fp-pdf-all">Всички маси PDF</button><button type="button" class="btn small" id="fp-print-clear">Изчисти</button></div>')+
-        '<div class="fp-kpis"><div><span>Отзиви за залата</span><b>'+reviewsCount+'</b></div><div><span>Средна оценка</span><b>'+(reviewsCount?(weight/reviewsCount).toFixed(2):'—')+' ★</b></div><div><span>Ниски оценки</span><b>'+low+'</b></div></div>'+
+        '<div class="fp-kpis"><div><span>Отзиви за залата</span><b>'+reviewsCount+'</b></div><div><span>Обща оценка на РАЙ</span><b>'+fmt(venueRating)+' ★</b></div><div><span>Ниски оценки</span><b>'+low+'</b></div></div>'+
         '<div class="fp-layout"><section class="fp-left"><div class="fp-map-head"><div class="fp-map-heading"><div class="fp-zone-switch" role="group" aria-label="Избор на зала">'+[['inside','Вътрешна зала'],['kids','Детски кът']].map(x=>'<button type="button" class="fp-zone-tab'+(zone===x[0]?' on':'')+'" aria-pressed="'+(zone===x[0])+'" data-fpz="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><span>'+(opt.embedded?'Натисни маса за подробности':'Натисни масите, които искаш да включиш в PDF')+'</span></div>'+(opt.embedded?'':'<button type="button" class="btn small" id="fp-edit">'+(edit?'Готово':'Подреди маси')+'</button>')+'</div>'+
         makeStage()+
         '<div class="fp-legend"><span><i class="fp-dot good"></i>Добри</span><span><i class="fp-dot mixed"></i>Смесени</span><span><i class="fp-dot bad"></i>Проблемни</span><span><i class="fp-dot neutral"></i>Без отзиви</span></div>'+
@@ -175,8 +174,8 @@
     }
     function load(){
       const q=params();
-      return Promise.all([api('/tables'),api('/floorplan/stats'+q)])
-        .then(x=>{tables=x[0];aggregated=x[1];reviews=[];draw();
+      return Promise.all([api('/tables'),api('/floorplan/stats'+q),api('/stats'+q)])
+        .then(x=>{tables=x[0];aggregated=x[1];venueRating=x[2].avg;reviews=[];draw();
           const t=tables.find(t=>String(t.label)===String(selected)&&mapName(t)===zone);
           if(t)loadReviews(t.id);}).catch(opt.fail);
     }
