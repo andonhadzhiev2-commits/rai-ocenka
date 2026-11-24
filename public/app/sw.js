@@ -1,6 +1,6 @@
 /* РАЙ Оценка service worker: push notifications + offline app shell */
-const CACHE = 'rai-ocenka-v1';
-const SHELL = ['/app/', '/app/index.html', '/app/app.css', '/app/app.js', '/app/logo.png', '/app/icons/icon-192.png', '/app/icons/badge-96.png', '/app/manifest.webmanifest'];
+const CACHE = 'rai-ocenka-print-v2';
+const SHELL = ['/app/', '/app/index.html', '/app/app.css', '/app/app.js', '/app/floorplan.js', '/app/pdf-export.js', '/app/logo.png', '/app/icons/icon-192.png', '/app/icons/badge-96.png', '/app/manifest.webmanifest'];
 
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => {
