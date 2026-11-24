@@ -135,7 +135,7 @@
         '<div class="fp-layout"><section class="fp-left"><div class="fp-map-head"><div class="fp-map-heading"><div class="fp-zone-switch" role="group" aria-label="Избор на зала">'+[['inside','Вътрешна зала'],['kids','Детски кът']].map(x=>'<button type="button" class="fp-zone-tab'+(zone===x[0]?' on':'')+'" aria-pressed="'+(zone===x[0])+'" data-fpz="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><span>Натисни маса, за да видиш подробности</span></div>'+(opt.embedded?'':'<button type="button" class="btn small" id="fp-edit">'+(edit?'Готово':'Подреди маси')+'</button>')+'</div>'+
         makeStage()+
         '<div class="fp-legend"><span><i class="fp-dot good"></i>Добри</span><span><i class="fp-dot mixed"></i>Смесени</span><span><i class="fp-dot bad"></i>Проблемни</span><span><i class="fp-dot neutral"></i>Без отзиви</span></div>'+
-        '<p class="meta">Цветовете се определят от средната оценка още от първия отзив. Броят отзиви показва колко данни има за масата.</p></section>'+
+        '</section>'+
         (opt.embedded ? '' : '<aside class="fp-right" id="fp-detail">'+detail()+'</aside>')+'</div>'+
         (opt.embedded && showDetail ? '<div class="fp-modal-backdrop" id="fp-modal-backdrop" role="presentation"><section class="fp-modal" role="dialog" aria-modal="true" aria-label="Отзиви за маса '+esc(selected)+'"><button type="button" class="fp-modal-close" id="fp-modal-close" aria-label="Затвори">✕</button><div id="fp-modal-body">'+detail()+'</div></section></div>' : '');
       target.querySelectorAll('[data-fpz]').forEach(b=>b.onclick=()=>{zone=b.dataset.fpz;selected=null;showDetail=false;reviews=[];draw();});
