@@ -320,7 +320,7 @@
           (r.suspected_repeat && /10 часа|48 часа/.test(r.suspicion_reason || '') ? '<div class="notice" style="background:#302013;border-color:#a36b32;color:#ffe0b6">⚠ Чести оценки от един браузър — ' + esc(r.suspicion_reason) + '. Проверете контекста; това не доказва манипулация.</div>' : '') +
           (isOwner() ? '<div class="meta">Идентификатор на браузър: '+(r.browser_short_id ? esc(r.browser_short_id) : 'не е наличен за този отзив')+'</div>' : '') +
           (r.products && r.products.length ? '<div><h3>Ново меню</h3><div class="tags" style="margin-top:6px">' + r.products.map(function (p) { return '<span class="tag">' + (p.vote > 0 ? '👍 ' : '👎 ') + esc(p.name) + '</span>'; }).join('') + '</div></div>' : '') +
-          (r.phone ? '<div><h3>Телефон (със съгласие)</h3><div class="row" style="margin-top:6px"><span class="code" style="font-size:16px;color:var(--fg)">' + esc(r.phone) + '</span><a class="btn small" href="tel:' + esc(r.phone) + '">Обади се</a></div></div>' : (r.phone_consent ? '<div class="meta">Телефонът е изтрит след срока за съхранение.</div>' : '')) +
+          (r.phone ? '<div class="rai-review-callback"><h3>📞 Клиентът иска да се свържеш с него</h3><div class="row" style="margin-top:6px"><span class="code" style="font-size:16px;color:var(--ink)">' + esc(r.phone) + '</span><a class="btn small" href="tel:' + esc(r.phone) + '">Обади се</a></div>' + (isOwner() ? (r.callback_called_at?'<p class="meta">✓ Позвъняно · '+dt(r.callback_called_at)+'</p>':'<button type="button" class="btn block rai-called-btn" id="rai-mark-called">✓ Позвъних</button>') : '') + '</div>' : (r.phone_consent ? '<div class="meta">Телефонът е изтрит след срока за съхранение.</div>' : '')) +
           '</div>' +
           (isOwner() && r.browser_history && r.browser_history.length > 1 ?
             '<div class="card"><h3>История на оценките от този браузър</h3>' +
@@ -334,6 +334,7 @@
             '<button class="btn primary block" id="ack">Отбележи като прочетен</button><button class="btn ok block" id="res">Архивирай отзива</button></div>' :
             '<div class="card"><div>Прегледан на ' + (r.ack_at ? tm(r.ack_at) : '—') + '</div>' +
             (r.status === 'resolved' ? '<div>Архивиран на ' + tm(r.resolved_at) + '</div>' : '<button class="btn ok block" id="res">Архивирай отзива</button>') + '</div>');
+        var called=$('#rai-mark-called');if(called)called.onclick=function(){called.disabled=true;api('/callbacks/'+encodeURIComponent(id)+'/called',{method:'POST'}).then(function(){toast('Обаждането е потвърдено');updateBadge();draw();}).catch(function(e){called.disabled=false;fail(e);});};
         if ($('#ack')) $('#ack').onclick = function () { api('/reviews/' + id + '/ack', { method: 'POST' }).then(function () { toast('Отзивът е отбелязан като прочетен'); draw(); updateBadge(); }).catch(function (e) { fail(e); draw(); }); };
         if ($('#res')) $('#res').onclick = function () { api('/reviews/' + id + '/resolve', { method: 'POST' }).then(function () { toast('Отзивът е архивиран'); draw(); updateBadge(); }).catch(fail); };
       });
