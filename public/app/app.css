@@ -294,3 +294,28 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#d4475c;box-sh
 .fp-map .fp-seat.round{border-radius:5px}
 .fp-map .fp-seat b{font-size:1em;line-height:1.05}
 .fp-map .fp-seat small{font:700 .69em/1 var(--body);letter-spacing:-.04em}
+
+/* Analytics: fit the complete room sketch in one view on desktop and phone.
+   Override the legacy 560px map minimum, which caused sideways clipping. */
+.stats-floorplan .fp-map-scroll{
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
+  margin-inline:auto;
+}
+.stats-floorplan .fp-map{
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  box-sizing:border-box;
+}
+.stats-floorplan .fp-left{
+  width:100%;
+  max-width:510px;
+  margin-inline:auto;
+}
+@media(max-width:600px){
+  .stats-floorplan .fp-left{padding:9px}
+  .stats-floorplan .fp-map .fp-seat{font-size:clamp(7px,2.1vw,10px);border-width:1px}
+  .stats-floorplan .fp-map .fp-seat small{font-size:.65em}
+}
