@@ -264,9 +264,9 @@
         var tmax = Math.max.apply(null, s.trend.map(function (d) { return d.n; }).concat([1]));
         var tagMax = Math.max.apply(null, s.tags.map(function (d) { return d.n; }).concat([1]));
         view.innerHTML = '<div class="rai-page-heading"><span class="rai-eyebrow">КОКТЕЙЛ-БАР РАЙ</span><h1>Анализи</h1></div>' +
-          '<div class="seg">' + [['day', 'Ден'], ['week', 'Седмица'], ['mtd', 'Месец'], ['custom', 'Период']].map(function (p) {
-            return '<button type="button" data-p="' + p[0] + '" class="' + (statP.period === p[0] ? 'on' : '') + '">' + p[1] + '</button>'; }).join('') + '</div>' +
-          (statP.period === 'custom' ? '<div class="row"><label class="f grow">От<input type="date" id="sf" value="' + statP.from + '"></label><label class="f grow">До<input type="date" id="st" value="' + statP.to + '"></label><button class="btn" id="sgo" style="align-self:flex-end">Покажи</button></div>' : '') +
+          '<section class="rai-period-panel"><div class="rai-period-tabs" role="group" aria-label="Избор на период">' + [['day', 'Ден'], ['week', 'Седмица'], ['mtd', 'Месец'], ['custom', 'Период']].map(function (p) {
+            return '<button type="button" data-p="' + p[0] + '" class="' + (statP.period === p[0] ? 'selected' : '') + '" aria-pressed="' + (statP.period === p[0]) + '">' + p[1] + '</button>'; }).join('') + '</div>' +
+          (statP.period === 'custom' ? '<div class="rai-period-dates"><label>От дата<input type="date" id="sf" value="' + statP.from + '"></label><label>До дата<input type="date" id="st" value="' + statP.to + '"></label><button type="button" class="btn primary" id="sgo">Покажи</button></div>' : '') + '</section>' +
           '<div class="kpis"><button type="button" id="rai-all-ratings" class="kpi rai-action-kpi"><div class="v">' + s.total + '</div><div class="l">Оценки ›</div><span class="rai-kpi-hint">Виж всички по маси</span></button>' +
           '<button type="button" id="rai-avg-ratings" class="kpi rai-action-kpi"><div class="v">' + (s.avg != null ? String(s.avg).replace('.', ',') + '<span class="rai-gold-star">★</span>' : '—') + '</div><div class="l">Средна оценка ›</div><span class="rai-kpi-hint">Виж оценките</span></button>' +
           '<button type="button" class="kpi rai-action-kpi" id="openNewReviewsQuick" aria-label="Покажи всички нови отзиви по маси"><div class="v">' + s.open.total + '</div><div class="l">Нови отзиви <span aria-hidden="true">›</span></div><span class="rai-kpi-hint">Виж всички по маси</span></button>' +
@@ -290,7 +290,14 @@
         var quickButton = $('#openNewReviewsQuick'); if (quickButton) quickButton.onclick = function(){openNewReviewsQuick({kind:'new'});};
         var allButton=$('#rai-all-ratings');if(allButton)allButton.onclick=function(){openNewReviewsQuick({period:statP.period,from:statP.from,to:statP.to});};
         var avgButton=$('#rai-avg-ratings');if(avgButton)avgButton.onclick=function(){openNewReviewsQuick({period:statP.period,from:statP.from,to:statP.to});};
-        view.querySelectorAll('.seg button').forEach(function (b) { b.onclick = function () { statP.period = b.dataset.p; draw().catch(fail); }; });
+        view.querySelectorAll('.rai-period-tabs button').forEach(function (b) { b.onclick = function () {
+          statP.period = b.dataset.p;
+          if (statP.period === 'custom' && !statP.from) {
+            var today = new Date().toLocaleDateString('sv-SE',{timeZone:'Europe/Sofia'});
+            statP.from = today.slice(0,8)+'01'; statP.to = today;
+          }
+          draw().catch(fail);
+        }; });
         if ($('#sgo')) $('#sgo').onclick = function () { statP.from = $('#sf').value; statP.to = $('#st').value; draw().catch(fail); };
         if(isOwner() && window.RAIFloorplan){var floorSlot=$('#stats-floorplan');if(floorSlot)window.RAIFloorplan.mount({view:floorSlot,api:api,toast:toast,fail:fail,tags:TAGS,embedded:true,period:statP.period,from:statP.from,to:statP.to}).catch(fail);}
       });
