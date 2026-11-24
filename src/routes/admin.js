@@ -198,6 +198,43 @@ r.get('/tables', ANY, wrap(async (req, res) => {
                         ORDER BY z.sort NULLS LAST, z.id, NULLIF(regexp_replace(t.label, '\\D', '', 'g'), '')::int NULLS LAST, t.label`);
   res.json(t.rows.map(x => ({ ...x, url: `${s.public_base_url}/r/${x.code}` })));
 }));
+// Idempotent initialization from the two owner-supplied sketches.
+// Never replace an existing QR code, never change an existing table's zone.
+// Called only by the user's explicit PDF export action.
+const FLOORPLAN_NUMBERS = {
+  inside: [21,22,23,24,42,41,40,11,12,13,17,18,19,16,28,35,31,32,33,34,36,37,38,39,43,44,45,46,61,62,63,52,53,55,66,67],
+  kids: [91,70,71,80,81,2,3,8,72,73,82,83,4,5,9,74,84,85,93,90,6,7,10,92,75,76,86,87,88,89]
+};
+r.post('/tables/ensure-floorplan', OWNER, wrap(async (req, res) => {
+  const body = req.body || {}, scope = body.scope;
+  if (!['inside','kids','all','selected'].includes(scope)) return bad(res, 'Невалиден избор на маси.');
+  const allowed = new Set([...FLOORPLAN_NUMBERS.inside,...FLOORPLAN_NUMBERS.kids]);
+  let numbers = scope === 'all' ? [...allowed] : scope === 'selected' ? body.numbers : FLOORPLAN_NUMBERS[scope];
+  if (!Array.isArray(numbers) || !numbers.length || numbers.length > allowed.size) return bad(res, 'Не са избрани валидни маси.');
+  numbers = [...new Set(numbers.map(Number))];
+  if (numbers.some(n => !Number.isInteger(n) || !allowed.has(n))) return bad(res, 'Невалиден номер на маса.');
+  const data = await db.tx(async client => {
+    // Serializes concurrent first-time exports so parallel clicks cannot duplicate a table.
+    await client.query('SELECT pg_advisory_xact_lock($1)', [8342026]);
+    const zones = {};
+    for (const [key, title] of [['inside','Вътрешна зала'],['kids','Детски кът']]) {
+      const existing = await client.query('SELECT id FROM zones WHERE name=$1 ORDER BY id LIMIT 1',[title]);
+      zones[key] = existing.rowCount ? existing.rows[0].id :
+        (await client.query('INSERT INTO zones(name,sort) VALUES($1,$2) RETURNING id',[title,key==='inside'?0:1])).rows[0].id;
+    }
+    const results=[];let created=0;
+    for (const n of numbers) {
+      const label=String(n);
+      const existing = await client.query('SELECT id,label,code,active,zone_id FROM tables WHERE label=$1 ORDER BY id LIMIT 1',[label]);
+      if (existing.rowCount) {results.push(existing.rows[0]);continue;}
+      const z = FLOORPLAN_NUMBERS.kids.includes(n) ? zones.kids : zones.inside;
+      const added=(await client.query('INSERT INTO tables(zone_id,label,code) VALUES($1,$2,$3) RETURNING id,label,code,active,zone_id',[z,label,newCode()])).rows[0];
+      results.push(added);created++;
+    }
+    return { tables:results, created };
+  });
+  res.json(data);
+}));
 r.post('/tables', OWNER, wrap(async (req, res) => {
   const { label, zone_id, count, start } = req.body || {};
   const z = zone_id ? Number(zone_id) : null;
