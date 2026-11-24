@@ -190,14 +190,10 @@
     function draw() {
       return Promise.all([api('/reviews/' + id), api('/settings')]).then(function (x) {
         var r = x[0], s = x[1], alert = r.rating <= s.alert_max_rating;
-        var age = Math.floor((Date.now() - new Date(r.created_at)) / 1000);
-        var reactSec = r.ack_at ? Math.floor((new Date(r.ack_at) - new Date(r.created_at)) / 1000) : null;
-        var target = s.ack_target_minutes * 60;
-        function mmss(sec) { return Math.floor(sec / 60) + ':' + ('0' + (sec % 60)).slice(-2); }
         view.innerHTML = '<a href="#/" class="muted">← Сигнали</a>' +
           '<div class="card" style="' + (alert ? 'border-color:#5a2129;background:#1c1215' : '') + '">' +
           '<div class="row between">' + stars(r.rating) + '<span class="pill ' + r.status + '">' + STATUS[r.status] + '</span></div>' +
-          (alert ? '<div class="notice" style="background:#2a0f14;border-color:#5a2129;color:#ffc2ca">⚠️ Сигнал: оценка ' + r.rating + '★. Цел: реакция до ' + s.ack_target_minutes + ' мин.</div>' : '') +
+          (alert ? '<div class="notice" style="background:#2a0f14;border-color:#5a2129;color:#ffc2ca">⚠️ Ниска оценка: ' + r.rating + '★.</div>' : '') +
           '<h2>' + esc(place(r)) + '</h2><div class="meta">' + dt(r.created_at) + ' · език ' + (LANG[r.lang] || '') + '</div>' +
           (r.tags && r.tags.length ? '<div class="tags">' + r.tags.map(function (t) { return '<span class="tag">' + esc(TAGS[t] || t) + '</span>'; }).join('') + '</div>' : '') +
           (r.comment ? '<div class="comment">' + esc(r.comment) + '</div>' : '<div class="meta">Без коментар</div>') +
@@ -215,19 +211,12 @@
               var trend=prior===null ? 'Първа оценка' : h.rating > prior ? '↑ Подобрение с '+(h.rating-prior)+'★' : h.rating < prior ? '↓ Спад с '+(prior-h.rating)+'★' : '→ Без промяна';
               return '<div class="item" style="border-color:'+(h.rating < prior ? '#9b3947' : 'var(--line)')+'"><div class="row between"><b>'+esc(dt(h.created_at))+'</b><b>'+h.rating+'★</b></div><div class="meta">'+trend+'</div></div>';
             }).join('')+'</div></div>' : '') +
-          (r.status === 'new' ? '<div class="card"><h3>Време от получаване</h3><div class="timer ' + (alert && age > target ? 'late' : '') + '" id="tmr">' + mmss(age) + '</div>' +
+          (r.status === 'new' ? '<div class="card">' +
             '<button class="btn primary block" id="ack">Поемам сигнала</button><button class="btn ok block" id="res">Разрешен</button></div>' :
-            '<div class="card"><div>Поет от <b>' + esc(r.ack_by_name || '—') + '</b> в ' + (r.ack_at ? tm(r.ack_at) : '—') + (reactSec != null ? ' · реакция <b>' + mmss(reactSec) + ' мин</b>' : '') + '</div>' +
+            '<div class="card"><div>Поет от <b>' + esc(r.ack_by_name || '—') + '</b> в ' + (r.ack_at ? tm(r.ack_at) : '—') + '</div>' +
             (r.status === 'resolved' ? '<div>Разрешен от <b>' + esc(r.resolved_by_name || '—') + '</b> в ' + tm(r.resolved_at) + '</div>' : '<button class="btn ok block" id="res">Отбележи като разрешен</button>') + '</div>');
         if ($('#ack')) $('#ack').onclick = function () { api('/reviews/' + id + '/ack', { method: 'POST' }).then(function () { toast('Поехте сигнала'); draw(); updateBadge(); }).catch(function (e) { fail(e); draw(); }); };
         if ($('#res')) $('#res').onclick = function () { api('/reviews/' + id + '/resolve', { method: 'POST' }).then(function () { toast('Отбелязано като разрешен'); draw(); updateBadge(); }).catch(fail); };
-        if (r.status === 'new') {
-          var start = new Date(r.created_at).getTime();
-          refreshTimer = setInterval(function () {
-            var el = $('#tmr'); if (!el) return clearInterval(refreshTimer);
-            var a = Math.floor((Date.now() - start) / 1000); el.textContent = mmss(a); el.classList.toggle('late', alert && a > target);
-          }, 1000);
-        }
       });
     }
     return draw();
@@ -243,7 +232,6 @@
         var max = Math.max.apply(null, s.distribution.map(function (d) { return d.n; }).concat([1]));
         var tmax = Math.max.apply(null, s.trend.map(function (d) { return d.n; }).concat([1]));
         var tagMax = Math.max.apply(null, s.tags.map(function (d) { return d.n; }).concat([1]));
-        var inTarget = s.reaction.acked ? Math.round(s.reaction.in_target / s.reaction.acked * 100) + '%' : '—';
         view.innerHTML = '<h1>Анализи</h1>' +
           '<div class="seg">' + [['mtd', 'Този месец'], ['day', 'Днес'], ['week', '7 дни'], ['month', '30 дни'], ['all', 'Всичко'], ['custom', 'Период']].map(function (p) {
             return '<button type="button" data-p="' + p[0] + '" class="' + (statP.period === p[0] ? 'on' : '') + '">' + p[1] + '</button>'; }).join('') + '</div>' +
@@ -251,13 +239,13 @@
           '<div class="kpis"><div class="kpi"><div class="v">' + s.total + '</div><div class="l">оценки</div></div>' +
           '<div class="kpi"><div class="v">' + (s.avg != null ? String(s.avg).replace('.', ',') + '★' : '—') + '</div><div class="l">средна оценка</div></div>' +
           '<div class="kpi"><div class="v">' + s.open.total + '</div><div class="l">Нови отзиви</div></div>' +
-          '<div class="kpi"><div class="v">' + (s.reaction.avg_min != null ? String(s.reaction.avg_min).replace('.', ',') : '—') + '</div><div class="l">мин. средна реакция</div></div></div>' +
+          '</div>' +
           '<div class="card"><h3>Разпределение</h3><div class="bars">' + s.distribution.slice().reverse().map(function (d) {
             return '<div class="bar"><span>' + stars(d.rating) + '</span><span class="track"><i style="width:' + (d.n / max * 100) + '%;background:' + (d.rating <= s.alert_max_rating ? 'var(--red2)' : d.rating === 3 ? 'var(--warn)' : 'var(--ok)') + '"></i></span><span class="num">' + d.n + '</span></div>'; }).join('') + '</div></div>' +
           (s.trend.length > 1 ? '<div class="card"><h3>Тенденция по дни</h3><div class="spark">' + s.trend.map(function (d) {
             return '<div title="' + d.d + ': ' + d.n + ' оценки, ' + d.avg + '★" style="height:' + Math.max(4, d.n / tmax * 100) + '%;background:' + (d.avg < 3 ? 'var(--red2)' : d.avg < 4 ? 'var(--warn)' : 'var(--ok)') + '"></div>'; }).join('') + '</div><div class="meta">Височина: брой оценки · цвят: средна оценка за деня</div></div>' : '') +
           (isOwner() ? '<section id="stats-floorplan" class="stats-floorplan" aria-label="Анализ по маси"><p class="muted">Зареждане на схемите…</p></section>' : '') +
-          '<div class="card"><h3>Реакция на сигнали (≤' + s.alert_max_rating + '★)</h3><div class="row"><span>Сигнали: <b>' + s.reaction.alerts + '</b></span><span>Поети: <b>' + s.reaction.acked + '</b></span><span>В рамките на ' + s.reaction.target_min + ' мин: <b>' + inTarget + '</b></span><span>Време за реакция: <b>' + (s.reaction.median_min != null ? s.reaction.median_min + ' мин' : '—') + '</b></span></div></div>' +
+          '<div class="card"><h3>Реакция на сигнали (≤' + s.alert_max_rating + '★)</h3><div class="row"><span>Сигнали: <b>' + s.reaction.alerts + '</b></span><span>Поети: <b>' + s.reaction.acked + '</b></span></div></div>' +
           '<div class="card"><h3>Категории</h3>' + (s.tags.length ? '<div class="bars">' + s.tags.map(function (t) {
             return '<div class="bar"><span>' + esc(TAGS[t.tag] || t.tag) + '</span><span class="track"><i style="width:' + (t.n / tagMax * 100) + '%;background:' + (['slow', 'cold', 'wrong', 'price', 'clean', 'noise'].indexOf(t.tag) >= 0 ? 'var(--red2)' : 'var(--ok)') + '"></i></span><span class="num">' + t.n + ' · ' + t.avg + '★</span></div>'; }).join('') + '</div><div class="meta">Червено: споменато като проблем · зелено: като харесано</div>' : '<p class="muted">Няма данни.</p>') + '</div>' +
           '<div class="card"><h3>Ново меню 👍 / 👎</h3>' + (s.products.length ? '<div class="bars">' + s.products.map(function (p) { var t = p.up + p.down || 1;
@@ -436,7 +424,6 @@
           '<div class="card"><h2>Известия</h2><div class="meta">За кои оценки се праща push. Всички оценки винаги се записват и влизат в статистиката.</div><div class="row">' +
           [1, 2, 3, 4, 5].map(function (n) { return '<label class="chk"><input type="checkbox" name="nr" value="' + n + '"' + (s.notify_ratings.indexOf(n) >= 0 ? ' checked' : '') + '> ' + n + '★</label>'; }).join('') + '</div>' +
           '<label class="f">Сигнал (червено, проследяване) при оценка до<select id="am">' + [0, 1, 2, 3].map(function (n) { return '<option value="' + n + '"' + (s.alert_max_rating === n ? ' selected' : '') + '>' + (n ? n + '★' : 'без сигнали') + '</option>'; }).join('') + '</select></label>' +
-          '<label class="f">Цел за реакция (минути)<input id="at" type="number" min="1" max="120" value="' + s.ack_target_minutes + '"></label>' +
           '<label class="chk"><input type="checkbox" id="esc"' + (s.escalate_unacked ? ' checked' : '') + '> Повторно известие до всички, ако сигналът не е поет навреме</label></div>' +
           '<div class="card"><h2>Публичен адрес и Google</h2><label class="f">Адрес за QR кодовете<input id="pu" type="url" value="' + esc(s.public_base_url) + '"></label>' +
           '<label class="chk"><input type="checkbox" id="puc"' + (s.public_base_url_confirmed ? ' checked' : '') + '> Адресът е потвърден и работи – стикерите са окончателни</label>' +
@@ -452,7 +439,7 @@
           e.preventDefault();
           var nr = []; view.querySelectorAll('input[name=nr]:checked').forEach(function (c) { nr.push(Number(c.value)); });
           api('/settings', { method: 'PUT', body: {
-            notify_ratings: nr, alert_max_rating: Number($('#am').value), ack_target_minutes: Number($('#at').value), escalate_unacked: $('#esc').checked,
+            notify_ratings: nr, alert_max_rating: Number($('#am').value), ack_target_minutes: s.ack_target_minutes, escalate_unacked: $('#esc').checked,
             public_base_url: $('#pu').value, public_base_url_confirmed: $('#puc').checked, google_review_url: $('#gu').value,
             phone_retention_days: Number($('#pr').value), rate_limit_per_device_10min: Number($('#rd').value), rate_limit_per_table_30min: Number($('#rt').value),
             min_fill_seconds: Number($('#mf').value), venue_address_bg: $('#vbg').value, venue_address_en: $('#ven').value, venue_address_el: $('#vel').value
