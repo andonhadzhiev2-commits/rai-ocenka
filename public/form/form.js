@@ -9,7 +9,7 @@
       send: 'Изпратете', hint: 'Изберете оценка, за да продължите.', hint2: 'Готово, можете да изпратите.', sending: 'Изпращане…',
       ty: 'Благодарим Ви!', ty2: 'Отзивът Ви беше изпратен на управителя.',
       errNet: 'Няма връзка. Опитайте отново – отзивът няма да се дублира.', errRate: 'Получихме много отзиви от това устройство. Опитайте по-късно.',
-      errFast: 'Моля, отделете няколко секунди и опитайте отново.', errGen: 'Нещо се обърка. Опитайте отново.', phoneBad: 'Проверете телефона или махнете отметката.',
+      errFast: 'Моля, отделете няколко секунди и опитайте отново.', errGen: 'Нещо се обърка. Опитайте отново.', phoneBad: 'Въведете валиден телефон или махнете отметката.', phoneConsentNeeded: 'За да се свържем с Вас, отбележете съгласието под телефона.',
       stars: ['', 'Много зле', 'Зле', 'Средно', 'Добре', 'Отлично'], starAria: 'звезди',
       lowc: { slow: 'Забавено обслужване', cold: 'Храната беше студена', wrong: 'Объркана поръчка', price: 'Високи цени', clean: 'Недостатъчна чистота', noise: 'Прекалено шумно', quality: 'Качество на храната', attitude: 'Невнимателно отношение' },
       highc: { food: 'Вкусна храна', drinks: 'Хубави напитки', staff: 'Любезно обслужване', atmosphere: 'Приятна атмосфера', music: 'Музиката', value: 'Добро съотношение цена–качество' } },
@@ -21,7 +21,7 @@
       send: 'Send', hint: 'Choose a rating to continue.', hint2: 'Ready to send.', sending: 'Sending…',
       ty: 'Thank you!', ty2: 'Your feedback was sent to the manager.',
       errNet: 'No connection. Please try again – your review will not be duplicated.', errRate: 'Too many reviews from this device. Please try later.',
-      errFast: 'Please take a few seconds and try again.', errGen: 'Something went wrong. Please try again.', phoneBad: 'Check the phone number or untick the box.',
+      errFast: 'Please take a few seconds and try again.', errGen: 'Something went wrong. Please try again.', phoneBad: 'Enter a valid phone number or untick the box.', phoneConsentNeeded: 'To let us contact you, tick the consent box below the phone number.',
       stars: ['', 'Very bad', 'Bad', 'OK', 'Good', 'Excellent'], starAria: 'stars',
       lowc: { slow: 'Delayed service', cold: 'Food was cold', wrong: 'Incorrect order', price: 'Prices too high', clean: 'Not clean enough', noise: 'Too noisy', quality: 'Food quality', attitude: 'Inattentive service' },
       highc: { food: 'The food', drinks: 'Drinks', staff: 'The staff', atmosphere: 'Atmosphere', music: 'Music', value: 'Price' } },
@@ -33,7 +33,7 @@
       send: 'Αποστολή', hint: 'Επιλέξτε βαθμολογία για να συνεχίσετε.', hint2: 'Έτοιμο για αποστολή.', sending: 'Αποστολή…',
       ty: 'Ευχαριστούμε!', ty2: 'Η γνώμη σας στάλθηκε στον υπεύθυνο.',
       errNet: 'Δεν υπάρχει σύνδεση. Δοκιμάστε ξανά – η αξιολόγηση δεν θα διπλασιαστεί.', errRate: 'Πολλές αξιολογήσεις από αυτή τη συσκευή. Δοκιμάστε αργότερα.',
-      errFast: 'Περιμένετε λίγα δευτερόλεπτα και δοκιμάστε ξανά.', errGen: 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.', phoneBad: 'Ελέγξτε το τηλέφωνο ή αφαιρέστε την επιλογή.',
+      errFast: 'Περιμένετε λίγα δευτερόλεπτα και δοκιμάστε ξανά.', errGen: 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.', phoneBad: 'Εισαγάγετε έγκυρο τηλέφωνο ή αποεπιλέξτε το κουτάκι.', phoneConsentNeeded: 'Για να επικοινωνήσουμε μαζί σας, επιλέξτε το πλαίσιο συγκατάθεσης κάτω από το τηλέφωνο.',
       stars: ['', 'Πολύ κακό', 'Κακό', 'Μέτριο', 'Καλό', 'Εξαιρετικό'], starAria: 'αστέρια',
       lowc: { slow: 'Καθυστέρηση εξυπηρέτησης', cold: 'Το φαγητό ήταν κρύο', wrong: 'Λάθος παραγγελία', price: 'Υψηλές τιμές', clean: 'Ελλιπής καθαριότητα', noise: 'Υπερβολικός θόρυβος', quality: 'Ποιότητα φαγητού', attitude: 'Απρόσεκτη εξυπηρέτηση' },
       highc: { food: 'Το φαγητό', drinks: 'Τα ποτά', staff: 'Το προσωπικό', atmosphere: 'Η ατμόσφαιρα', music: 'Η μουσική', value: 'Η τιμή' } }
@@ -247,15 +247,26 @@
   });
 
   function showErr(msg) { var e = $('#err'); e.textContent = msg; e.hidden = !msg; }
+  $('#consent').addEventListener('change',function(){if(this.checked)showErr('');});
   $('#form').addEventListener('submit', function (ev) {
     ev.preventDefault(); if (!rating || sending) return;
     var t = T[lang], consent = $('#consent').checked, phone = $('#phone').value.trim();
-    if (consent && !/^\+?[\d\s\-()]{7,20}$/.test(phone)) { showErr(t.phoneBad); return; }
+    // Do not discard a submitted contact number when consent was missed.
+    if (phone && !consent) {
+      showErr(t.phoneConsentNeeded);
+      $('#consent').focus();
+      $('#consent').scrollIntoView({block:'center',behavior:'smooth'});
+      return;
+    }
+    var cleanedPhone=phone.replace(/[^\d+]/g,'');
+    if (consent && (!/^\+?[\d\s()\-]{7,20}$/.test(phone) || !/^\+?\d{7,15}$/.test(cleanedPhone))) {
+      showErr(t.phoneBad); $('#phone').focus(); return;
+    }
     showErr(''); sending = true; render();
     var prods = {}; Object.keys(votes).forEach(function (k) { if (votes[k]) prods[k] = votes[k]; });
     fetch('/api/public/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
       submission_id: submissionId, code: code, rating: rating, tags: Object.keys(chips).filter(function (k) { return chips[k]; }).concat(Object.keys(details).filter(function(k){return details[k];})),
-      products: prods, comment: $('#comment').value, phone: consent ? phone : '', phone_consent: consent, lang: lang,
+      products: prods, comment: $('#comment').value, phone: consent ? cleanedPhone : '', phone_consent: consent, lang: lang,
       issued_at: cfg.issued_at, website: $('#website').value })
     }).then(function (r) { return r.json().then(function (j) { return { s: r.status, j: j }; }); })
       .then(function (x) {
