@@ -99,12 +99,20 @@ router.post('/api/public/reviews', express.json({ limit: '8kb' }), async (req, r
     }
     const lang = ['bg', 'en', 'el'].includes(b.lang) ? b.lang : 'bg';
 
+    const browserHash = typeof b.browser_id === 'string' && UUID.test(b.browser_id)
+      ? crypto.createHmac('sha256', process.env.SESSION_SECRET || 'rai-review-fallback').update(b.browser_id).digest('hex') : null;
     const review = await db.tx(async c => {
+      let repeated = false;
+      if (browserHash) {
+        await c.query('SELECT pg_advisory_xact_lock(hashtext($1))', [browserHash]);
+        const seen = await c.query("SELECT 1 FROM reviews WHERE browser_hash=$1 AND created_at >= now() - interval '10 hours' LIMIT 1", [browserHash]);
+        repeated = seen.rowCount > 0;
+      }
       const ins = await c.query(
-        `INSERT INTO reviews (submission_id, table_id, table_label, zone_name, rating, tags, comment, phone, phone_consent, phone_purge_at, lang, client_hash)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, CASE WHEN $8::text IS NULL THEN NULL ELSE now() + make_interval(days => $10) END, $11, $12)
+        `INSERT INTO reviews (submission_id, table_id, table_label, zone_name, rating, tags, comment, phone, phone_consent, phone_purge_at, lang, client_hash, browser_hash, suspected_repeat, suspicion_reason)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, CASE WHEN $8::text IS NULL THEN NULL ELSE now() + make_interval(days => $10) END, $11, $12, $13, $14, $15)
          ON CONFLICT (submission_id) DO NOTHING RETURNING *`,
-        [b.submission_id, t.id, t.label, t.zone_name, rating, tags, comment, phone, consent, s.phone_retention_days, lang, ch]);
+        [b.submission_id, t.id, t.label, t.zone_name, rating, tags, comment, phone, consent, s.phone_retention_days, lang, ch, browserHash, repeated, repeated ? 'Повторна оценка от същия браузър в рамките на 10 часа' : null]);
       if (!ins.rowCount) return null;
       const rev = ins.rows[0];
       const votes = b.products && typeof b.products === 'object' ? b.products : {};
