@@ -1,6 +1,6 @@
 {
-  "name": "РАЙ ПУЛС",
-  "short_name": "РАЙ ПУЛС",
+  "name": "Rai Pulse",
+  "short_name": "Rai Pulse",
   "description": "Клиентски оценки и сигнали в реално време за Коктейл бар Рай",
   "id": "/app/",
   "start_url": "/app/#/stats",
