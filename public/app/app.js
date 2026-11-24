@@ -407,13 +407,15 @@
             return '<button type="button" data-p="' + p[0] + '" class="' + (statP.period === p[0] ? 'selected' : '') + '" aria-pressed="' + (statP.period === p[0]) + '">' + p[1] + '</button>'; }).join('') + '</div>' +
           '<button type="button" class="rai-period-choice'+(statP.period==='custom'?' selected':'')+'" data-p="custom" aria-expanded="'+(statP.period==='custom')+'"><span>Период</span><small>'+(statP.period==='custom'&&statP.from?esc(statP.from.slice(5)+' – '+statP.to.slice(5)):'Избери дати')+'</small></button></div>' +
           (statP.period === 'custom' ? '<div class="rai-calendar-panel" id="rai-calendar" aria-label="Календар за избор на период"></div>' : '') + '</section>' +
-          '<div class="kpis rai-summary-kpis">' +
-          '<div class="kpi rai-summary-group rai-summary-three">' +
+          '<div class="kpis rai-summary-kpis rai-summary-212">' +
+          '<div class="kpi rai-summary-group rai-summary-pair">' +
             '<button type="button" id="rai-all-ratings" class="rai-summary-cell" aria-label="Всички оценки"><span class="v">' + s.total + '</span><span class="l">📝 Оценки</span></button>' +
-            '<button type="button" id="rai-avg-ratings" class="rai-summary-cell" aria-label="Средна оценка"><span class="v">' + (s.avg != null ? String(s.avg).replace('.', ',') + '<span class="rai-gold-star">★</span>' : '—') + '</span><span class="l">⭐ Средна</span></button>' +
             '<button type="button" id="rai-comments-quick" class="rai-summary-cell" aria-label="Коментари за периода"><span class="v">' + (s.comments_total || 0) + '</span><span class="l">💬 Коментари</span></button>' +
           '</div>' +
-          '<div class="kpi rai-summary-group rai-summary-two'+(isOwner()?'':' rai-summary-one')+'">' +
+          '<div class="kpi rai-summary-group rai-summary-center">' +
+            '<button type="button" id="rai-avg-ratings" class="rai-summary-cell" aria-label="Средна оценка"><span class="v">' + (s.avg != null ? String(s.avg).replace('.', ',') : '—') + '</span><span class="rai-center-star" aria-hidden="true">★</span><span class="l">Средна</span></button>' +
+          '</div>' +
+          '<div class="kpi rai-summary-group rai-summary-pair'+(isOwner()?'':' rai-summary-one')+'">' +
             (isOwner()?'<button type="button" id="rai-callbacks" class="rai-summary-cell" aria-label="Чакащи позвънявания"><span class="v" id="rai-callback-number">—</span><span class="l">📞 Позвъни</span></button>':'') +
             '<button type="button" id="openTopReviews" class="rai-summary-cell" aria-label="Топ 10 положителни и отрицателни мнения"><span class="v rai-top-ten">ТОП 10</span><span class="l">👍👎 Мнения</span></button>' +
           '</div>' +
