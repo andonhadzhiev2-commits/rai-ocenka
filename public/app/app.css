@@ -1855,3 +1855,64 @@ label.f,.meta,.muted{color:var(--muted)}
   #view .rai-rating-distribution{gap:3px;margin-top:-3px}
   #view .rai-rating-distribution>h3{font-size:12px;padding-bottom:2px;gap:8px}
 }
+
+/* Slightly larger ten-card scale without altering their five-column symmetry. */
+.kpis.rai-summary-kpis.rai-summary-five>.kpi.rai-summary-cell,
+.rai-rating-distribution .rai-rating-tile{
+  height:120px;
+  min-height:120px;
+}
+.kpis.rai-summary-kpis.rai-summary-five>.kpi.rai-summary-cell{
+  grid-template-rows:41px 30px 25px;
+}
+.kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v{
+  font-size:clamp(30px,3vw,38px);
+}
+.kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten{
+  font-size:clamp(22px,2.3vw,29px);
+}
+.kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .rai-summary-icon{
+  height:30px;
+  font-size:21px;
+}
+.kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .rai-center-star{
+  font-size:24px;
+}
+.kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .l{
+  font-size:clamp(12px,1.2vw,15px);
+}
+.rai-rating-distribution .rai-rating-tile-stars{
+  font-size:clamp(14px,1.75vw,20px);
+}
+.rai-rating-distribution .rai-rating-tile-count{
+  font-size:clamp(29px,2.8vw,36px);
+}
+@media(max-width:600px){
+  .kpis.rai-summary-kpis.rai-summary-five>.kpi.rai-summary-cell,
+  .rai-rating-distribution .rai-rating-tile{
+    height:112px;
+    min-height:112px;
+  }
+  .kpis.rai-summary-kpis.rai-summary-five>.kpi.rai-summary-cell{
+    grid-template-rows:38px 28px 24px;
+  }
+  .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v{
+    font-size:clamp(23px,5.8vw,29px);
+  }
+  .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten{
+    font-size:clamp(16px,4.15vw,21px);
+  }
+  .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .rai-summary-icon{
+    height:28px;
+    font-size:19px;
+  }
+  .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .rai-center-star{font-size:23px}
+  .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .l{
+    font-size:clamp(9px,2.65vw,12px);
+  }
+  .rai-rating-distribution .rai-rating-tile-stars{
+    font-size:clamp(10px,2.8vw,14px);
+    letter-spacing:-1.6px;
+  }
+  .rai-rating-distribution .rai-rating-tile-count{font-size:30px}
+}
