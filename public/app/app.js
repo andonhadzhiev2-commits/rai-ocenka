@@ -85,6 +85,7 @@
 
   // ---------- feed ----------
   var feedFilter = 'open';
+  var feedRatingSort = 'desc';
   function reviewCard(r) {
     var alert = r.rating <= (window.__alertMax || 2);
     return '<a class="rv ' + (alert ? 'alert' : 'r' + r.rating) + '" href="#/review/' + r.id + '">' +
@@ -96,17 +97,22 @@
   route(/^\/$/, function () {
     chrome(true);
     function draw() {
-      var q = feedFilter === 'open' ? '/reviews?period=month&status=new&limit=100' : feedFilter === 'today' ? '/reviews?period=day&limit=200' : feedFilter === 'low' ? '/reviews?period=month&limit=200' : '/reviews?period=week&limit=200';
+      var q = feedFilter === 'open' ? '/reviews?period=month&status=new&limit=200' :
+        feedFilter === 'today' ? '/reviews?period=day&limit=200' :
+        feedFilter === 'week' ? '/reviews?period=week&limit=200' :
+        '/reviews?period=all&limit=200&rating_group=' + (feedFilter === 'high' ? 'high' : 'low');
+      q += '&sort=rating_' + (feedRatingSort === 'asc' ? 'asc' : 'desc');
       return Promise.all([api(q), api('/stats?period=day')]).then(function (x) {
         var list = x[0], s = x[1];
         window.__alertMax = s.alert_max_rating;
-        if (feedFilter === 'low') list = list.filter(function (r) { return r.rating <= s.alert_max_rating; });
-        var banner = s.open.alerts ? '<div class="banner"><div><b>' + s.open.alerts + ' непоет' + (s.open.alerts === 1 ? ' сигнал' : 'и сигнала') + '</b><div class="meta">Оценки ' + s.alert_max_rating + '★ и по-ниски</div></div><button class="btn small primary" id="seeOpen">Виж</button></div>' : '';
+        var banner = s.open.alerts ? '<div class="banner"><div><b>' + s.open.alerts + ' нов' + (s.open.alerts === 1 ? ' сигнал' : 'и сигнала') + '</b><div class="meta">Оценки ' + s.alert_max_rating + '★ и по-ниски</div></div><button class="btn small primary" id="seeOpen">Виж</button></div>' : '';
         view.innerHTML = '<div class="row between"><h1>Отзиви</h1><button class="btn small" id="rf">Обнови</button></div>' + banner +
-          '<div class="seg" role="tablist">' + [['open', 'Непоети'], ['today', 'Днес'], ['week', '7 дни'], ['low', 'Ниски']].map(function (f) {
+          '<div class="seg" role="group" aria-label="Филтри на отзиви">' + [['open', 'Нови отзиви'], ['today', 'Днес'], ['week', '7 дни'], ['low', 'Ниски 1–3★'], ['high', 'Високи 4–5★']].map(function (f) {
             return '<button type="button" data-f="' + f[0] + '" class="' + (feedFilter === f[0] ? 'on' : '') + '">' + f[1] + '</button>'; }).join('') + '</div>' +
+          '<div class="row between" style="margin:12px 0"><span class="muted">Подредба по оценка</span><button type="button" class="btn small" id="ratingSort" aria-label="Смени реда на оценките">' + (feedRatingSort === 'asc' ? '↑ Възходящо (1 → 5★)' : '↓ Низходящо (5 → 1★)') + '</button></div>' +
           (list.length ? '<div class="list">' + list.map(reviewCard).join('') + '</div>' : '<p class="muted pad">Няма отзиви за този филтър.</p>');
         view.querySelectorAll('.seg button').forEach(function (b) { b.onclick = function () { feedFilter = b.dataset.f; draw().catch(fail); }; });
+        $('#ratingSort').onclick = function () { feedRatingSort = feedRatingSort === 'asc' ? 'desc' : 'asc'; draw().catch(fail); };
         $('#rf').onclick = function () { draw().then(function () { toast('Обновено'); }).catch(fail); };
         if ($('#seeOpen')) $('#seeOpen').onclick = function () { feedFilter = 'open'; draw().catch(fail); };
         updateBadge();
