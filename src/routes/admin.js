@@ -226,7 +226,7 @@ r.post('/tables/ensure-floorplan', OWNER, wrap(async (req, res) => {
     for (const n of numbers) {
       const label=String(n);
       const existing = await client.query('SELECT id,label,code,active,zone_id FROM tables WHERE label=$1 ORDER BY id LIMIT 1',[label]);
-      if (existing.rowCount) {results.push(existing.rows[0]);continue;}
+      if (existing.rowCount) { if (existing.rows[0].active || scope === 'selected') results.push(existing.rows[0]); continue; }
       const z = FLOORPLAN_NUMBERS.kids.includes(n) ? zones.kids : zones.inside;
       const added=(await client.query('INSERT INTO tables(zone_id,label,code) VALUES($1,$2,$3) RETURNING id,label,code,active,zone_id',[z,label,newCode()])).rows[0];
       results.push(added);created++;
