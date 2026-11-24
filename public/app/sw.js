@@ -1,17 +1,43 @@
-/* РАЙ Оценка service worker: push notifications + offline app shell */
-const CACHE = 'rai-ocenka-print-v2';
-const SHELL = ['/app/', '/app/index.html', '/app/app.css', '/app/app.js', '/app/floorplan.js', '/app/pdf-export.js', '/app/logo.png', '/app/icons/icon-192.png', '/app/icons/badge-96.png', '/app/manifest.webmanifest'];
-
-self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+/* RAI Ocenka PWA service worker — versioned mobile shell and reliable updates */
+const CACHE = 'rai-ocenka-mobile-20261124-8';
+const SHELL = [
+  '/app/',
+  '/app/index.html',
+  '/app/app.css?v=20261124-8',
+  '/app/app.js?v=20261124-8',
+  '/app/floorplan.js?v=20261124-8',
+  '/app/pdf-export.js?v=20261124-8',
+  '/app/logo.png',
+  '/app/icons/icon-192.png',
+  '/app/icons/badge-96.png',
+  '/app/manifest.webmanifest'
+];
+const SHELL_PATHS = new Set(SHELL.map(url=>new URL(url,self.location.origin).pathname));
+self.addEventListener('install',event=>{
+  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()));
 });
-self.addEventListener('fetch', e => {
-  const url = new URL(e.request.url);
-  if (e.request.method !== 'GET' || url.origin !== location.origin || url.pathname.startsWith('/api/')) return;
-  // network first, fall back to the cached shell when offline
-  e.respondWith(fetch(e.request).then(r => { const copy = r.clone(); if (r.ok && SHELL.includes(url.pathname)) caches.open(CACHE).then(c => c.put(e.request, copy)); return r; })
-    .catch(() => caches.match(e.request).then(m => m || caches.match('/app/index.html'))));
+self.addEventListener('activate',event=>{
+  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('rai-ocenka-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));
+});
+self.addEventListener('fetch',event=>{
+  const req=event.request;
+  if(req.method!=='GET')return;
+  const url=new URL(req.url);
+  if(url.origin!==self.location.origin||url.pathname.startsWith('/api/'))return;
+  if(!url.pathname.startsWith('/app/'))return;
+  event.respondWith(fetch(req).then(response=>{
+    if(response.ok&&SHELL_PATHS.has(url.pathname)){
+      const copy=response.clone();
+      event.waitUntil(caches.open(CACHE).then(cache=>cache.put(req,copy)).catch(()=>{}));
+    }
+    return response;
+  }).catch(async()=>{
+    const cached=await caches.match(req,{ignoreSearch:true});
+    if(cached)return cached;
+    // Never serve HTML in place of JS/CSS, which causes silent broken screens.
+    if(req.mode==='navigate')return caches.match('/app/index.html');
+    return Response.error();
+  }));
 });
 
 self.addEventListener('push', e => {
