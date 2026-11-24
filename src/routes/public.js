@@ -99,8 +99,14 @@ router.post('/api/public/reviews', express.json({ limit: '8kb' }), async (req, r
     }
     const lang = ['bg', 'en', 'el'].includes(b.lang) ? b.lang : 'bg';
 
-    const browserHash = typeof b.browser_id === 'string' && UUID.test(b.browser_id)
-      ? crypto.createHmac('sha256', process.env.SESSION_SECRET || 'rai-review-fallback').update(b.browser_id).digest('hex') : null;
+    // Persist one pseudonymous ID in both localStorage (guest form) and a
+    // first-party HttpOnly cookie, so either storage can carry it across scans.
+    const cookieId = req.cookies && typeof req.cookies.rai_review_browser_id === 'string' && UUID.test(req.cookies.rai_review_browser_id)
+      ? req.cookies.rai_review_browser_id : null;
+    const formId = typeof b.browser_id === 'string' && UUID.test(b.browser_id) ? b.browser_id : null;
+    const effectiveBrowserId = cookieId || formId || crypto.randomUUID();
+    const browserHash = crypto.createHmac('sha256', process.env.SESSION_SECRET || 'rai-review-fallback')
+      .update(effectiveBrowserId).digest('hex');
     const review = await db.tx(async c => {
       let repeated = false;
       let suspicionReason = null;
@@ -152,6 +158,10 @@ router.post('/api/public/reviews', express.json({ limit: '8kb' }), async (req, r
       const again = await db.q('SELECT id FROM reviews WHERE submission_id=$1', [b.submission_id]);
       return res.json({ ok: true, id: again.rows[0] && again.rows[0].id, duplicate: true });
     }
+    res.cookie('rai_review_browser_id', effectiveBrowserId, {
+      httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production',
+      maxAge: 365 * 24 * 60 * 60 * 1000, path: '/'
+    });
     res.status(201).json({ ok: true, id: review.id });
     // notify after answering the guest, so a slow push service never delays the form
     push.processPending().catch(e => logError('notify', e));
