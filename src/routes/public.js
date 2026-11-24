@@ -123,6 +123,7 @@ router.post('/api/public/reviews', express.json({ limit: '8kb' }), async (req, r
         const reasons = [];
         if (n10 >= 2) reasons.push(n10 + ' оценки от един браузър за 10 часа');
         if (n48 >= 3) reasons.push(n48 + ' оценки от един браузър за 48 часа');
+        if (lifetime >= 2) reasons.push('Оценка №' + lifetime + ' от този браузър (история за целия период)');
         repeated = reasons.length > 0;
         suspicionReason = repeated ? reasons.join('; ') : null;
       }
