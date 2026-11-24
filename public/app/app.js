@@ -244,7 +244,7 @@
     chrome(true);
     if (!isOwner()) { location.hash = '#/'; return; }
     view.innerHTML = '<h1>Управление</h1><div class="list">' +
-      [['#/tables', 'Маси и зони', 'Добавяне, QR кодове, печат на стикери'], ['#/menu', 'Ново меню', 'Продукти и категории за оценка'],
+      [['#/floorplan', 'Маси за печат', 'Двете скици · QR PDF за избрани маси, цяла зала или всички маси'], ['#/tables', 'Маси и зони', 'Добавяне и настройка на масите'], ['#/menu', 'Ново меню', 'Продукти и категории за оценка'],
        ['#/users', 'Потребители', 'Управители, известия, дежурен'], ['#/settings', 'Настройки', 'Известия, адрес, Google, GDPR, защита']].map(function (x) {
         return '<a class="item" href="' + x[0] + '" style="text-decoration:none;color:var(--fg)"><span class="grow"><b>' + x[1] + '</b><br><span class="meta">' + x[2] + '</span></span><span>›</span></a>'; }).join('') + '</div>';
   });
