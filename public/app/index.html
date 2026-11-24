@@ -13,24 +13,23 @@
 <link rel="manifest" href="/app/manifest.webmanifest">
 <link rel="icon" href="/app/icons/favicon-32.png">
 <link rel="apple-touch-icon" href="/app/icons/apple-touch-icon.png">
-<link rel="stylesheet" href="/app/app.css?v=20261124-91">
+<link rel="stylesheet" href="/app/app.css?v=20261124-93">
 </head>
 <body>
-<header class="top" id="top" hidden>
-  <img src="/app/logo.png" alt="Рай" class="top-logo">
-  <div class="brand-stack"><span class="top-title">РАЙ <em>PULSE</em></span></div>
+<header class="top rai-top-nav" id="top" hidden>
+  <div class="brand-stack"><span class="top-title">PULSE</span></div>
+  <nav class="tabs rai-header-tabs" id="tabs" aria-label="Основно меню" hidden>
+    <a href="#/" data-tab="feed" aria-label="Сигнали" title="Сигнали"><span class="ti" aria-hidden="true">✦</span></a>
+    <a href="#/stats" data-tab="stats" aria-label="Клиентски анализ" title="Клиентски анализ"><span class="ti" aria-hidden="true">▥</span></a>
+    <a href="#/manage" data-tab="manage" class="owner-only" aria-label="Управление" title="Управление"><span class="ti" aria-hidden="true">⚙</span></a>
+    <a href="#/me" data-tab="me" aria-label="Профил" title="Профил"><span class="ti" aria-hidden="true">◉</span></a>
+  </nav>
   <button type="button" id="rai-callback-badge" class="rai-callback-badge" hidden aria-label="Чакащи позвънявания"></button>
 </header>
 <main id="view" class="view"><p class="muted pad">Зареждане…</p></main>
-<nav class="tabs" id="tabs" hidden>
-  <a href="#/" data-tab="feed"><span class="ti" aria-hidden="true">✦</span>Сигнали</a>
-  <a href="#/stats" data-tab="stats"><span class="ti" aria-hidden="true">▥</span>Клиентски анализ</a>
-  <a href="#/manage" data-tab="manage" class="owner-only"><span class="ti" aria-hidden="true">⚙</span>Управление</a>
-  <a href="#/me" data-tab="me"><span class="ti" aria-hidden="true">◉</span>Профил</a>
-</nav>
 <div class="toast" id="toast" role="status" hidden></div>
 <script src="/app/pdf-export.js?v=20261124-28"></script>
 <script src="/app/floorplan.js?v=20261124-64"></script>
-<script src="/app/app.js?v=20261124-92"></script>
+<script src="/app/app.js?v=20261124-93"></script>
 </body>
 </html>
