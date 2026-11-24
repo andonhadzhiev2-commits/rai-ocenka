@@ -2553,3 +2553,22 @@ body header.top.rai-top-nav .rai-pulse-mark{
 @media(max-width:400px){
   body header.top.rai-top-nav .rai-pulse-brand{flex-basis:132px;max-width:132px;min-width:90px}
 }
+
+/* Five summary KPIs: same subtle divider above captions as star percentages below.
+   No card height or type scale changes. */
+#view .kpis.rai-summary-kpis.rai-summary-five>.kpi.rai-summary-cell .l{
+  position:relative;
+}
+#view .kpis.rai-summary-kpis.rai-summary-five>.kpi.rai-summary-cell .l::before{
+  content:"";
+  display:block;
+  position:absolute;
+  width:72%;
+  max-width:76px;
+  height:1px;
+  top:-5px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#e4e8e5;
+  pointer-events:none;
+}
