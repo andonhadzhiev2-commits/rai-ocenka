@@ -126,6 +126,7 @@
       '<div class="row between"><span>' + stars(r.rating) + '</span><span class="pill ' + r.status + '">' + STATUS[r.status] + '</span></div>' +
       '<div class="meta">' + esc(place(r)) + ' · ' + dt(r.created_at) + ' · ' + (LANG[r.lang] || '') + '</div>' +
       (r.phone ? '<div class="tags"><span class="tag" style="border-color:#a97945;color:#ffe2a4">☎ Иска обаждане</span></div>' : '') +
+      (r.suspected_repeat ? '<div class="tags"><span class="tag" style="border-color:#d68b43;color:#ffd7a3">⚠ За проверка · повторен браузър до 10 ч.</span></div>' : '') +
       (r.tags && r.tags.length ? '<div class="tags">' + r.tags.map(function (t) { return '<span class="tag">' + esc(TAGS[t] || t) + '</span>'; }).join('') + '</div>' : '') +
       (r.comment ? '<div class="comment">' + esc(r.comment) + '</div>' : '') + '</a>';
   }
@@ -178,6 +179,7 @@
           '<h2>' + esc(place(r)) + '</h2><div class="meta">' + dt(r.created_at) + ' · език ' + (LANG[r.lang] || '') + '</div>' +
           (r.tags && r.tags.length ? '<div class="tags">' + r.tags.map(function (t) { return '<span class="tag">' + esc(TAGS[t] || t) + '</span>'; }).join('') + '</div>' : '') +
           (r.comment ? '<div class="comment">' + esc(r.comment) + '</div>' : '<div class="meta">Без коментар</div>') +
+          (r.suspected_repeat ? '<div class="notice" style="background:#302013;border-color:#a36b32;color:#ffe0b6">⚠ Възможна манипулация — ' + esc(r.suspicion_reason || 'повторна оценка от същия браузър') + '. Това не доказва измама.</div>' : '') +
           (r.products && r.products.length ? '<div><h3>Ново меню</h3><div class="tags" style="margin-top:6px">' + r.products.map(function (p) { return '<span class="tag">' + (p.vote > 0 ? '👍 ' : '👎 ') + esc(p.name) + '</span>'; }).join('') + '</div></div>' : '') +
           (r.phone ? '<div><h3>Телефон (със съгласие)</h3><div class="row" style="margin-top:6px"><span class="code" style="font-size:16px;color:var(--fg)">' + esc(r.phone) + '</span><a class="btn small" href="tel:' + esc(r.phone) + '">Обади се</a></div></div>' : (r.phone_consent ? '<div class="meta">Телефонът е изтрит след срока за съхранение.</div>' : '')) +
           '</div>' +
