@@ -52,7 +52,6 @@ textarea{min-height:84px;resize:vertical}
 .err{color:#ff8a98;font-size:13px;margin:8px 0 0}
 .thanks{text-align:center;align-items:stretch}
 .thanks .big{font-size:44px}
-.google{display:flex;gap:10px;align-items:center;justify-content:center;background:#fff;color:#1f1f1f;font:600 15px var(--body);border-radius:14px;padding:15px;text-decoration:none}
 .optional{color:var(--muted);font-weight:500;font-size:13px}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .foot{text-align:center;font-size:12px;color:var(--muted);padding:0 18px 24px}
