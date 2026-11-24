@@ -207,6 +207,14 @@
           (r.products && r.products.length ? '<div><h3>Ново меню</h3><div class="tags" style="margin-top:6px">' + r.products.map(function (p) { return '<span class="tag">' + (p.vote > 0 ? '👍 ' : '👎 ') + esc(p.name) + '</span>'; }).join('') + '</div></div>' : '') +
           (r.phone ? '<div><h3>Телефон (със съгласие)</h3><div class="row" style="margin-top:6px"><span class="code" style="font-size:16px;color:var(--fg)">' + esc(r.phone) + '</span><a class="btn small" href="tel:' + esc(r.phone) + '">Обади се</a></div></div>' : (r.phone_consent ? '<div class="meta">Телефонът е изтрит след срока за съхранение.</div>' : '')) +
           '</div>' +
+          (isOwner() && r.browser_history && r.browser_history.length > 1 ?
+            '<div class="card"><h3>История на оценките от този браузър</h3>' +
+            '<p class="meta">За целия наличен период · един браузър не доказва един и същ човек</p>' +
+            '<div class="list">' + r.browser_history.map(function(h,i,all){
+              var prior=i ? all[i-1].rating : null;
+              var trend=prior===null ? 'Първа оценка' : h.rating > prior ? '↑ Подобрение с '+(h.rating-prior)+'★' : h.rating < prior ? '↓ Спад с '+(prior-h.rating)+'★' : '→ Без промяна';
+              return '<div class="item" style="border-color:'+(h.rating < prior ? '#9b3947' : 'var(--line)')+'"><div class="row between"><b>'+esc(dt(h.created_at))+'</b><b>'+h.rating+'★</b></div><div class="meta">'+trend+'</div></div>';
+            }).join('')+'</div></div>' : '') +
           (r.status === 'new' ? '<div class="card"><h3>Време от получаване</h3><div class="timer ' + (alert && age > target ? 'late' : '') + '" id="tmr">' + mmss(age) + '</div>' +
             '<button class="btn primary block" id="ack">Поемам сигнала</button><button class="btn ok block" id="res">Разрешен</button></div>' :
             '<div class="card"><div>Поет от <b>' + esc(r.ack_by_name || '—') + '</b> в ' + (r.ack_at ? tm(r.ack_at) : '—') + (reactSec != null ? ' · реакция <b>' + mmss(reactSec) + ' мин</b>' : '') + '</div>' +
