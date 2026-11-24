@@ -2376,3 +2376,59 @@ label.f,.meta,.muted{color:var(--muted)}
     letter-spacing:-.5px;
   }
 }
+
+/* Final phone polish: compact card rhythm, readable labels and clean alignment. */
+@media(max-width:600px){
+  #view .kpis.rai-summary-kpis.rai-summary-five>.kpi.rai-summary-cell,
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent{
+    height:98px;
+    min-height:98px;
+    max-height:98px;
+    border-radius:11px;
+    box-shadow:0 1px 2px rgba(25,40,45,.035);
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.kpi.rai-summary-cell{
+    grid-template-rows:37px 24px 19px;
+    padding:7px 1px;
+    row-gap:0;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v,
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-count{
+    font-size:clamp(30px,8vw,34px);
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten{
+    height:37px;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten .rai-top-word,
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .v.rai-top-ten .rai-top-number{
+    font-size:clamp(18px,5.4vw,22px);
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .rai-summary-icon{
+    height:24px;
+    font-size:19px;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .rai-center-star{font-size:21px}
+  #view .kpis.rai-summary-kpis.rai-summary-five>.rai-summary-cell .l{
+    align-self:center;
+    max-width:100%;
+    font-size:clamp(8.8px,2.5vw,10.5px);
+    letter-spacing:-.35px;
+    line-height:1;
+    overflow:visible;
+  }
+  #view .kpis.rai-summary-kpis.rai-summary-five>#rai-comments-quick .l{
+    font-size:clamp(8.4px,2.28vw,9.8px);
+    letter-spacing:-.6px;
+  }
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent{
+    grid-template-rows:36px 25px 22px;
+    padding:6px 1px;
+  }
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-stars{
+    font-size:clamp(10px,2.9vw,13px);
+  }
+  #view .rai-rating-distribution .rai-rating-tile.rai-rating-accent .rai-rating-tile-percent{
+    font-size:13px;
+    padding-top:3px;
+  }
+}
