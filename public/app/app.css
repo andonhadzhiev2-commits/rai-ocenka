@@ -2482,3 +2482,65 @@ label.f,.meta,.muted{color:var(--muted)}
     letter-spacing:-1.2px;
   }
 }
+
+/* Pulse ECG logo + four icon tabs in a red header, never a bottom overlay. */
+body header.top.rai-top-nav{
+  position:sticky;top:0;z-index:30;
+  display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;
+  gap:7px;min-height:62px;
+  padding:9px max(10px,env(safe-area-inset-right,0px)) 9px max(10px,env(safe-area-inset-left,0px));
+  background:#bd1730;color:#fff;border:0;
+  box-shadow:0 2px 10px rgba(83,15,29,.14);backdrop-filter:none;
+}
+body header.top.rai-top-nav .rai-pulse-brand{
+  flex:0 1 170px;width:170px;min-width:105px;max-width:170px;
+  display:flex;align-items:center;
+}
+body header.top.rai-top-nav .rai-pulse-mark{
+  display:block;width:100%;height:auto;max-height:44px;color:#fff;
+}
+body header.top.rai-top-nav nav.tabs.rai-header-tabs{
+  position:static!important;inset:auto!important;left:auto!important;right:auto!important;
+  bottom:auto!important;transform:none!important;z-index:auto;
+  display:flex;align-items:center;justify-content:flex-end;
+  flex:1 1 auto;width:auto;min-width:0;max-width:none;
+  margin:0;padding:0;gap:2px;border:0;border-radius:0;
+  background:transparent;box-shadow:none;backdrop-filter:none;
+}
+body header.top.rai-top-nav nav.tabs.rai-header-tabs a{
+  display:flex;flex:0 1 42px;width:42px;min-width:33px;min-height:42px;
+  align-items:center;justify-content:center;
+  margin:0;padding:6px 2px;gap:0;
+  border:1px solid transparent;border-radius:9px;
+  background:transparent!important;color:rgba(255,255,255,.87)!important;
+  font-size:0;text-decoration:none;
+}
+body header.top.rai-top-nav nav.tabs.rai-header-tabs a .ti{
+  color:inherit!important;font-size:23px;line-height:1;
+}
+body header.top.rai-top-nav nav.tabs.rai-header-tabs a.on,
+body header.top.rai-top-nav nav.tabs.rai-header-tabs a.on:active{
+  background:rgba(255,255,255,.18)!important;
+  border-color:rgba(255,255,255,.18);
+  color:#fff!important;
+}
+body header.top.rai-top-nav nav.tabs.rai-header-tabs a.on .ti{color:#fff!important}
+body header.top.rai-top-nav .rai-callback-badge{
+  position:absolute;top:calc(100% + 4px);right:10px;
+  margin:0;max-width:145px;z-index:31;
+}
+body main#view.view{
+  padding-bottom:calc(26px + env(safe-area-inset-bottom,0px));
+}
+@media(min-width:900px){
+  body main#view.view{padding-bottom:30px}
+}
+@media(max-width:400px){
+  body header.top.rai-top-nav{gap:3px;padding-left:7px;padding-right:7px;min-height:57px}
+  body header.top.rai-top-nav .rai-pulse-brand{flex-basis:145px;min-width:90px}
+  body header.top.rai-top-nav nav.tabs.rai-header-tabs{gap:0}
+  body header.top.rai-top-nav nav.tabs.rai-header-tabs a{
+    flex-basis:37px;width:37px;min-width:31px;min-height:39px;padding:5px 1px;
+  }
+  body header.top.rai-top-nav nav.tabs.rai-header-tabs a .ti{font-size:21px}
+}
