@@ -472,3 +472,75 @@ input:focus,select:focus,textarea:focus{border-color:#ee603e!important;box-shado
 .rai-action-kpi{font-family:var(--body)}
 .rai-action-kpi:hover{transform:translateY(-1px)}
 @media(max-width:560px){.rai-rating-bar{padding:8px 3px}}
+
+
+/* RAI Ocenka — cohesive Barometer-inspired editorial refinement */
+:root{--display:"Montserrat","Segoe UI",Arial,sans-serif;--body:"Inter","Segoe UI",Arial,sans-serif}
+body{font-family:var(--body);font-size:14px;line-height:1.6}
+.top{
+  background:linear-gradient(115deg,#f5e7df 0%,#f8eee7 53%,#f2e4d8 100%)!important;
+  border-bottom:1px solid #e8d8cd!important;
+  box-shadow:0 3px 16px rgba(88,65,48,.07)!important;
+  min-height:72px;
+}
+.top-title{font-family:var(--display);font-size:17px;letter-spacing:-.045em;font-weight:800;color:#253541}
+.top-title em{color:#ca5638}
+.brand-sub{font-size:9px;letter-spacing:.1em;color:#927765}
+.top-logo{height:39px}
+.top-badge{background:#fffaf6;border:1px solid #e6c3af;color:#b4543b;font:700 12px var(--body)}
+.view{gap:18px}
+.view>h1,.view>.row>h1{font-family:var(--display);font-weight:800;letter-spacing:-.045em;line-height:1.22}
+.view>h1:after,.view>.row>h1:after{height:3px;width:32px}
+h2{font-family:var(--display);font-size:17px;line-height:1.35;font-weight:700;letter-spacing:-.025em}
+h3{font-family:var(--body);font-size:12px;font-weight:750;letter-spacing:0;line-height:1.4;color:#566471}
+.card{gap:12px;padding:19px 20px}
+.card h3{margin-bottom:2px}
+.kpi .v{font-family:var(--display);font-size:clamp(28px,4vw,35px);letter-spacing:-.05em;font-weight:800;line-height:1.18}
+.kpi .l{font-family:var(--body);font-weight:700;font-size:12px;line-height:1.4;color:#596876}
+.kpi .rai-kpi-hint{font-weight:650;font-size:11px}
+.fp-kpis b,.fp-mini-stats b{font-family:var(--display);letter-spacing:-.04em;font-weight:700}
+.fp-review{font-size:13px;line-height:1.55}
+.fp-review p{font-size:12px;line-height:1.55}
+.tbl{font-size:13px;line-height:1.55}
+.tbl th{font-size:11px;font-weight:750;letter-spacing:.01em;text-transform:none}
+.fp-map-scroll{background:#f2f3ef;border:1px solid #dde3de}
+.fp-map{background:#f2f3ef}
+.fp-sketch{background:#f2f3ef}
+.fp-sketch text{font-family:var(--body);font-weight:650}
+.fp-left,.fp-right{background:white;border:1px solid #e3e8e3}
+.fp-map .fp-seat{
+  background:#e5eae5;color:#364652;border-color:#aab6b2;
+  font-family:var(--body);font-weight:750;
+  box-shadow:0 1px 3px rgba(42,67,58,.07);
+}
+.fp-map .fp-seat.good{background:#deefe5;color:#286448;border-color:#6ca78a}
+.fp-map .fp-seat.mixed{background:#fff0ce;color:#795a21;border-color:#d9b369}
+.fp-map .fp-seat.bad{background:#f9e0de;color:#a34642;border-color:#d68680}
+.fp-map .fp-seat.few{background:#e8ebea;color:#5d6b73;border-color:#aab6b2}
+.fp-map .fp-seat.pending{background:#f5f6f3;color:#85938b;border-color:#c2cbc5}
+.fp-map .fp-seat.selected,.fp-map .fp-seat:hover{
+  border-color:#de6b4e;color:#263a43;
+  box-shadow:0 0 0 2px #ed7559,0 3px 12px rgba(36,48,59,.18)
+}
+.fp-legend{font-size:11px;color:#61717b}
+.fp-dot.good{background:#a9d7b9;border-color:#6ca78a}
+.fp-dot.mixed{background:#f5dba0;border-color:#d9b369}
+.fp-dot.bad{background:#ecb1ad;border-color:#d68680}
+.fp-dot.neutral{background:#dee5e0;border-color:#b7c4bc}
+.fp-modal{background:#fffdfa;border-color:#e3e7e1}
+.fp-detail-head h2{font-family:var(--display);font-weight:750}
+.fp-map-head{margin-bottom:14px}
+.fp-map-head span{font-size:11px}
+.fp-zone-switch{background:#f1f3f0}
+.fp-zone-tab{font-size:12px;font-weight:700}
+.fp-zone-tab.on{box-shadow:0 1px 4px rgba(44,65,55,.08)}
+.btn,.fp-pill,.seg button{font-family:var(--body);font-weight:700}
+.rai-quick-head h2{font-family:var(--display);font-weight:800;letter-spacing:-.04em}
+.rai-quick-review strong{font-family:var(--body);font-weight:750;font-size:14px}
+@media(max-width:560px){
+  .top{min-height:66px}
+  .top-title{font-size:15px}
+  .card{padding:16px}
+  .view{gap:15px}
+  .fp-map .fp-seat{box-shadow:none}
+}
