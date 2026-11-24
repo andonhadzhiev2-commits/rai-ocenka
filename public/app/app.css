@@ -278,3 +278,19 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#d4475c;box-sh
  .stats-floorplan .fp-map-scroll{max-width:510px;margin-left:auto;margin-right:auto}
  .stats-floorplan .fp-map{min-width:0;width:100%}
 }
+
+/* Consistent table tiles: same compact rectangular footprint across both halls. */
+.fp-map .fp-seat{
+  width:7.1%;
+  height:7.4%;
+  min-width:0;
+  min-height:0;
+  padding:1px;
+  border-radius:5px;
+  font:700 clamp(9px,.75vw,12px)/1.05 var(--display);
+  gap:1px;
+  white-space:nowrap;
+}
+.fp-map .fp-seat.round{border-radius:5px}
+.fp-map .fp-seat b{font-size:1em;line-height:1.05}
+.fp-map .fp-seat small{font:700 .69em/1 var(--body);letter-spacing:-.04em}
