@@ -3,7 +3,7 @@
   "short_name": "РАЙ Оценка",
   "description": "Клиентски оценки и сигнали в реално време за Коктейл бар Рай",
   "id": "/app/",
-  "start_url": "/app/",
+  "start_url": "/app/#/stats",
   "scope": "/app/",
   "display": "standalone",
   "orientation": "portrait",
