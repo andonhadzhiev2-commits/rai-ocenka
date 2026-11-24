@@ -1347,3 +1347,82 @@ label.f,.meta,.muted{color:var(--muted)}
   .kpis.rai-summary-kpis.rai-summary-212{gap:3px}
   .kpis.rai-summary-kpis.rai-summary-212 .rai-summary-cell .l{font-size:8px}
 }
+
+/* Five ratings, one horizontal row like the compact dashboard KPI cards. */
+.rai-rating-distribution{
+  gap:12px;
+  padding:15px 16px;
+}
+.rai-rating-distribution h3{margin:0;font-size:16px}
+.rai-rating-tiles{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:#fff;
+  overflow:hidden;
+}
+.rai-rating-tile{
+  appearance:none;
+  background:transparent;
+  border:0;
+  color:var(--ink);
+  min-width:0;
+  cursor:pointer;
+  padding:10px 5px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  text-align:center;
+}
+.rai-rating-tile + .rai-rating-tile{border-left:1px solid var(--border)}
+.rai-rating-tile:hover{background:#f7f7f4}
+.rai-rating-tile:focus-visible{outline:2px solid #278465;outline-offset:-3px}
+.rai-rating-tile-stars{
+  font:800 19px/1.05 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  white-space:nowrap;
+}
+.rai-rating-tile-stars span{color:#d6a036;padding-left:2px}
+.rai-rating-tile-count{
+  font:750 24px/1.1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-variant-numeric:tabular-nums;
+}
+.rai-rating-tile-track{
+  display:block;
+  width:76%;
+  max-width:90px;
+  height:6px;
+  background:#eeefeb;
+  border-radius:20px;
+  overflow:hidden;
+}
+.rai-rating-tile-track i{display:block;height:100%;border-radius:20px}
+/* The top dashboard row has ample height for a larger legible type size. */
+.kpis.rai-summary-kpis.rai-summary-212 .rai-summary-cell .v{
+  font-size:clamp(25px,2.7vw,33px);
+}
+.kpis.rai-summary-kpis.rai-summary-212 .rai-summary-cell .v.rai-top-ten{
+  font-size:clamp(19px,2.2vw,27px);
+}
+.kpis.rai-summary-kpis.rai-summary-212 .rai-summary-cell .l{
+  font-size:clamp(11px,1.12vw,14px);
+  font-weight:750;
+}
+@media(max-width:600px){
+  .rai-rating-distribution{padding:13px 12px;gap:10px}
+  .rai-rating-distribution h3{font-size:15px}
+  .rai-rating-tile{padding:9px 2px;gap:5px}
+  .rai-rating-tile-stars{font-size:16px}
+  .rai-rating-tile-count{font-size:22px}
+  .rai-rating-tile-track{height:5px;width:82%}
+  .kpis.rai-summary-kpis.rai-summary-212 .rai-summary-cell .v{font-size:clamp(19px,5vw,24px)}
+  .kpis.rai-summary-kpis.rai-summary-212 .rai-summary-cell .v.rai-top-ten{font-size:clamp(15px,4vw,20px)}
+  .kpis.rai-summary-kpis.rai-summary-212 .rai-summary-cell .l{font-size:clamp(9px,2.45vw,11px);line-height:1.2}
+}
+@media(max-width:350px){
+  .rai-rating-tile-stars{font-size:14px}
+  .rai-rating-tile-count{font-size:19px}
+  .kpis.rai-summary-kpis.rai-summary-212 .rai-summary-cell .l{font-size:9px}
+}
