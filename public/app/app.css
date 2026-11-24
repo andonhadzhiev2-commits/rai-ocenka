@@ -703,3 +703,136 @@ label.f,.meta,.muted{color:var(--muted)}
   .kpis>.kpi.rai-action-kpi .v{font-size:clamp(25px,7vw,30px)}
   .kpis>.kpi.rai-action-kpi .l{font-size:11px}
 }
+
+/* Final seating readability: no 510px thumbnail. Large actual plan with horizontal
+   scrolling on narrow screens, not tiny illegible table markers. */
+.stats-floorplan .fp-left,
+.stats-floorplan .fp-layout,
+.fp-layout .fp-left{
+  width:100%;
+  max-width:none;
+  min-width:0;
+  margin-inline:0;
+}
+.fp-map-scroll,
+.stats-floorplan .fp-map-scroll{
+  box-sizing:border-box;
+  width:100%;
+  max-width:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+  margin-inline:0;
+  scrollbar-color:#bfcac6 #f1f3f0;
+  -webkit-overflow-scrolling:touch;
+}
+.fp-map,
+.stats-floorplan .fp-map{
+  width:100%;
+  max-width:none;
+  min-width:0;
+  position:relative;
+  box-sizing:border-box;
+}
+.fp-map .fp-seat,
+.stats-floorplan .fp-map .fp-seat{
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:5px;
+  padding:4px;
+  width:9%;
+  min-width:0;
+  min-height:0;
+  font:750 17px/1.05 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  border-width:1.5px;
+  border-radius:8px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:clip;
+}
+.fp-map .fp-seat b,.stats-floorplan .fp-map .fp-seat b{font-size:1em;line-height:1.05}
+.fp-map .fp-seat small.rai-seat-stars,
+.stats-floorplan .fp-map .fp-seat small.rai-seat-stars{
+  display:block;
+  max-width:100%;
+  overflow:visible;
+  font-size:13px;
+  line-height:1;
+  font-weight:800;
+  letter-spacing:-1px;
+  color:#a27b25;
+  text-align:center;
+  white-space:nowrap;
+}
+.fp-map-inside .fp-seat{height:7.5%}
+.fp-map-kids .fp-seat{height:9.3%}
+@media(max-width:950px){
+  .fp-map-inside,.stats-floorplan .fp-map-inside{min-width:850px;max-width:none}
+  .fp-map-kids,.stats-floorplan .fp-map-kids{min-width:790px;max-width:none}
+  .fp-map .fp-seat,.stats-floorplan .fp-map .fp-seat{font-size:16px;gap:5px}
+  .fp-map .fp-seat small.rai-seat-stars,
+  .stats-floorplan .fp-map .fp-seat small.rai-seat-stars{font-size:12px;letter-spacing:-.95px}
+}
+@media(min-width:951px){
+  .fp-map-inside,.stats-floorplan .fp-map-inside{min-width:850px}
+  .fp-map-kids,.stats-floorplan .fp-map-kids{min-width:790px}
+}
+.fp-map .fp-seat.selected,
+.stats-floorplan .fp-map .fp-seat.selected,
+.fp-map .fp-seat.selected:hover,
+.stats-floorplan .fp-map .fp-seat.selected:hover{
+  border-color:#839d96!important;
+  outline:2px solid #a8bdb6!important;
+  outline-offset:1px;
+  box-shadow:0 2px 7px rgba(36,48,59,.15)!important;
+}
+.fp-map .fp-seat:hover:not(.selected),
+.stats-floorplan .fp-map .fp-seat:hover:not(.selected){
+  border-color:#839d96!important;
+  box-shadow:0 2px 7px rgba(36,48,59,.15)!important;
+}
+/* Replace inherited old orange/pink selected-button overrides with the final
+   neutral BAROMETER treatment, including keyboard and mouse press states. */
+.rai-period-tabs button.selected,
+.rai-period-tabs button[aria-pressed="true"],
+.rai-period-tabs button.selected:active,
+.rai-period-tabs button[aria-pressed="true"]:focus,
+.rai-period-tabs button.selected:hover{
+  background:#f7f7f4!important;
+  color:#24303b!important;
+  box-shadow:0 1px 3px rgba(36,48,59,.08)!important;
+  border-color:transparent!important;
+}
+.rai-period-choice.selected,
+.rai-period-choice:active,
+.rai-period-choice:focus,
+.rai-period-choice[aria-expanded="true"]{
+  background:#f7f7f4!important;
+  color:#24303b!important;
+  border-color:#dce2df!important;
+  box-shadow:0 1px 3px rgba(36,48,59,.08)!important;
+}
+.fp-zone-tab.on,
+.fp-zone-tab[aria-pressed="true"],
+.fp-zone-tab.on:active,
+.fp-pill.on,
+.seg button.on{
+  background:#f7f7f4!important;
+  color:#24303b!important;
+  border-color:#dce2df!important;
+  box-shadow:0 1px 3px rgba(36,48,59,.08)!important;
+}
+.fp-zone-switch{background:#fff;border:1px solid #e4e6e2}
+.tabs a.on,.tabs a.on:active{
+  background:#f7f7f4!important;
+  color:#24303b!important;
+}
+.tabs a.on .ti{color:#52656e!important}
+.kpis>.kpi.rai-action-kpi:hover,
+.kpis>.kpi.rai-action-kpi:active{
+  background:#f7f7f4!important;
+  border-color:#dce2df!important;
+  box-shadow:0 2px 7px rgba(36,48,59,.07)!important;
+}
