@@ -110,7 +110,7 @@
         const posX=t&&t.map_x!=null?Number(t.map_x):100*(x+w/2)/c.w;
         const posY=t&&t.map_y!=null?Number(t.map_y):100*(y+h/2)/c.h;
         const attr='style="left:'+posX+'%;top:'+posY+'%"';
-        markup+='<button type="button" title="Маса '+esc(num)+' · '+(total?fmt(avg)+' звезди, '+total+' отзива':'Няма отзиви')+'" class="fp-seat '+quality+(selected===num?' selected':'')+(printSelection.has(keyForNum(num))?' print-marked':'')+'" data-fps="'+esc(num)+'" '+attr+'><b>'+esc(num)+'</b>'+(total?'<small>'+fmt(avg)+' <span class="rai-gold-star">★</span></small>':'')+'</button>';
+        markup+='<button type="button" title="Маса '+esc(num)+' · '+(total?fmt(avg)+' звезди, '+total+' отзива':'Няма отзиви')+'" class="fp-seat '+quality+(selected===num?' selected':'')+(printSelection.has(keyForNum(num))?' print-marked':'')+'" data-fps="'+esc(num)+'" '+attr+'><b>'+esc(num)+'</b>'+(total?'<small>'+Number(avg).toFixed(1).replace('.',',')+'<span class="rai-gold-star">★</span></small>':'')+'</button>';
       });
       const unplaced=tables.filter(t=>mapName(t)===zone&&!c.seats.some(q=>String(q[0])===String(t.label)));
       return '<div class="fp-map-scroll"><div class="fp-map" style="aspect-ratio:'+c.w+'/'+c.h+'">'+markup+'</div></div>'+
