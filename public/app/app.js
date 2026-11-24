@@ -236,6 +236,13 @@
         if(isOwner() && window.RAIFloorplan){var floorSlot=$('#stats-floorplan');if(floorSlot)window.RAIFloorplan.mount({view:floorSlot,api:api,toast:toast,fail:fail,tags:TAGS,embedded:true,period:statP.period,from:statP.from,to:statP.to}).catch(fail);}
       });
     }
+    // Cross midnight/month boundary automatically even when Analytics stays open.
+    var lastSofiaDate = new Date().toLocaleDateString('sv-SE',{timeZone:'Europe/Sofia'});
+    refreshTimer=setInterval(function(){
+      if(document.hidden)return;
+      var today=new Date().toLocaleDateString('sv-SE',{timeZone:'Europe/Sofia'});
+      if(today!==lastSofiaDate){lastSofiaDate=today;draw().catch(fail);}
+    },60000);
     return draw();
   });
 
