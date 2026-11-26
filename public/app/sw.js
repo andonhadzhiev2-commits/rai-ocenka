@@ -1,13 +1,14 @@
 /* RAI Ocenka PWA service worker — versioned mobile shell and reliable updates */
-const CACHE = 'rai-pulse-mobile-20261125-100';
+const CACHE = 'rai-pulse-mobile-20261126-101';
 const SHELL = [
   '/app/',
   '/app/index.html',
-  '/app/app.css?v=20261125-100',
-  '/app/app.js?v=20261124-95',
+  '/app/app.css?v=20261126-101',
+  '/app/app.js?v=20261126-101',
   '/app/floorplan.js?v=20261124-64',
-  '/app/pdf-export.js?v=20261124-28',
+  '/app/pdf-export.js?v=20261126-101',
   '/app/logo.png',
+  '/app/sticker-5x8.png',
   '/app/icons/icon-192.png',
   '/app/icons/badge-96.png',
   '/app/manifest.webmanifest'

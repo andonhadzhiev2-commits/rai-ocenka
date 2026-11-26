@@ -89,21 +89,18 @@ label.chk{display:flex;gap:10px;align-items:center;font-size:14px}
 .login img{height:56px;align-self:center}
 /* printable sticker sheet */
 .sheet{background:#fff;color:#222;border-radius:12px;padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}
-.stk-wrap{display:flex;flex-direction:column;gap:6px;align-items:center}
-.stk{width:70mm;max-width:100%;aspect-ratio:70/90;background:#0d0b0c;color:#fff;border:1px dashed #999;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:5mm 4mm;font-family:var(--display);position:relative}
-.stk img.lg{width:55%}
-.stk .h{font-weight:800;font-size:4.2mm;text-align:center;line-height:1.15}
-.stk .s{font-size:2.8mm;color:#bdb3ae}
-.stk .qr{background:#fff;border-radius:3mm;padding:2mm;width:46mm;max-width:80%}
-.stk .qr svg{display:block;width:100%;height:auto}
-.stk .lng{font-size:2.6mm;color:#9a8f8b;border-bottom:.6mm solid #c91f36;padding-bottom:1mm}
+.stk-wrap{position:relative;width:60mm;padding-left:10mm;box-sizing:border-box}
+.stk{position:relative;width:50mm;height:80mm}
+.sticker-art{display:block;width:100%;height:100%}
+.stk .qr{position:absolute;left:10.5mm;top:38.7mm;width:29mm;height:29mm}
+.stk .qr svg{display:block;width:100%;height:100%}
 .stk .test{position:absolute;top:40%;left:-2mm;right:-2mm;text-align:center;transform:rotate(-20deg);font:800 9mm var(--display);color:rgba(230,40,60,.85);letter-spacing:1mm}
-.stk-label{font:800 14px var(--display);color:#c91f36}
+.stk-label{position:absolute;left:5mm;top:50%;transform:translate(-50%,-50%) rotate(-90deg);white-space:nowrap;font:700 2.7mm Arial;color:#444951}
 @media print{
   .top,.tabs,.noprint,.toast{display:none!important}
   html,body{background:#fff}
   .view{padding:0;max-width:none}
-  .sheet{border-radius:0;padding:0;grid-template-columns:repeat(2,70mm);gap:10mm 14mm;justify-content:center}
+  .sheet{border-radius:0;padding:0;grid-template-columns:repeat(3,60mm);gap:10mm 0;justify-content:center}
   .stk-wrap{break-inside:avoid}
 }
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
