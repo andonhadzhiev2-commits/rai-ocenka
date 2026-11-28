@@ -47,10 +47,21 @@ function createApp() {
     const key = process.env.INTEGRATION_API_KEY;
     if (!key || req.headers.authorization !== 'Bearer ' + key) return res.status(401).json({ error: 'unauthorized' });
     const since = req.query.since ? new Date(req.query.since) : new Date(Date.now() - 7 * 864e5);
-    const rows = await db.q(`SELECT id, created_at, table_label, zone_name, rating, tags, comment, status, ack_at, resolved_at,
+    const rows = await db.q(`SELECT id, table_id, created_at, table_label, zone_name, rating, tags, comment, status, ack_at, resolved_at,
       COALESCE((SELECT json_agg(json_build_object('name', product_name, 'vote', vote)) FROM review_products rp WHERE rp.review_id = r.id), '[]') products
       FROM reviews r WHERE created_at >= $1 ORDER BY created_at LIMIT 5000`, [isNaN(since) ? new Date(0) : since]);
     res.json(rows.rows);
+  });
+
+  // Private, read-only table positions for Barometer. Never return QR tokens or contact data.
+  app.get('/api/v1/floorplan', async (req, res, next) => {
+    const key = process.env.INTEGRATION_API_KEY;
+    if (!key || req.headers.authorization !== 'Bearer ' + key) return res.status(401).json({ error: 'unauthorized' });
+    try {
+      const result = await db.q(`SELECT t.id, t.label, t.active, t.map_x, t.map_y, z.name AS zone_name
+        FROM tables t LEFT JOIN zones z ON z.id=t.zone_id ORDER BY t.id`);
+      res.set('Cache-Control', 'no-store').json(result.rows);
+    } catch (error) { next(error); }
   });
 
   const pub = path.join(__dirname, '..', 'public');
